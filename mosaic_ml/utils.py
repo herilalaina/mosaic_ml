@@ -1,20 +1,15 @@
 import signal
+from contextlib import contextmanager
 
-class TimedOutExc(Exception):
-  pass
+class TimeoutException(Exception): pass
 
-def deadline(timeout, *args):
-  def decorate(f):
-    def handler(signum, frame):
-      raise TimedOutExc()
-
-    def new_f(*args):
-
-      signal.signal(signal.SIGALRM, handler)
-      signal.alarm(timeout)
-      return f(*args)
-      signa.alarm(0)
-
-    new_f.__name__ = f.__name__
-    return new_f
-  return decorate
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException("Timed out!")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)

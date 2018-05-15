@@ -31,13 +31,17 @@ def get_configuration_DictionaryLearning():
 
 
 def get_configuration_FactorAnalysis():
+    rules = [
+        ChildRule(applied_to = ["FactorAnalysis__iterated_power"], parent = "FactorAnalysis__svd_method", value = ["randomized"])
+    ]
     FactorAnalysis = ListTask(is_ordered=False, name = "FactorAnalysis",
                                   tasks = ["FactorAnalysis__n_components",
                                            "FactorAnalysis__noise_variance_init",
                                            "FactorAnalysis__max_iter",
                                            "FactorAnalysis__tol",
                                            "FactorAnalysis__svd_method",
-                                           "FactorAnalysis__iterated_power"])
+                                           "FactorAnalysis__iterated_power"],
+                                    rules = rules)
     sampler = {
           "FactorAnalysis__n_components": Parameter("FactorAnalysis__n_components", [2, 20], "uniform", 'int'),
           "FactorAnalysis__noise_variance_init": Parameter("FactorAnalysis__noise_variance_init", None, "constant", "string"),
@@ -46,10 +50,6 @@ def get_configuration_FactorAnalysis():
           "FactorAnalysis__svd_method": Parameter("FactorAnalysis__svd_method", ["lapack", "randomized"], "choice", "string"),
           "FactorAnalysis__iterated_power": Parameter("FactorAnalysis__iterated_power", [1, 5], "uniform", "int")
     }
-
-    rules = [
-        ChildRule(applied_to = ["FactorAnalysis__iterated_power"], parent = "FactorAnalysis__svd_method", value = ["randomized"])
-    ]
     return FactorAnalysis, sampler, rules
 
 
@@ -90,6 +90,11 @@ def get_configuration_IncrementalPCA():
 
 
 def get_configuration_KernelPCA():
+    rules = [
+        ChildRule(applied_to = ["KernelPCA__degree"], parent = "KernelPCA__kernel", value = ["poly"]),
+        ChildRule(applied_to = ["KernelPCA__gamma"], parent = "KernelPCA__kernel", value = ["poly", "rbf", "sigmoid"]),
+        ChildRule(applied_to = ["KernelPCA__coef0"], parent = "KernelPCA__kernel", value = ["poly", "sigmoid"]),
+    ]
     KernelPCA = ListTask(is_ordered=False, name = "KernelPCA",
                                   tasks = ["KernelPCA__n_components",
                                            "KernelPCA__kernel",
@@ -101,7 +106,8 @@ def get_configuration_KernelPCA():
                                            "KernelPCA__tol",
                                            "KernelPCA__max_iter",
                                            "KernelPCA__remove_zero_eig",
-                                           "KernelPCA__n_jobs"])
+                                           "KernelPCA__n_jobs"],
+                                   rules = rules)
     sampler = {
           "KernelPCA__n_components": Parameter("KernelPCA__n_components", [2, 20], "uniform", 'int'),
           "KernelPCA__kernel": Parameter("KernelPCA__kernel", ["linear", "poly", "rbf", "sigmoid", "cosine"], "choice", "string"),
@@ -116,11 +122,6 @@ def get_configuration_KernelPCA():
           "KernelPCA__n_jobs": Parameter("KernelPCA__n_jobs", -1, "constant", "int"),
     }
 
-    rules = [
-        ChildRule(applied_to = ["KernelPCA__degree"], parent = "KernelPCA__kernel", value = ["poly"]),
-        ChildRule(applied_to = ["KernelPCA__gamma"], parent = "KernelPCA__kernel", value = ["poly", "rbf", "sigmoid"]),
-        ChildRule(applied_to = ["KernelPCA__coef0"], parent = "KernelPCA__kernel", value = ["poly", "sigmoid"]),
-    ]
     return KernelPCA, sampler, rules
 
 
@@ -207,6 +208,10 @@ def get_configuration_MiniBatchSparsePCA():
 
 
 def get_configuration_NMF():
+    rules = [
+        ChildRule(applied_to = ["NMF__beta_loss"], parent = "NMF__solver", value = ["mu"])
+    ]
+
     NMF = ListTask(is_ordered=False, name = "NMF",
                                   tasks = ["NMF__n_components",
                                            "NMF__init",
@@ -216,7 +221,8 @@ def get_configuration_NMF():
                                            "NMF__max_iter",
                                            "NMF__alpha",
                                            "NMF__l1_ratio",
-                                           "NMF__shuffle"])
+                                           "NMF__shuffle"],
+                                   rules = rules)
     sampler = {
           "NMF__n_components": Parameter("NMF__n_components", [2, 20], "uniform", 'int'),
           "NMF__init": Parameter("NMF__init", ["random", "nndsvd", "nndsvda", "nndsvdar"], "choice", 'string'),
@@ -229,19 +235,21 @@ def get_configuration_NMF():
           "NMF__shuffle": Parameter("NMF__shuffle", [True, False], "uniform", "bool"),
     }
 
-    rules = [
-        ChildRule(applied_to = ["NMF__beta_loss"], parent = "NMF__solver", value = ["mu"])
-    ]
     return NMF, sampler, rules
 
 
 def get_configuration_PCA():
+    rules = [
+        ChildRule(applied_to = ["PCA__iterated_power"], parent = "PCA__svd_solver", value = ["randomized"])
+    ]
+
     PCA = ListTask(is_ordered=False, name = "PCA",
                                   tasks = ["PCA__n_components",
                                            "PCA__whiten",
                                            "PCA__svd_solver",
                                            "PCA__tol",
-                                           "PCA__iterated_power"])
+                                           "PCA__iterated_power"],
+                                   rules = rules)
     sampler = {
           "PCA__n_components": Parameter("PCA__n_components", [2, 20], "uniform", 'int'),
           "PCA__whiten": Parameter("PCA__whiten", [True, False], "choice", "bool"),
@@ -250,7 +258,4 @@ def get_configuration_PCA():
           "PCA__iterated_power": Parameter("PCA__iterated_power", "auto", "constant", "string"),
     }
 
-    rules = [
-        ChildRule(applied_to = ["PCA__iterated_power"], parent = "PCA__svd_solver", value = ["randomized"])
-    ]
     return PCA, sampler, rules
