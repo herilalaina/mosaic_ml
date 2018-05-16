@@ -9,7 +9,7 @@ from mosaic.mosaic import Search
 from mosaic.env import Env
 
 from mosaic_ml import model
-from mosaic_ml.utils import balanced_accuracy, memory_limit
+from mosaic_ml.utils import balanced_accuracy, memory_limit, time_limit
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
