@@ -3,7 +3,7 @@ import pynisher
 import warnings
 import pickle
 import time
-import resource
+import os
 
 
 from mosaic.scenario import ListTask, ComplexScenario, ChoiceScenario
@@ -29,9 +29,7 @@ LIST_TASK = [""]
 
 
 # Limit memory usage
-soft, hard = 4000000000, 4000000000
-resource.setrlimit(resource.RLIMIT_AS,(soft, hard))
-
+os.system("ulimit -v 4000000")
 
 
 class AutoML():
@@ -97,35 +95,38 @@ class AutoML():
 
             pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
 
-            try:
-                print(pipeline) # Print algo
 
-                skf = StratifiedKFold(n_splits=10)
+            print(pipeline) # Print algo
 
-                list_score = []
-                for train_index, valid_index in skf.split(X, y):
-                    X_train, X_valid = X[train_index], X[valid_index]
-                    y_train, y_valid = y[train_index], y[valid_index]
-                    with time_limit(36):
+            skf = StratifiedKFold(n_splits=10)
+
+            list_score = []
+            for train_index, valid_index in skf.split(X, y):
+                X_train, X_valid = X[train_index], X[valid_index]
+                y_train, y_valid = y[train_index], y[valid_index]
+                with time_limit(36):
+
+                    try:
                         pipeline.fit(X_train, y_train)
-                        score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
-                        if score < bestconfig["score"]:
-                            print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
-                            return score
-                        else:
-                            list_score.append(score)
+                    except ValueError as e:
+                        # raise e
+                        return 0
 
-                score = min(list_score)
+                    score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
+                    if score < bestconfig["score"]:
+                        print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
+                        return score
+                    else:
+                        list_score.append(score)
 
-                pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
-                print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
-                return score
-            except Exception as e:
-                # raise e
-                return 0
+            score = min(list_score)
+
+            pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
+            print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
+            return score
 
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        with time_limit(3600):
-            self.searcher.run(nb_simulation = 1000000000)
+        searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(elf.searcher.run)
+        searcher(nb_simulation = 1000000000)
