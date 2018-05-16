@@ -48,12 +48,14 @@ is_test = args.unittest
 tmp_dir = os.path.join(working_directory, str(task_id))
 try:
     os.makedirs(tmp_dir + '/')
+    os.makedirs(tmp_dir + '/images/')
 except:
     pass
 
 
 info = {
-    "working_directory": tmp_dir + '/'
+    "working_directory": tmp_dir + '/',
+    "images_directory": tmp_dir + "/images"
 }
 
 
