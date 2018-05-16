@@ -74,8 +74,8 @@ class AutoML():
         for param in model.DATA_DEPENDANT_PARAMS:
             if param in self.sampler:
                 self.sampler[param].value_list = [1, self.X.shape[1] - 1]
-        for param in model.list_n_jobs_parms:
-            if param in self.sampler:
+        for param in self.sampler:
+            if param.endswith("__n_jobs"):
                 self.sampler[param].value_list = self.n_jobs
     def fit(self, X, y):
         self.X = X
