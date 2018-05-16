@@ -19,7 +19,7 @@ class TestSemiSuervised(unittest.TestCase):
     def test_LabelPropagation(self):
         scenario, sampler, rules = get_configuration_LabelPropagation()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "LabelPropagation":
                     classifier = semi_supervised.LabelPropagation(**params)
@@ -34,7 +34,7 @@ class TestSemiSuervised(unittest.TestCase):
     """def test_LabelSpreading(self):
         scenario, sampler, rules = get_configuration_LabelSpreading()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "LabelSpreading":
                     classifier = semi_supervised.LabelSpreading(**params)

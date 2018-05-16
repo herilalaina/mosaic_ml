@@ -1,12 +1,12 @@
 import unittest
 import warnings
+import pynisher
 
 from sklearn import datasets, decomposition, linear_model
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 from mosaic.mosaic import Search
-from mosaic_ml.utils import deadline, TimedOutExc
 from mosaic_ml.model.data_preprocessing.decomposition import *
 
 digits = datasets.load_digits()
@@ -16,7 +16,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits, test_siz
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-@deadline(30)
+@pynisher.enforce_limits(wall_time_in_s=20)
 def fit_model(model, X, y):
     model.fit(X, y)
     return model
@@ -26,7 +26,7 @@ class TestDecomposition(unittest.TestCase):
     def test_DictionaryLearning(self):
         scenario, sampler, rules = get_configuration_DictionaryLearning()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "DictionaryLearning":
@@ -46,7 +46,7 @@ class TestDecomposition(unittest.TestCase):
     def test_FactorAnalysis(self):
         scenario, sampler, rules = get_configuration_FactorAnalysis()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "FactorAnalysis":
@@ -66,7 +66,7 @@ class TestDecomposition(unittest.TestCase):
     def test_FastICA(self):
         scenario, sampler, rules = get_configuration_FastICA()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "FastICA":
@@ -86,7 +86,7 @@ class TestDecomposition(unittest.TestCase):
     def test_IncrementalPCA(self):
         scenario, sampler, rules = get_configuration_IncrementalPCA()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "IncrementalPCA":
@@ -106,7 +106,7 @@ class TestDecomposition(unittest.TestCase):
     def test_KernelPCA(self):
         scenario, sampler, rules = get_configuration_KernelPCA()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "KernelPCA":
@@ -127,7 +127,7 @@ class TestDecomposition(unittest.TestCase):
     def test_LatentDirichletAllocation(self):
         scenario, sampler, rules = get_configuration_LatentDirichletAllocation()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "LatentDirichletAllocation":
@@ -147,7 +147,7 @@ class TestDecomposition(unittest.TestCase):
     def test_MiniBatchDictionaryLearning(self):
         scenario, sampler, rules = get_configuration_MiniBatchDictionaryLearning()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "MiniBatchDictionaryLearning":
@@ -167,7 +167,7 @@ class TestDecomposition(unittest.TestCase):
     def test_NMF(self):
         scenario, sampler, rules = get_configuration_NMF()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "NMF":
@@ -187,7 +187,7 @@ class TestDecomposition(unittest.TestCase):
     def test_MiniBatchSparsePCA(self):
         scenario, sampler, rules = get_configuration_MiniBatchSparsePCA()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "MiniBatchSparsePCA":
@@ -205,7 +205,7 @@ class TestDecomposition(unittest.TestCase):
     def test_PCA(self):
         scenario, sampler, rules = get_configuration_PCA()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "PCA":

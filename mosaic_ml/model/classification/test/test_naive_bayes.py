@@ -17,7 +17,7 @@ class TestNaiveBayes(unittest.TestCase):
     def test_GaussianNB(self):
         scenario, sampler, rules = get_configuration_GaussianNB()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "GaussianNB":
                     classifier = naive_bayes.GaussianNB(**params)
@@ -31,7 +31,7 @@ class TestNaiveBayes(unittest.TestCase):
     def test_MultinomialNB(self):
         scenario, sampler, rules = get_configuration_MultinomialNB()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "MultinomialNB":
                     classifier = naive_bayes.MultinomialNB(**params)

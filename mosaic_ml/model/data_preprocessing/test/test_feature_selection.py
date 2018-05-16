@@ -1,12 +1,12 @@
 import unittest
 import warnings
+import pynisher
 
 from sklearn import datasets, feature_selection, linear_model, feature_selection
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 from mosaic.mosaic import Search
-from mosaic_ml.utils import deadline, TimedOutExc
 from mosaic_ml.model.data_preprocessing.feature_selection import *
 
 digits = datasets.load_digits()
@@ -17,7 +17,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits, test_siz
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-@deadline(30)
+@pynisher.enforce_limits(wall_time_in_s=20)
 def fit_model(model, X, y):
     model.fit(X, y)
     return model
@@ -27,7 +27,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectPercentile(self):
         scenario, sampler, rules = get_configuration_SelectPercentile()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectPercentile":
@@ -47,7 +47,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectKBest(self):
         scenario, sampler, rules = get_configuration_SelectKBest()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectKBest":
@@ -67,7 +67,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectFpr(self):
         scenario, sampler, rules = get_configuration_SelectFpr()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectFpr":
@@ -87,7 +87,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectFdr(self):
         scenario, sampler, rules = get_configuration_SelectFdr()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectFdr":
@@ -107,7 +107,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectFwe(self):
         scenario, sampler, rules = get_configuration_SelectFwe()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectFwe":
@@ -128,7 +128,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_SelectFromModel(self):
         scenario, sampler, rules = get_configuration_SelectFromModel()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SelectFromModel":
@@ -148,7 +148,7 @@ class Testfeature_selection(unittest.TestCase):
     def test_RFE(self):
         scenario, sampler, rules = get_configuration_RFE()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "RFE":

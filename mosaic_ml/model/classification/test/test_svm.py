@@ -22,7 +22,7 @@ class TestSVM(unittest.TestCase):
     def test_LinearSVC(self):
         scenario, sampler, rules = get_configuration_LinearSVC()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "LinearSVC":
                     classifier = svm.LinearSVC(**params)
@@ -37,7 +37,7 @@ class TestSVM(unittest.TestCase):
     def test_NuSVC(self):
         scenario, sampler, rules = get_configuration_NuSVC()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "NuSVC":
@@ -55,7 +55,7 @@ class TestSVM(unittest.TestCase):
     def test_SVC(self):
         scenario, sampler, rules = get_configuration_SVC()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "SVC":

@@ -17,7 +17,7 @@ class TestNeighbors(unittest.TestCase):
     def test_KNeighborsClassifier(self):
         scenario, sampler, rules = get_configuration_KNeighborsClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "KNeighborsClassifier":
                     classifier = neighbors.KNeighborsClassifier(**params)
@@ -31,7 +31,7 @@ class TestNeighbors(unittest.TestCase):
     def test_RadiusNeighborsClassifier(self):
         scenario, sampler, rules = get_configuration_RadiusNeighborsClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "RadiusNeighborsClassifier":
                     try:

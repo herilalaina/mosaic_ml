@@ -22,7 +22,7 @@ class TestDecisionTreeClassifier(unittest.TestCase):
     def test_DecisionTreeClassifier(self):
         scenario, sampler, rules = get_configuration_DecisionTreeClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "DecisionTreeClassifier":
                     classifier = tree.DecisionTreeClassifier(**params)
@@ -36,7 +36,7 @@ class TestDecisionTreeClassifier(unittest.TestCase):
     def test_ExtraTreeClassifier(self):
         scenario, sampler, rules = get_configuration_ExtraTreeClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "ExtraTreeClassifier":
                     classifier = tree.ExtraTreeClassifier(**params)

@@ -20,7 +20,7 @@ class TestLinearModel(unittest.TestCase):
     def test_LogisticRegression(self):
         scenario, sampler, rules = get_configuration_LogisticRegression()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "LogisticRegression":
                     classifier = linear_model.LogisticRegression(**params)
@@ -34,7 +34,7 @@ class TestLinearModel(unittest.TestCase):
     def test_SGDClassifier(self):
         scenario, sampler, rules = get_configuration_SGDClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "SGDClassifier":
                     classifier = linear_model.SGDClassifier(**params)
@@ -48,7 +48,7 @@ class TestLinearModel(unittest.TestCase):
     def test_RidgeClassifier(self):
         scenario, sampler, rules = get_configuration_RidgeClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "RidgeClassifier":
                     classifier = linear_model.RidgeClassifier(**params)
@@ -62,7 +62,7 @@ class TestLinearModel(unittest.TestCase):
     def test_Perceptron(self):
         scenario, sampler, rules = get_configuration_Perceptron()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "Perceptron":
                     classifier = linear_model.Perceptron(**params)
@@ -76,7 +76,7 @@ class TestLinearModel(unittest.TestCase):
     def test_PassiveAggressiveClassifier(self):
         scenario, sampler, rules = get_configuration_PassiveAggressiveClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "PassiveAggressiveClassifier":
                     classifier = linear_model.PassiveAggressiveClassifier(**params)

@@ -21,7 +21,7 @@ class TestDummy(unittest.TestCase):
     def test_DummyClassifier(self):
         scenario, sampler, rules = get_configuration_DummyClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "DummyClassifier":

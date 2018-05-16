@@ -21,7 +21,7 @@ class TestDiscriminantAnalysis(unittest.TestCase):
     def test_LinearDiscriminantAnalysis(self):
         scenario, sampler, rules = get_configuration_LinearDiscriminantAnalysis()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "LinearDiscriminantAnalysis":
@@ -39,7 +39,7 @@ class TestDiscriminantAnalysis(unittest.TestCase):
     def test_QuadraticDiscriminantAnalysis(self):
         scenario, sampler, rules = get_configuration_QuadraticDiscriminantAnalysis()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             try:
                 for name, params in config:
                     if  name == "QuadraticDiscriminantAnalysis":

@@ -19,7 +19,7 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_MLPClassifier(self):
         scenario, sampler, rules = get_configuration_MLPClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "MLPClassifier":
                     classifier = neural_network.MLPClassifier(**params)

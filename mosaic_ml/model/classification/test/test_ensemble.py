@@ -24,7 +24,7 @@ class TestEnsemble(unittest.TestCase):
     def test_AdaBoostClassifier(self):
         scenario, sampler, rules = get_configuration_AdaBoostClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "AdaBoostClassifier":
                     classifier = ensemble.AdaBoostClassifier(**params)
@@ -39,7 +39,7 @@ class TestEnsemble(unittest.TestCase):
     def test_BaggingClassifier(self):
         scenario, sampler, rules = get_configuration_BaggingClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "BaggingClassifier":
                     classifier = ensemble.BaggingClassifier(**params)
@@ -53,7 +53,7 @@ class TestEnsemble(unittest.TestCase):
     def test_ExtraTreesClassifier(self):
         scenario, sampler, rules = get_configuration_ExtraTreesClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "ExtraTreesClassifier":
                     classifier = ensemble.ExtraTreesClassifier(**params)
@@ -67,7 +67,7 @@ class TestEnsemble(unittest.TestCase):
     def test_GradientBoostingClassifier(self):
         scenario, sampler, rules = get_configuration_GradientBoostingClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "GradientBoostingClassifier":
                     classifier = ensemble.GradientBoostingClassifier(**params)
@@ -82,7 +82,7 @@ class TestEnsemble(unittest.TestCase):
     def test_RandomForestClassifier(self):
         scenario, sampler, rules = get_configuration_RandomForestClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "RandomForestClassifier":
                     classifier = ensemble.RandomForestClassifier(**params)

@@ -22,7 +22,7 @@ class TestGaussianProcess(unittest.TestCase):
     def test_GaussianProcessClassifier(self):
         scenario, sampler, rules = get_configuration_GaussianProcessClassifier()
 
-        def evaluate(config):
+        def evaluate(config, bestconfig):
             for name, params in config:
                 if  name == "GaussianProcessClassifier":
                     classifier = gaussian_process.GaussianProcessClassifier(**params)
