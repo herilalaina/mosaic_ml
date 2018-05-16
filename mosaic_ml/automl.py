@@ -87,7 +87,7 @@ class AutoML():
             if preprocessing is None or classifier is None:
                 raise Exception("Classifier and/or Preprocessing not found\n {0}".format(config))
 
-            pipeline = Pipeline(memory="/tmp/{0}".format(time.time()), steps=[("preprocessing", preprocessing), ("classifier", classifier)])
+            pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
 
             try:
                 print(pipeline) # Print algo

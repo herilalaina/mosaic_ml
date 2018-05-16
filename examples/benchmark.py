@@ -12,6 +12,7 @@ from update_metadata_util import load_task
 import warnings
 import pickle
 import pynisher
+import scipy
 
 from sklearn import datasets, feature_selection, linear_model, feature_selection
 from sklearn.model_selection import train_test_split
@@ -46,8 +47,7 @@ is_test = args.unittest
 
 tmp_dir = os.path.join(working_directory, str(task_id))
 try:
-    os.makedirs(working_directory)
-    os.makedirs(tmp_dir)
+    os.makedirs(tmp_dir + '/')
 except:
     pass
 
@@ -60,14 +60,20 @@ info = {
 X_train, y_train, X_test, y_test, cat = load_task(task_id)
 imp = Imputer(missing_values="NaN", strategy="median")
 imp.fit(X_train)
+
 X_train = imp.transform(X_train)
 X_test = imp.transform(X_test)
 
-scaler = StandardScaler()
-scaler.fit(X_train)
-X_train = scaler.transform(X_train)
-X_test = scaler.transform(X_test)
-
+if not scipy.sparse.issparse(X_train):
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    X_train = scaler.transform(X_train)
+    X_test = scaler.transform(X_test)
+else:
+    scaler = StandardScaler(with_mean=False)
+    scaler.fit(X_train)
+    X_train = scaler.transform(X_train)
+    X_test = scaler.transform(X_test)
 
 autoML = AutoML(training_log_file = "{0}/result.txt".format(tmp_dir), info_training = info)
 autoML.fit(X_train, y_train)
