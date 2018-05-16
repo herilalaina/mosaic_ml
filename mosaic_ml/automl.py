@@ -74,8 +74,8 @@ class AutoML():
         for param in model.DATA_DEPENDANT_PARAMS:
             if param in self.sampler:
                 self.sampler[param].value_list = [1, self.X.shape[1] - 1]
-        for param in model.list_n_jobs_parms:
-            if param in self.sampler:
+        for param in self.sampler:
+            if param.endswith("__n_jobs"):
                 self.sampler[param].value_list = self.n_jobs
     def fit(self, X, y):
         self.X = X
@@ -104,24 +104,25 @@ class AutoML():
             skf = StratifiedKFold(n_splits=10)
 
             list_score = []
-            for train_index, valid_index in skf.split(X, y):
-                X_train, X_valid = X[train_index], X[valid_index]
-                y_train, y_valid = y[train_index], y[valid_index]
-                with time_limit(36):
-
-                    try:
+            try:
+                for train_index, valid_index in skf.split(X, y):
+                    X_train, X_valid = X[train_index], X[valid_index]
+                    y_train, y_valid = y[train_index], y[valid_index]
+                    with time_limit(36):
                         pipeline.fit(X_train, y_train)
-                    except ValueError as e:
-                        return 0
-                    except TypeError as e:
-                        return 0
+                        score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
+                        if score < bestconfig["score"]:
+                            print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
+                            return score
+                        else:
+                            list_score.append(score)
+            except ValueError as e:
+                return 0
+            except TypeError as e:
+                return 0
+            except pynisher.MemorylimitException:
+                return 0
 
-                    score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
-                    if score < bestconfig["score"]:
-                        print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
-                        return score
-                    else:
-                        list_score.append(score)
 
             score = min(list_score)
 
