@@ -113,11 +113,11 @@ class AutoML():
                 print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
                 return score
             except Exception as e:
-                print(e)
+                raise e
                 return 0
 
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        obj = pynisher.enforce_limits(wall_time_in_s=3600)(self.searcher.run)
-        obj(nb_simulation = 1000000000)
+        with time_limit(3600):
+            self.searcher.run(nb_simulation = 1000000000)
