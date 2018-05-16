@@ -33,11 +33,12 @@ os.system("ulimit -v 4000000")
 
 
 class AutoML():
-    def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}):
+    def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}, n_jobs = 1):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
         self.training_log_file = training_log_file
         self.info_training = info_training
+        self.n_jobs = n_jobs
 
     def configure_hyperparameter_space(self):
         if not hasattr(self, "X") or not hasattr(self, "y"):
@@ -73,7 +74,9 @@ class AutoML():
         for param in model.DATA_DEPENDANT_PARAMS:
             if param in self.sampler:
                 self.sampler[param].value_list = [1, self.X.shape[1] - 1]
-
+        for param in model.list_n_jobs_parms:
+            if param in self.sampler:
+                self.sampler[param].value_list = self.n_jobs
     def fit(self, X, y):
         self.X = X
         self.y = y
@@ -109,7 +112,8 @@ class AutoML():
                     try:
                         pipeline.fit(X_train, y_train)
                     except ValueError as e:
-                        # raise e
+                        return 0
+                    except TypeError as e:
                         return 0
 
                     score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
@@ -128,5 +132,5 @@ class AutoML():
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(elf.searcher.run)
+        searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(self.searcher.run)
         searcher(nb_simulation = 1000000000)

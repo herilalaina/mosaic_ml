@@ -42,6 +42,21 @@ DATA_DEPENDANT_PARAMS = [
 ]
 
 
+list_n_jobs_parms = [
+    "BaggingClassifier__n_jobs",
+    "ExtraTreesClassifier__n_jobs",
+    "RandomForestClassifier__n_jobs",
+    "BaggingClassifier__n_jobs",
+    "GaussianProcessClassifier__n_jobs",
+    "Perceptron__n_jobs",
+    "PassiveAggressiveClassifier__n_jobs",
+    "KNeighborsClassifier__n_jobs",
+    "DictionaryLearning__n_jobs",
+    "KernelPCA__n_jobs",
+    "LatentDirichletAllocation__n_jobs",
+    "MiniBatchDictionaryLearning__n_jobs"
+]
+
 list_available_classifiers = {
     "LinearDiscriminantAnalysis": discriminant_analysis.LinearDiscriminantAnalysis,
     "QuadraticDiscriminantAnalysis": discriminant_analysis.QuadraticDiscriminantAnalysis,
