@@ -3,6 +3,8 @@ import pynisher
 import warnings
 import pickle
 import time
+import resource
+
 
 from mosaic.scenario import ListTask, ComplexScenario, ChoiceScenario
 from mosaic.mosaic import Search
@@ -24,6 +26,13 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 LIST_TASK = [""]
+
+
+# Limit memory usage
+soft, hard = 4000000000, 4000000000
+resource.setrlimit(resource.RLIMIT_AS,(soft, hard))
+
+
 
 class AutoML():
     def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}):
@@ -72,7 +81,6 @@ class AutoML():
         self.y = y
         self.configure_hyperparameter_space()
 
-        @pynisher.enforce_limits(mem_in_mb=3072)
         def evaluate(config, bestconfig, X=None, y=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
@@ -113,7 +121,7 @@ class AutoML():
                 print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
                 return score
             except Exception as e:
-                raise e
+                # raise e
                 return 0
 
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
