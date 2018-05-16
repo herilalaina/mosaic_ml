@@ -29,7 +29,7 @@ LIST_TASK = [""]
 
 
 # Limit memory usage
-os.system("ulimit -v 4000000")
+# os.system("ulimit -v 4000000")
 
 
 class AutoML():
@@ -132,10 +132,12 @@ class AutoML():
             except pynisher.MemorylimitException as e:
                 print("MemorylimitException: {0}".format(e))
                 return 0
+            except Exception as e:
+                print("Exception: {0}".format(e))
+                return 0
 
 
             score = min(list_score)
-
             pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
             print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
             return score
@@ -144,4 +146,4 @@ class AutoML():
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
         searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(self.searcher.run)
-        searcher(nb_simulation = 1000000000)
+        searcher(nb_simulation = 1000000000, generate_image_path = self.info_training["images_directory"])
