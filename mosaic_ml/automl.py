@@ -9,7 +9,7 @@ from mosaic.mosaic import Search
 from mosaic.env import Env
 
 from mosaic_ml import model
-from mosaic_ml.utils import time_limit, balanced_accuracy
+from mosaic_ml.utils import balanced_accuracy, memory_limit
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -72,7 +72,6 @@ class AutoML():
         self.y = y
         self.configure_hyperparameter_space()
 
-        @pynisher.enforce_limits(mem_in_mb=3072)
         def evaluate(config, bestconfig, X=None, y=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
@@ -90,6 +89,7 @@ class AutoML():
             pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
 
             try:
+                memory_limit(3072)
                 print(pipeline) # Print algo
 
                 skf = StratifiedKFold(n_splits=10)

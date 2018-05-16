@@ -18,9 +18,9 @@ def time_limit(seconds):
     finally:
         signal.alarm(0)
 
-def memory_limit():
+def memory_limit(memory_limit_MB):
     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-    resource.setrlimit(resource.RLIMIT_AS, (get_memory() * 1024, hard))
+    resource.setrlimit(resource.RLIMIT_AS, (memory_limit_MB * 1024, hard))
 
 def get_memory():
     with open('/proc/meminfo', 'r') as mem:
