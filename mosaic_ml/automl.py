@@ -1,22 +1,36 @@
 import random
+import pynisher
+import warnings
+import pickle
+import time
 
 from mosaic.scenario import ListTask, ComplexScenario, ChoiceScenario
 from mosaic.mosaic import Search
+from mosaic.env import Env
 
 from mosaic_ml import model
-from mosaic_ml.utils import time_limit
+from mosaic_ml.utils import time_limit, balanced_accuracy
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.exceptions import ConvergenceWarning
+from sklearn.model_selection import StratifiedKFold
+
 
 from functools import partial
+
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 LIST_TASK = [""]
 
 class AutoML():
-    def __init__(self, time_budget = None, time_limit_for_evaluation = None):
+    def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
+        self.training_log_file = training_log_file
+        self.info_training = info_training
 
     def configure_hyperparameter_space(self):
         if not hasattr(self, "X") or not hasattr(self, "y"):
@@ -59,7 +73,8 @@ class AutoML():
         self.y = y
         self.configure_hyperparameter_space()
 
-        def evaluate(config, X_train=None, X_test=None, y_train=None, y_test=None):
+        @pynisher.enforce_limits(mem_in_mb=3072)
+        def evaluate(config, bestconfig, X=None, X_test=None, y=None, y_test=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
             classifier = None
@@ -73,22 +88,37 @@ class AutoML():
             if preprocessing is None or classifier is None:
                 raise Exception("Classifier and/or Preprocessing not found\n {0}".format(config))
 
-            pipeline = Pipeline([("preprocessing", preprocessing), ("classifier", classifier)])
+            pipeline = Pipeline(memory="/tmp/{0}".format(time.time()), steps=[("preprocessing", preprocessing), ("classifier", classifier)])
 
             try:
-                a = 20
-                print(pipeline)
-                with time_limit(a):
-                    pipeline.fit(X, y)
-                score = pipeline.score(X_test, y_test)
-                print(">>>>>>>>>>>>>>>> Score: {0}".format(score))
+                print(pipeline) # Print algo
+
+                skf = StratifiedKFold(n_splits=10)
+
+                list_score = []
+                for train_index, valid_index in skf.split(X, y):
+                    X_train, X_valid = X[train_index], X[valid_index]
+                    y_train, y_valid = y[train_index], y[valid_index]
+                    with time_limit(36):
+                        pipeline.fit(X_train, y_train)
+                        score = balanced_accuracy(y_test, pipeline.predict(X_test))
+                        if score < bestconfig["score"]:
+                            print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
+                            return score
+                        else:
+                            list_score.append(score)
+
+                score = min(list_score)
+
+                pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
+                print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
                 return score
             except Exception as e:
                 print(e)
                 return 0
 
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.33, random_state=42)
-        eval_func = partial(evaluate, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+        eval_func = partial(evaluate, X=X_train, X_test=X_test, y=y_train, y_test=y_test, info = self.info_training)
 
-        self.searcher = Search(self.start, self.sampler, self.rules, eval_func)
-        self.searcher.run(nb_simulation = 500, generate_image_path = "search_out")
+        self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
+        self.searcher.run(nb_simulation = 5)
