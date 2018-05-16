@@ -72,6 +72,7 @@ class AutoML():
         self.y = y
         self.configure_hyperparameter_space()
 
+        @pynisher.enforce_limits(mem_in_mb=3072)
         def evaluate(config, bestconfig, X=None, y=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
@@ -89,7 +90,6 @@ class AutoML():
             pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
 
             try:
-                memory_limit(3072)
                 print(pipeline) # Print algo
 
                 skf = StratifiedKFold(n_splits=10)
