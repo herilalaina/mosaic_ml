@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import sys
-sys.path.insert(0,'/home/herilalaina/Code/software/mosaic_ml')
+sys.path.insert(0,'/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
 sys.path.append('.')
 
 
