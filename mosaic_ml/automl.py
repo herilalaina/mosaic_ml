@@ -97,30 +97,40 @@ class AutoML():
                 raise Exception("Classifier and/or Preprocessing not found\n {0}".format(config))
 
             pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
-
-
             print(pipeline) # Print algo
 
-            skf = StratifiedKFold(n_splits=10)
+            def train_predict_func(model, X_train, y_train, X_valid, y_valid):
+                model.fit(X_train, y_train)
+                return balanced_accuracy(y_valid, pipeline.predict(X_valid))
 
             list_score = []
             try:
+                skf = StratifiedKFold(n_splits=10)
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
                     with time_limit(36):
-                        pipeline.fit(X_train, y_train)
-                        score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
+                        searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
+                        score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
                         if score < bestconfig["score"]:
                             print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
                             return score
                         else:
                             list_score.append(score)
+            except TimeoutException as e:
+                print("TimeoutException: {0}".format(e))
+                return 0
             except ValueError as e:
+                print("ValueError: {0}".format(e))
                 return 0
             except TypeError as e:
+                print("TypeError: {0}".format(e))
                 return 0
-            except pynisher.MemorylimitException:
+            except AttributeError as e:
+                print("AttributeError: {0}".format(e))
+                return 0
+            except pynisher.MemorylimitException as e:
+                print("MemorylimitException: {0}".format(e))
                 return 0
 
 
