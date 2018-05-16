@@ -67,14 +67,13 @@ class AutoML():
             if param in self.sampler:
                 self.sampler[param].value_list = [1, self.X.shape[1] - 1]
 
-
     def fit(self, X, y):
         self.X = X
         self.y = y
         self.configure_hyperparameter_space()
 
         @pynisher.enforce_limits(mem_in_mb=3072)
-        def evaluate(config, bestconfig, X=None, X_test=None, y=None, y_test=None, info = {}):
+        def evaluate(config, bestconfig, X=None, y=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
             classifier = None
@@ -101,7 +100,7 @@ class AutoML():
                     y_train, y_valid = y[train_index], y[valid_index]
                     with time_limit(36):
                         pipeline.fit(X_train, y_train)
-                        score = balanced_accuracy(y_test, pipeline.predict(X_test))
+                        score = balanced_accuracy(y_valid, pipeline.predict(X_valid))
                         if score < bestconfig["score"]:
                             print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
                             return score
@@ -117,8 +116,8 @@ class AutoML():
                 print(e)
                 return 0
 
-        X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.33, random_state=42)
-        eval_func = partial(evaluate, X=X_train, X_test=X_test, y=y_train, y_test=y_test, info = self.info_training)
+        eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        self.searcher.run(nb_simulation = 5)
+        obj = pynisher.enforce_limits(wall_time_in_s=3600)(self.searcher.run)
+        obj(nb_simulation = 1000000000)
