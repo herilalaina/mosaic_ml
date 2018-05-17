@@ -136,10 +136,10 @@ class AutoML():
                 print("Exception: {0}".format(e))
                 return 0
 
-
             score = min(list_score)
-            pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
-            print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
+            if score > bestconfig["score"]:
+                pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
+                print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
             return score
 
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
