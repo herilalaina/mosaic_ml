@@ -79,7 +79,7 @@ else:
 
 autoML = AutoML(training_log_file = "{0}/result.txt".format(tmp_dir), info_training = info)
 autoML.fit(X_train, y_train)
-
+"""
 os.chdir(info["working_directory"])
 for file in glob.glob("*.pkl"):
     pipeline = pickle.load(open(file, "rb"))
@@ -87,3 +87,4 @@ for file in glob.glob("*.pkl"):
     score = balanced_accuracy(y_test, pipeline.predict(X_test))
     with open("{0}/validation.txt".format(tmp_dir), "a+") as f:
         f.write("{0},{1}\n".format(file, score))
+"""
