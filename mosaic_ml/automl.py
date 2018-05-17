@@ -145,5 +145,5 @@ class AutoML():
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(self.searcher.run)
+        searcher = pynisher.enforce_limits(wall_time_in_s=3600)(self.searcher.run)
         searcher(nb_simulation = 1000000000, generate_image_path = self.info_training["images_directory"])
