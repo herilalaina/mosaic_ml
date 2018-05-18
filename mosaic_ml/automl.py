@@ -4,7 +4,7 @@ import warnings
 import pickle
 import time
 import os
-
+import signal, psutil
 
 from mosaic.scenario import ListTask, ComplexScenario, ChoiceScenario
 from mosaic.mosaic import Search
@@ -84,6 +84,15 @@ class AutoML():
         self.y = y
         self.configure_hyperparameter_space()
 
+        def kill_child_processes(parent_pid, sig=signal.SIGTERM):
+            try:
+                parent = psutil.Process(parent_pid)
+            except psutil.NoSuchProcess:
+                return
+            children = parent.children(recursive=True)
+            for process in children:
+                process.send_signal(sig)
+
         def evaluate(config, bestconfig, X=None, y=None, info = {}):
             print("\n#####################################################")
             preprocessing = None
@@ -111,9 +120,11 @@ class AutoML():
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
+                    kill_child_processes(os.getpid())
                     with time_limit(36):
                         searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
                         score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
+                        del searcher
                         if score < bestconfig["score"]:
                             print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
                             return score
