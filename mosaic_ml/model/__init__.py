@@ -117,11 +117,11 @@ list_available_classifiers = {
 
 list_available_preprocessing = {
     #"DictionaryLearning": decomposition.DictionaryLearning,
-    "PCA": decomposition.PCA,
-    "NMF": decomposition.NMF,
-    "FastICA": decomposition.FastICA,
-    "KernelPCA": decomposition.KernelPCA,
-    "FactorAnalysis": decomposition.FactorAnalysis,
+    #"PCA": decomposition.PCA,
+    #"NMF": decomposition.NMF,
+    #"FastICA": decomposition.FastICA,
+    #"KernelPCA": decomposition.KernelPCA,
+    #"FactorAnalysis": decomposition.FactorAnalysis,
     "IncrementalPCA": decomposition.IncrementalPCA,
     #"MiniBatchSparsePCA": decomposition.MiniBatchSparsePCA,
     #"MiniBatchDictionaryLearning": decomposition.MiniBatchDictionaryLearning,
@@ -195,11 +195,11 @@ def get_all_data_preprocessing():
     return [
         # decomposition
         #get_configuration_DictionaryLearning,
-        get_configuration_PCA,
-        get_configuration_NMF,
-        get_configuration_FastICA,
-        get_configuration_KernelPCA,
-        get_configuration_FactorAnalysis,
+        #get_configuration_PCA,
+        #get_configuration_NMF,
+        #get_configuration_FastICA,
+        #get_configuration_KernelPCA,
+        #get_configuration_FactorAnalysis,
         get_configuration_IncrementalPCA,
         #get_configuration_MiniBatchSparsePCA,
         #get_configuration_MiniBatchDictionaryLearning,
