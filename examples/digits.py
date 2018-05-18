@@ -15,7 +15,8 @@ from mosaic_ml.utils import balanced_accuracy
 import glob, os
 
 info = {
-    "working_directory": "tmp/"
+    "working_directory": "tmp/",
+    "images_directory": ""
 }
 
 digits = datasets.load_digits()
