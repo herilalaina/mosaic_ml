@@ -71,15 +71,29 @@ else:
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
+def train_predict_func(model, X_train, y_train, X_valid, y_valid):
+    model.fit(X_train, y_train)
+    return balanced_accuracy(y_valid, pipeline.predict(X_valid))
+
 os.chdir(info["working_directory"])
 list_score = []
+error_log = []
 for file in sorted(glob.glob('*.pkl'), key=os.path.getmtime):
     pipeline = pickle.load(open(file, "rb"))
-    pipeline.fit(X_train, y_train)
-    score = balanced_accuracy(y_test, pipeline.predict(X_test))
-    list_score.append((file, score))
+    try:
+        searcher = pynisher.enforce_limits(mem_in_mb=3072 * 2)(train_predict_func)
+        score = searcher(pipeline, X_train, y_train, X_test, y_test)
+        pipeline.fit(X_train, y_train)
+        list_score.append((file, score))
+    except Exception as e:
+        list_score.append((file, 0))
+        error_log.append((file, e))
 
 with open("{0}/validation.txt".format(tmp_dir), "w") as f:
     for file, score in list_score:
         f.write("{0},{1}\n".format(file, score))
 print("Validation created for task={0} run={1}".format(task_id, seed))
+
+for file, error in error_log:
+    with open("{0}/error.txt".format(tmp_dir), "a+") as f:
+        f.write("{0},{1}\n".format(file, error))
