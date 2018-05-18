@@ -147,6 +147,7 @@ class AutoML():
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
+
         start_time = time.time()
         self.upgrade_ressource(100)
         with time_limit(3540):
