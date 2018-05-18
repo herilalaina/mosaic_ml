@@ -148,15 +148,8 @@ class AutoML():
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
         start_time = time.time()
-        self.upgrade_ressource(1)
+        self.upgrade_ressource(100)
         with time_limit(3540):
             i = 2
             while True:
-                passed_min = int((time.time() - start_time) / 60)
-                if passed_min < 20:
-                    self.upgrade_ressource(1)
-                elif passed_min < 40:
-                    self.upgrade_ressource(50)
-                else:
-                    self.upgrade_ressource(110)
                 self.searcher.run(nb_simulation = 10, generate_image_path = self.info_training["images_directory"])
