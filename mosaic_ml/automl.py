@@ -11,7 +11,7 @@ from mosaic.mosaic import Search
 from mosaic.env import Env
 
 from mosaic_ml import model
-from mosaic_ml.utils import balanced_accuracy, memory_limit, time_limit
+from mosaic_ml.utils import balanced_accuracy, memory_limit, time_limit, TimeoutException
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -26,10 +26,6 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 LIST_TASK = [""]
-
-
-# Limit memory usage
-# os.system("ulimit -v 4000000")
 
 
 class AutoML():
@@ -77,6 +73,12 @@ class AutoML():
         for param in self.sampler:
             if param.endswith("__n_jobs"):
                 self.sampler[param].value_list = self.n_jobs
+
+    def upgrade_ressource(self, nb_ressource):
+        for param in self.searcher.mcts.env.space.sampler:
+            if param in model.Ressource_parameters:
+                self.searcher.mcts.env.space.sampler[param].value_list = [nb_ressource, nb_ressource + 10]
+
     def fit(self, X, y):
         self.X = X
         self.y = y
@@ -145,5 +147,16 @@ class AutoML():
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
-        searcher = pynisher.enforce_limits(wall_time_in_s=3600, mem_in_mb=3072)(self.searcher.run)
-        searcher(nb_simulation = 1000000000, generate_image_path = self.info_training["images_directory"])
+        start_time = time.time()
+        self.upgrade_ressource(1)
+        with time_limit(3540):
+            i = 2
+            while True:
+                passed_min = int((time.time() - start_time) / 60)
+                if passed_min < 20:
+                    self.upgrade_ressource(1)
+                elif passed_min < 40:
+                    self.upgrade_ressource(50)
+                else:
+                    self.upgrade_ressource(110)
+                self.searcher.run(nb_simulation = 10, generate_image_path = self.info_training["images_directory"])

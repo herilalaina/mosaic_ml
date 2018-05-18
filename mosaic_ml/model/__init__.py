@@ -1,5 +1,6 @@
 from mosaic_ml.model.data_preprocessing.decomposition import *
 from mosaic_ml.model.data_preprocessing.feature_selection import *
+from mosaic_ml.model.data_preprocessing.cluster import *
 from mosaic_ml.model.classification.discriminant_analysis import *
 from mosaic_ml.model.classification.dummy import *
 from mosaic_ml.model.classification.ensemble import *
@@ -12,8 +13,26 @@ from mosaic_ml.model.classification.semi_supervised import *
 from mosaic_ml.model.classification.svm import *
 from mosaic_ml.model.classification.tree import *
 
-from sklearn import discriminant_analysis, dummy, ensemble, gaussian_process, linear_model, naive_bayes
+from sklearn import discriminant_analysis, dummy, ensemble, gaussian_process, linear_model, naive_bayes, cluster
 from sklearn import neighbors, neural_network, semi_supervised, svm, tree, decomposition, feature_selection
+
+Ressource_parameters = [
+    "AdaBoostClassifier__n_estimators",
+    "BaggingClassifier__n_estimators",
+    "ExtraTreesClassifier__n_estimators",
+    "GradientBoostingClassifier__n_estimators",
+    "RandomForestClassifier__n_estimators",
+    "SGDClassifier__max_iter",
+    "RidgeClassifier__max_iter",
+    "Perceptron__max_iter",
+    "PassiveAggressiveClassifier__max_iter",
+    "MLPClassifier__max_iter",
+    "LinearSVC__max_iter",
+    "NuSVC__max_iter",
+    "SVC__max_iter"
+]
+
+
 
 DATA_DEPENDANT_PARAMS = [
     # Classifier
@@ -21,8 +40,8 @@ DATA_DEPENDANT_PARAMS = [
     "GradientBoostingClassifier__max_depth",
     "RandomForestClassifier__max_depth",
     "KNeighborsClassifier__n_neighbors",
-    "LabelPropagation__n_neighbors",
-    "LabelSpreading__n_neighbors",
+    #"LabelPropagation__n_neighbors",
+    #"LabelSpreading__n_neighbors",
     "DecisionTreeClassifier__max_depth",
     "ExtraTreeClassifier__max_depth",
 
@@ -43,11 +62,10 @@ DATA_DEPENDANT_PARAMS = [
 
 
 list_n_jobs_parms = [
-    "BaggingClassifier__n_jobs",
+    #"BaggingClassifier__n_jobs",
     "ExtraTreesClassifier__n_jobs",
     "RandomForestClassifier__n_jobs",
-    "BaggingClassifier__n_jobs",
-    "GaussianProcessClassifier__n_jobs",
+    # "GaussianProcessClassifier__n_jobs",
     "Perceptron__n_jobs",
     "PassiveAggressiveClassifier__n_jobs",
     "KNeighborsClassifier__n_jobs",
@@ -64,14 +82,14 @@ list_available_classifiers = {
     "DummyClassifier": dummy.DummyClassifier,
     # Ensemble
     "AdaBoostClassifier": ensemble.AdaBoostClassifier,
-    "BaggingClassifier": ensemble.BaggingClassifier,
+    #"BaggingClassifier": ensemble.BaggingClassifier,
     "ExtraTreesClassifier": ensemble.ExtraTreesClassifier,
     "RandomForestClassifier": ensemble.RandomForestClassifier,
     "GradientBoostingClassifier": ensemble.GradientBoostingClassifier,
     # gaussian_process
-    "GaussianProcessClassifier": gaussian_process.GaussianProcessClassifier,
+    #"GaussianProcessClassifier": gaussian_process.GaussianProcessClassifier,
     # linear_model
-    "LogisticRegression": linear_model.LogisticRegression,
+    # "LogisticRegression": linear_model.LogisticRegression,
     "Perceptron": linear_model.Perceptron,
     "SGDClassifier": linear_model.SGDClassifier,
     "RidgeClassifier": linear_model.RidgeClassifier,
@@ -81,15 +99,15 @@ list_available_classifiers = {
     "MultinomialNB": naive_bayes.MultinomialNB,
     # neighbors
     "KNeighborsClassifier": neighbors.KNeighborsClassifier,
-    "RadiusNeighborsClassifier": neighbors.RadiusNeighborsClassifier,
+    # "RadiusNeighborsClassifier": neighbors.RadiusNeighborsClassifier,
     # neural_network
     "MLPClassifier": neural_network.MLPClassifier,
     # semi_supervised
-    "LabelSpreading": semi_supervised.LabelSpreading,
-    "LabelPropagation": semi_supervised.LabelPropagation,
+    #"LabelSpreading": semi_supervised.LabelSpreading,
+    #"LabelPropagation": semi_supervised.LabelPropagation,
     # svm
     "SVC": svm.SVC,
-    "NuSVC": svm.NuSVC,
+    # "NuSVC": svm.NuSVC,
     "LinearSVC": svm.LinearSVC,
     # tree
     "DecisionTreeClassifier": tree.DecisionTreeClassifier,
@@ -115,7 +133,9 @@ list_available_preprocessing = {
     "SelectFwe": feature_selection.SelectFwe,
     "SelectKBest": feature_selection.SelectKBest,
     "SelectPercentile": feature_selection.SelectPercentile,
-    "SelectFromModel": feature_selection.SelectFromModel
+    "SelectFromModel": feature_selection.SelectFromModel,
+    # Cluster
+    "FeatureAgglomeration": cluster.FeatureAgglomeration
 }
 
 
@@ -130,16 +150,16 @@ def get_all_classifier():
 
         # Ensemble
         get_configuration_AdaBoostClassifier,
-        get_configuration_BaggingClassifier,
+        #get_configuration_BaggingClassifier,
         get_configuration_ExtraTreesClassifier,
         get_configuration_RandomForestClassifier,
         get_configuration_GradientBoostingClassifier,
 
         # gaussian_process
-        get_configuration_GaussianProcessClassifier,
+        # get_configuration_GaussianProcessClassifier,
 
         # linear_model
-        get_configuration_LogisticRegression,
+        # get_configuration_LogisticRegression,
         get_configuration_Perceptron,
         get_configuration_SGDClassifier,
         get_configuration_RidgeClassifier,
@@ -151,18 +171,18 @@ def get_all_classifier():
 
         # neighbors
         get_configuration_KNeighborsClassifier,
-        get_configuration_RadiusNeighborsClassifier,
+        # get_configuration_RadiusNeighborsClassifier,
 
         # neural_network
         get_configuration_MLPClassifier,
 
         # semi_supervised
-        get_configuration_LabelSpreading,
-        get_configuration_LabelPropagation,
+        #get_configuration_LabelSpreading,
+        #get_configuration_LabelPropagation,
 
         # svm
         get_configuration_SVC,
-        get_configuration_NuSVC,
+        # get_configuration_NuSVC,
         get_configuration_LinearSVC,
 
         # tree
@@ -192,5 +212,8 @@ def get_all_data_preprocessing():
         get_configuration_SelectFwe,
         get_configuration_SelectKBest,
         get_configuration_SelectPercentile,
-        get_configuration_SelectFromModel
+        get_configuration_SelectFromModel,
+
+        # Cluster
+        get_configuration_FeatureAgglomeration
     ]

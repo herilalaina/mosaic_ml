@@ -35,7 +35,7 @@ def get_configuration_SelectFpr():
                                            "SelectFpr__alpha"])
     sampler = {
              "SelectFpr__score_func": Parameter("SelectFpr__score_func", [feature_selection.f_classif, feature_selection.mutual_info_classif, feature_selection.chi2], "choice", "func"),
-             "SelectFpr__alpha": Parameter("SelectFpr__alpha", [0, 0.1], "uniform", "float")
+             "SelectFpr__alpha": Parameter("SelectFpr__alpha", [0, 0.05], "uniform", "float")
     }
     rules = []
     return SelectFpr, sampler, rules
@@ -47,7 +47,7 @@ def get_configuration_SelectFdr():
                                            "SelectFdr__alpha"])
     sampler = {
              "SelectFdr__score_func": Parameter("SelectFdr__score_func", [feature_selection.f_classif, feature_selection.mutual_info_classif, feature_selection.chi2], "choice", "func"),
-             "SelectFdr__alpha": Parameter("SelectFdr__alpha", [0, 0.1], "uniform", "float")
+             "SelectFdr__alpha": Parameter("SelectFdr__alpha", [0, 0.05], "uniform", "float")
     }
     rules = []
     return SelectFdr, sampler, rules
@@ -59,7 +59,7 @@ def get_configuration_SelectFwe():
                                            "SelectFwe__alpha"])
     sampler = {
              "SelectFwe__score_func": Parameter("SelectFwe__score_func", [feature_selection.f_classif, feature_selection.mutual_info_classif, feature_selection.chi2], "choice", "func"),
-             "SelectFwe__alpha": Parameter("SelectFwe__alpha", [0, 0.1], "uniform", "float")
+             "SelectFwe__alpha": Parameter("SelectFwe__alpha", [0, 0.05], "uniform", "float")
     }
     rules = []
     return SelectFwe, sampler, rules
