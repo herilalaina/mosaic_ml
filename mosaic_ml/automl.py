@@ -69,7 +69,7 @@ class AutoML():
     def adjust_sampler(self):
         for param in model.DATA_DEPENDANT_PARAMS:
             if param in self.sampler:
-                self.sampler[param].value_list = [10, self.X.shape[1] - 1]
+                self.sampler[param].value_list = [5, self.X.shape[1] - 1]
         for param in self.sampler:
             if param.endswith("__n_jobs"):
                 self.sampler[param].value_list = self.n_jobs

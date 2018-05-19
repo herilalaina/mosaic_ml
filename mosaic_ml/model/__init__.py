@@ -101,8 +101,8 @@ list_available_classifiers = {
     "RidgeClassifier": linear_model.RidgeClassifier,
     "PassiveAggressiveClassifier": linear_model.PassiveAggressiveClassifier,
     # naive_bayes
-    "GaussianNB": naive_bayes.GaussianNB,
-    "MultinomialNB": naive_bayes.MultinomialNB,
+    #"GaussianNB": naive_bayes.GaussianNB,
+    #"MultinomialNB": naive_bayes.MultinomialNB,
     # neighbors
     "KNeighborsClassifier": neighbors.KNeighborsClassifier,
     # "RadiusNeighborsClassifier": neighbors.RadiusNeighborsClassifier,
@@ -178,8 +178,8 @@ def get_all_classifier():
         get_configuration_PassiveAggressiveClassifier,
 
         # naive_bayes
-        get_configuration_GaussianNB,
-        get_configuration_MultinomialNB,
+        #get_configuration_GaussianNB,
+        #get_configuration_MultinomialNB,
 
         # neighbors
         get_configuration_KNeighborsClassifier,

@@ -23,7 +23,7 @@ def get_configuration_RandomTreesEmbedding():
              "RandomTreesEmbedding__max_depth": Parameter("RandomTreesEmbedding__max_depth", [2, 10], "uniform", "int"),
              "RandomTreesEmbedding__min_samples_split": Parameter("RandomTreesEmbedding__min_samples_split", [2, 20], "uniform", "int"),
              "RandomTreesEmbedding__min_samples_leaf": Parameter("RandomTreesEmbedding__min_samples_leaf", [1, 20], "uniform", "int"),
-             "RandomTreesEmbedding__min_weight_fraction_leaf": Parameter("RandomTreesEmbedding__min_weight_fraction_leaf", 1.0, "constant", "float"),
+             "RandomTreesEmbedding__min_weight_fraction_leaf": Parameter("RandomTreesEmbedding__min_weight_fraction_leaf", 0.0, "constant", "float"),
              #"RandomTreesEmbedding__max_features": Parameter("RandomTreesEmbedding__max_features", ["auto", "sqrt", "log2", None], "choice", "string"),
              "RandomTreesEmbedding__max_leaf_nodes": Parameter("RandomTreesEmbedding__max_leaf_nodes", None, "constant", "string"),
              "RandomTreesEmbedding__min_impurity_decrease": Parameter("RandomTreesEmbedding__min_impurity_decrease", [0, 0.05], "uniform", "float"),
