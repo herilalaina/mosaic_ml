@@ -125,7 +125,7 @@ list_available_preprocessing = {
     "IncrementalPCA": decomposition.IncrementalPCA,
     #"MiniBatchSparsePCA": decomposition.MiniBatchSparsePCA,
     #"MiniBatchDictionaryLearning": decomposition.MiniBatchDictionaryLearning,
-    "LatentDirichletAllocation": decomposition.LatentDirichletAllocation,
+    #"LatentDirichletAllocation": decomposition.LatentDirichletAllocation,
     # feature_selection
     "RFE": feature_selection.RFE,
     "SelectFdr": feature_selection.SelectFdr,
@@ -203,7 +203,7 @@ def get_all_data_preprocessing():
         get_configuration_IncrementalPCA,
         #get_configuration_MiniBatchSparsePCA,
         #get_configuration_MiniBatchDictionaryLearning,
-        get_configuration_LatentDirichletAllocation,
+        #get_configuration_LatentDirichletAllocation,
 
         # feature_selection
         get_configuration_RFE,
