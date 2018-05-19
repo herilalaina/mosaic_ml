@@ -83,7 +83,6 @@ class AutoML():
         self.X = X
         self.y = y
         self.configure_hyperparameter_space()
-        memory_limit(3072)
 
         def kill_child_processes(parent_pid, sig=signal.SIGTERM):
             try:
@@ -163,6 +162,6 @@ class AutoML():
         start_time = time.time()
         self.upgrade_ressource(100)
         with time_limit(3540):
-            i = 2
+            obj = pynisher.enforce_limits(mem_in_mb=3072)(self.searcher.run)
             while True:
-                self.searcher.run(nb_simulation = 10, generate_image_path = self.info_training["images_directory"])
+                obj(nb_simulation = 1, generate_image_path = self.info_training["images_directory"])
