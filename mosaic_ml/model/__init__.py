@@ -1,6 +1,7 @@
 from mosaic_ml.model.data_preprocessing.decomposition import *
 from mosaic_ml.model.data_preprocessing.feature_selection import *
 from mosaic_ml.model.data_preprocessing.cluster import *
+from mosaic_ml.model.data_preprocessing.preprocessing import *
 from mosaic_ml.model.classification.discriminant_analysis import *
 from mosaic_ml.model.classification.dummy import *
 from mosaic_ml.model.classification.ensemble import *
@@ -14,7 +15,7 @@ from mosaic_ml.model.classification.svm import *
 from mosaic_ml.model.classification.tree import *
 
 from sklearn import discriminant_analysis, dummy, ensemble, gaussian_process, linear_model, naive_bayes, cluster
-from sklearn import neighbors, neural_network, semi_supervised, svm, tree, decomposition, feature_selection
+from sklearn import neighbors, neural_network, semi_supervised, svm, tree, decomposition, feature_selection, preprocessing
 
 Ressource_parameters = [
     "AdaBoostClassifier__n_estimators",
@@ -119,23 +120,25 @@ list_available_preprocessing = {
     #"DictionaryLearning": decomposition.DictionaryLearning,
     #"PCA": decomposition.PCA,
     #"NMF": decomposition.NMF,
-    #"FastICA": decomposition.FastICA,
-    #"KernelPCA": decomposition.KernelPCA,
+    "FastICA": decomposition.FastICA,
+    "KernelPCA": decomposition.KernelPCA,
     #"FactorAnalysis": decomposition.FactorAnalysis,
     "IncrementalPCA": decomposition.IncrementalPCA,
     #"MiniBatchSparsePCA": decomposition.MiniBatchSparsePCA,
     #"MiniBatchDictionaryLearning": decomposition.MiniBatchDictionaryLearning,
     #"LatentDirichletAllocation": decomposition.LatentDirichletAllocation,
     # feature_selection
-    "RFE": feature_selection.RFE,
-    "SelectFdr": feature_selection.SelectFdr,
-    "SelectFpr": feature_selection.SelectFpr,
-    "SelectFwe": feature_selection.SelectFwe,
+    #"RFE": feature_selection.RFE,
+    #"SelectFdr": feature_selection.SelectFdr,
+    #"SelectFpr": feature_selection.SelectFpr,
+    #"SelectFwe": feature_selection.SelectFwe,
     "SelectKBest": feature_selection.SelectKBest,
     "SelectPercentile": feature_selection.SelectPercentile,
     "SelectFromModel": feature_selection.SelectFromModel,
     # Cluster
-    "FeatureAgglomeration": cluster.FeatureAgglomeration
+    "FeatureAgglomeration": cluster.FeatureAgglomeration,
+    # preprocessing
+    "PolynomialFeatures": preprocessing.PolynomialFeatures
 }
 
 
@@ -206,14 +209,17 @@ def get_all_data_preprocessing():
         #get_configuration_LatentDirichletAllocation,
 
         # feature_selection
-        get_configuration_RFE,
-        get_configuration_SelectFdr,
-        get_configuration_SelectFpr,
-        get_configuration_SelectFwe,
+        #get_configuration_RFE,
+        #get_configuration_SelectFdr,
+        #get_configuration_SelectFpr,
+        #get_configuration_SelectFwe,
         get_configuration_SelectKBest,
         get_configuration_SelectPercentile,
         get_configuration_SelectFromModel,
 
         # Cluster
-        get_configuration_FeatureAgglomeration
+        get_configuration_FeatureAgglomeration,
+
+        # Preprocessing
+        get_configuration_PolynomialFeatures
     ]
