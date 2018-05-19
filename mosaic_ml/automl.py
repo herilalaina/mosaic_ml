@@ -117,17 +117,16 @@ class AutoML():
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
 
-                    with time_limit(37):
-                        with time_limit(36):
-                            searcher = pynisher.enforce_limits(mem_in_mb=3072, wall_time_in_s=36)(obj)
-                            score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
-                            kill_child_processes(os.getpid())
-                            del searcher
-                            if score < bestconfig["score"]:
-                                print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
-                                return score
-                            else:
-                                list_score.append(score)
+                    with time_limit(40):
+                        searcher = pynisher.enforce_limits(mem_in_mb=3072, wall_time_in_s=36, cpu_time_in_s=36, grace_period_in_s = 2)(obj)
+                        score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
+                        kill_child_processes(os.getpid())
+                        del searcher
+                        if score < bestconfig["score"]:
+                            print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
+                            return score
+                        else:
+                            list_score.append(score)
             except TimeoutException as e:
                 print("TimeoutException: {0}".format(e))
                 return 0

@@ -67,7 +67,7 @@ def get_configuration_ExtraTreesClassifier():
                                            #"ExtraTreesClassifier__warm_start"
                                            ])
     sampler = {
-             "ExtraTreesClassifier__n_estimators": Parameter("ExtraTreesClassifier__n_estimators", [100, 110], "uniform", "int"),
+             "ExtraTreesClassifier__n_estimators": Parameter("ExtraTreesClassifier__n_estimators", [50, 500], "uniform", "int"),
              "ExtraTreesClassifier__criterion": Parameter("ExtraTreesClassifier__criterion", ["gini", "entropy"], "choice", "string"),
              "ExtraTreesClassifier__max_depth": Parameter("ExtraTreesClassifier__max_depth", [1, 10], "uniform", "int"),
              "ExtraTreesClassifier__min_samples_split": Parameter("ExtraTreesClassifier__min_samples_split", [2, 20], "uniform", "int"),
@@ -143,7 +143,7 @@ def get_configuration_RandomForestClassifier():
                                            #"RandomForestClassifier__warm_start"
                                            ])
     sampler = {
-             "RandomForestClassifier__n_estimators": Parameter("RandomForestClassifier__n_estimators", [100, 110], "uniform", "int"),
+             "RandomForestClassifier__n_estimators": Parameter("RandomForestClassifier__n_estimators", [50, 500], "uniform", "int"),
              "RandomForestClassifier__criterion": Parameter("RandomForestClassifier__criterion", ["gini", "entropy"], "choice", "string"),
              "RandomForestClassifier__max_depth": Parameter("RandomForestClassifier__max_depth", None, "constant", "string"),
              "RandomForestClassifier__min_samples_split": Parameter("RandomForestClassifier__min_samples_split", [2, 20], "uniform", "int"),
