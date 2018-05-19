@@ -93,7 +93,7 @@ class AutoML():
             for process in children:
                 process.send_signal(sig)
 
-        def evaluate(config, bestconfig, X=None, y=None, info = {}, obj):
+        def evaluate(config, bestconfig, X=None, y=None, info = {}, obj = None):
             print("\n#####################################################")
             preprocessing = None
             classifier = None
@@ -109,10 +109,6 @@ class AutoML():
 
             pipeline = Pipeline(steps=[("preprocessing", preprocessing), ("classifier", classifier)])
             print(pipeline) # Print algo
-
-            def train_predict_func(model, X_train, y_train, X_valid, y_valid):
-                model.fit(X_train, y_train)
-                return balanced_accuracy(y_valid, pipeline.predict(X_valid))
 
             list_score = []
             try:
@@ -154,6 +150,11 @@ class AutoML():
                 pickle.dump(pipeline, open(info["working_directory"] + str(time.time()) + ".pkl", "wb"))
                 print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
             return score
+
+        def train_predict_func(model, X_train, y_train, X_valid, y_valid):
+                model.fit(X_train, y_train)
+                return balanced_accuracy(y_valid, model.predict(X_valid))
+
 
         obj = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training, obj = obj)
