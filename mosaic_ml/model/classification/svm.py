@@ -15,9 +15,9 @@ def get_configuration_LinearSVC():
     sampler = {
            "LinearSVC__penalty": Parameter("LinearSVC__penalty", ["l1", "l2"], "choice", "string"),
            "LinearSVC__loss": Parameter("LinearSVC__loss", ["hinge", "squared_hinge"], "choice", "string"),
-           "LinearSVC__dual": Parameter("LinearSVC__dual", [True, False], "choice", "bool"),
-           "LinearSVC__tol": Parameter("LinearSVC__tol", [0, 0.5], "uniform", "bool"),
-           "LinearSVC__C": Parameter("LinearSVC__C", [1e-5, 10], "log_uniform", "float"),
+           "LinearSVC__dual": Parameter("LinearSVC__dual", False, "constant", "bool"),
+           "LinearSVC__tol": Parameter("LinearSVC__tol", [1e-5, 1e-1], "log_uniform", "bool"),
+           "LinearSVC__C": Parameter("LinearSVC__C", [0.03125, 30], "log_uniform", "float"),
            "LinearSVC__class_weight": Parameter("LinearSVC__class_weight", "balanced", "constant", "string"),
            "LinearSVC__max_iter": Parameter("LinearSVC__max_iter", [1, 100], "uniform", "int")
     }
@@ -71,23 +71,23 @@ def get_configuration_SVC():
                                            "SVC__degree",
                                            "SVC__gamma",
                                            "SVC__coef0",
-                                           "SVC__probability",
+                                           #"SVC__probability",
                                            "SVC__shrinking",
                                            "SVC__tol",
                                            "SVC__class_weight",
-                                           "SVC__max_iter",
+                                           #"SVC__max_iter",
                                            "SVC__decision_function_shape"])
     sampler = {
-           "SVC__C": Parameter("SVC__C", [1e-8, 200], "log_uniform", "float"),
+           "SVC__C": Parameter("SVC__C", [0.03125, 30], "log_uniform", "float"),
            "SVC__kernel": Parameter("SVC__kernel", ["linear", "poly", "rbf", "sigmoid"], "choice", "string"),
            "SVC__degree": Parameter("SVC__degree", [2, 3, 4, 5], "choice", "int"),
            "SVC__gamma": Parameter("SVC__gamma", [3e-8, 50], "log_uniform", "float"),
-           "SVC__coef0": Parameter("SVC__coef0", [0, 1], "uniform", "float"),
-           "SVC__probability": Parameter("SVC__probability", False, "constant", "bool"),
+           "SVC__coef0": Parameter("SVC__coef0", [-1, 1], "uniform", "float"),
+           #"SVC__probability": Parameter("SVC__probability", False, "constant", "bool"),
            "SVC__shrinking": Parameter("SVC__shrinking", [True, False], "choice", "bool"),
-           "SVC__tol": Parameter("SVC__tol", [0, 0.1], "uniform", "float"),
+           "SVC__tol": Parameter("SVC__tol", [1e-5, 1e-1], "log_uniform", "float"),
            "SVC__class_weight": Parameter("SVC__class_weight", "balanced", "constant", "string"),
-           "SVC__max_iter": Parameter("SVC__max_iter", [1, 100], "uniform", "int"),
+           #"SVC__max_iter": Parameter("SVC__max_iter", [1, 100], "uniform", "int"),
            "SVC__decision_function_shape": Parameter("SVC__decision_function_shape", "ovr", "constant", "string")
     }
 

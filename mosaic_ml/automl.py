@@ -161,6 +161,6 @@ class AutoML():
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
 
         start_time = time.time()
-        self.upgrade_ressource(100)
+        # self.upgrade_ressource(100)
         with time_limit(3600):
             self.searcher.run(nb_simulation = 100000000000, generate_image_path = self.info_training["images_directory"])

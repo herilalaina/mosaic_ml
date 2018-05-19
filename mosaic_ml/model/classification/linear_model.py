@@ -21,21 +21,21 @@ def get_configuration_SGDClassifier():
                                      "SGDClassifier__alpha", "SGDClassifier__l1_ratio",
                                      "SGDClassifier__epsilon", "SGDClassifier__learning_rate",
                                      "SGDClassifier__eta0", "SGDClassifier__power_t",
-                                     "SGDClassifier__class_weight", "SGDClassifier__warm_start",
+                                     #"SGDClassifier__class_weight", "SGDClassifier__warm_start",
                                      "SGDClassifier__max_iter", "SGDClassifier__tol"])
 
     sampler = {"SGDClassifier__loss": Parameter("SGDClassifier__loss", ["hinge", "log", "modified_huber", "squared_hinge", "perceptron", "squared_loss", "huber", "epsilon_insensitive", "squared_epsilon_insensitive"], "choice", "string"),
                "SGDClassifier__penalty": Parameter("SGDClassifier__penalty", ["l1", "l2", "elasticnet"], "choice", "string"),
-               "SGDClassifier__alpha": Parameter("SGDClassifier__alpha", [0.0001, 1], "uniform", "float"),
-               "SGDClassifier__l1_ratio": Parameter("SGDClassifier__l1_ratio", [0, 1], "uniform", "float"),
-               "SGDClassifier__epsilon": Parameter("SGDClassifier__epsilon", [0, 0.1], "uniform", "float"),
+               "SGDClassifier__alpha": Parameter("SGDClassifier__alpha", [1e-7, 1e-1], "log_uniform", "float"),
+               "SGDClassifier__l1_ratio": Parameter("SGDClassifier__l1_ratio", [1e-9, 1], "uniform", "float"),
+               "SGDClassifier__epsilon": Parameter("SGDClassifier__epsilon", [1e-5, 1e-1], "uniform", "float"),
                "SGDClassifier__learning_rate": Parameter("SGDClassifier__learning_rate", ["constant", "optimal", "invscaling"], "choice", "string"),
-               "SGDClassifier__eta0": Parameter("SGDClassifier__eta0", [0.01, 0.3], "uniform", "float"),
-               "SGDClassifier__power_t": Parameter("SGDClassifier__power_t", [0.1, 0.9], "uniform", "float"),
+               "SGDClassifier__eta0": Parameter("SGDClassifier__eta0", [1e-7, 1e-1], "uniform", "float"),
+               "SGDClassifier__power_t": Parameter("SGDClassifier__power_t", [1e-5, 1], "uniform", "float"),
                "SGDClassifier__class_weight": Parameter("SGDClassifier__class_weight", "balanced", "constant", "string"),
-               "SGDClassifier__warm_start": Parameter("SGDClassifier__warm_start", [True, False], "choice", "bool"),
+               #"SGDClassifier__warm_start": Parameter("SGDClassifier__warm_start", [True, False], "choice", "bool"),
                "SGDClassifier__max_iter": Parameter("SGDClassifier__max_iter", [1, 100], "uniform", "int"),
-               "SGDClassifier__tol": Parameter("SGDClassifier__tol", None, "constant", "float")}
+               "SGDClassifier__tol": Parameter("SGDClassifier__tol", [1e-5, 1e-1], "log_uniform", "float")}
 
     rules = [
         # Elastic net constraint
@@ -82,17 +82,22 @@ def get_configuration_Perceptron():
 
 def get_configuration_PassiveAggressiveClassifier():
     passiveAggressiveClassifier = ListTask(is_ordered=False, name = "PassiveAggressiveClassifier",
-                             tasks = ["PassiveAggressiveClassifier__C", "PassiveAggressiveClassifier__max_iter", "PassiveAggressiveClassifier__tol",
-                                      "PassiveAggressiveClassifier__shuffle", "PassiveAggressiveClassifier__loss", "PassiveAggressiveClassifier__n_jobs",
-                                      "PassiveAggressiveClassifier__warm_start", "PassiveAggressiveClassifier__class_weight"])
+                             tasks = ["PassiveAggressiveClassifier__C",
+                                      "PassiveAggressiveClassifier__max_iter",
+                                      "PassiveAggressiveClassifier__tol",
+                                      #"PassiveAggressiveClassifier__shuffle",
+                                      "PassiveAggressiveClassifier__loss",
+                                      "PassiveAggressiveClassifier__n_jobs",
+                                      #"PassiveAggressiveClassifier__warm_start",
+                                      "PassiveAggressiveClassifier__class_weight"])
     sampler = {
         "PassiveAggressiveClassifier__C": Parameter("PassiveAggressiveClassifier__C", [1e-5, 10], "log_uniform", "float"),
-        "PassiveAggressiveClassifier__max_iter": Parameter("PassiveAggressiveClassifier__max_iter", [1, 100], "uniform", "int"),
-        "PassiveAggressiveClassifier__tol": Parameter("PassiveAggressiveClassifier__tol", None, "constant", "string"),
-        "PassiveAggressiveClassifier__shuffle": Parameter("PassiveAggressiveClassifier__shuffle", [True, False], "choice", "bool"),
+        "PassiveAggressiveClassifier__max_iter": Parameter("PassiveAggressiveClassifier__max_iter", [90, 100], "uniform", "int"),
+        "PassiveAggressiveClassifier__tol": Parameter("PassiveAggressiveClassifier__tol", [1e-5, 1e-1], "log_uniform", "float"),
+        # "PassiveAggressiveClassifier__shuffle": Parameter("PassiveAggressiveClassifier__shuffle", [True, False], "choice", "bool"),
         "PassiveAggressiveClassifier__loss": Parameter("PassiveAggressiveClassifier__loss", ["hinge", "squared_hinge"], "choice", "string"),
         "PassiveAggressiveClassifier__n_jobs": Parameter("PassiveAggressiveClassifier__n_jobs", -1, "constant", "int"),
-        "PassiveAggressiveClassifier__warm_start": Parameter("PassiveAggressiveClassifier__warm_start", [True, False], "choice", "bool"),
+        #"PassiveAggressiveClassifier__warm_start": Parameter("PassiveAggressiveClassifier__warm_start", [True, False], "choice", "bool"),
         "PassiveAggressiveClassifier__class_weight": Parameter("PassiveAggressiveClassifier__class_weight", "balanced", "constant", "string"),
     }
 
