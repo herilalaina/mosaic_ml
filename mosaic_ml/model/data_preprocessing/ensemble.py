@@ -16,8 +16,8 @@ def get_configuration_RandomTreesEmbedding():
                                            #"RandomTreesEmbedding__class_weight",
                                            #"RandomTreesEmbedding__bootstrap",
                                            "RandomTreesEmbedding__n_jobs",
-                                           #"RandomTreesEmbedding__warm_start"]
-                                           )
+                                           #"RandomTreesEmbedding__warm_start"
+                                           ])
     sampler = {
              "RandomTreesEmbedding__n_estimators": Parameter("RandomTreesEmbedding__n_estimators", [10, 100], "uniform", "int"),
              "RandomTreesEmbedding__max_depth": Parameter("RandomTreesEmbedding__max_depth", [2, 10], "uniform", "int"),
