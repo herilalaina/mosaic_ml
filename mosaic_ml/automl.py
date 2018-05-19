@@ -155,7 +155,6 @@ class AutoML():
                 model.fit(X_train, y_train)
                 return balanced_accuracy(y_valid, model.predict(X_valid))
 
-
         obj = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training, obj = obj)
 
@@ -163,6 +162,5 @@ class AutoML():
 
         start_time = time.time()
         self.upgrade_ressource(100)
-        with time_limit(3540):
-            while True:
-                self.searcher.run(nb_simulation = 1, generate_image_path = self.info_training["images_directory"])
+        with time_limit(3600):
+            self.searcher.run(nb_simulation = 100000000000, generate_image_path = self.info_training["images_directory"])
