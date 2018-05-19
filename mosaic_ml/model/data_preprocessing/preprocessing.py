@@ -12,3 +12,14 @@ def get_configuration_PolynomialFeatures():
 
     rules = []
     return PolynomialFeatures, sampler, rules
+
+
+def get_configuration_FunctionTransformer():
+    FunctionTransformer = ListTask(is_ordered=False, name = "FunctionTransformer",
+                                  tasks = ["FunctionTransformer__func"])
+    sampler = {
+         "FunctionTransformer__func": Parameter("FunctionTransformer__func", None, 'constant', "string"),
+    }
+
+    rules = []
+    return FunctionTransformer, sampler, rules

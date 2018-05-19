@@ -32,7 +32,10 @@ class TestPreprocessing(unittest.TestCase):
                     if  name == "PolynomialFeatures":
                         pipeline = Pipeline(steps = [(name, preprocessing.PolynomialFeatures(**params)), ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
-                        return pipeline.score(X_test, y_test)
+                        if pipeline is not None:
+                            return pipeline.score(X_test, y_test)
+                        else:
+                            return 0
                 raise Exception("Classifier not found")
             except ValueError:
                 return 0
@@ -41,3 +44,22 @@ class TestPreprocessing(unittest.TestCase):
 
         searcher = Search(scenario, sampler, rules, evaluate)
         searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/PolynomialFeatures")
+
+    def test_FunctionTransformer(self):
+        scenario, sampler, rules = get_configuration_FunctionTransformer()
+
+        def evaluate(config, bestconfig):
+            try:
+                for name, params in config:
+                    if  name == "FunctionTransformer":
+                        pipeline = Pipeline(steps = [(name, preprocessing.FunctionTransformer(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                        pipeline = fit_model(pipeline, X_train, y_train)
+                        return pipeline.score(X_test, y_test)
+                raise Exception("Classifier not found")
+            except ValueError:
+                return 0
+            except pynisher.TimeoutException:
+                return 0
+
+        searcher = Search(scenario, sampler, rules, evaluate)
+        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/FunctionTransformer")

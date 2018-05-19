@@ -112,7 +112,7 @@ list_available_classifiers = {
     #"LabelSpreading": semi_supervised.LabelSpreading,
     #"LabelPropagation": semi_supervised.LabelPropagation,
     # svm
-    #"SVC": svm.SVC,
+    "SVC": svm.SVC,
     # "NuSVC": svm.NuSVC,
     #"LinearSVC": svm.LinearSVC,
     # tree
@@ -144,9 +144,10 @@ list_available_preprocessing = {
     "FeatureAgglomeration": cluster.FeatureAgglomeration,
     # preprocessing
     "PolynomialFeatures": preprocessing.PolynomialFeatures,
+    "FunctionTransformer": preprocessing.FunctionTransformer,
     # Kernel approximation
     "RBFSampler": kernel_approximation.RBFSampler,
-    "RandomTreesEmbedding": ensemble.RandomTreesEmbedding
+    "RandomTreesEmbedding": ensemble.RandomTreesEmbedding,
 }
 
 
@@ -192,7 +193,7 @@ def get_all_classifier():
         #get_configuration_LabelPropagation,
 
         # svm
-        #get_configuration_SVC,
+        get_configuration_SVC,
         # get_configuration_NuSVC,
         #get_configuration_LinearSVC,
 
@@ -230,6 +231,7 @@ def get_all_data_preprocessing():
 
         # Preprocessing
         get_configuration_PolynomialFeatures,
+        get_configuration_FunctionTransformer,
 
         # kernel approximation
         get_configuration_RBFSampler,

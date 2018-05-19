@@ -70,7 +70,7 @@ def get_configuration_SelectFromModel():
                                   tasks = ["SelectFromModel__estimator",
                                            "SelectFromModel__threshold"])
     sampler = {
-             "SelectFromModel__estimator": Parameter("SelectFromModel__estimator", [svm.LinearSVC(penalty='l1'), ensemble.ExtraTreesClassifier(), ensemble.RandomForestClassifier()], "choice", "func"),
+             "SelectFromModel__estimator": Parameter("SelectFromModel__estimator", [svm.LinearSVC(penalty='l1', dual=False), ensemble.ExtraTreesClassifier(n_estimators=100, criterion="gini"), ensemble.RandomForestClassifier(n_estimators=100)], "choice", "func"),
              "SelectFromModel__threshold": Parameter("SelectFromModel__threshold", ["mean", "median"], "choice", "string")
     }
     rules = []
