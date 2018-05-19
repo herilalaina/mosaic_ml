@@ -112,9 +112,9 @@ list_available_classifiers = {
     #"LabelSpreading": semi_supervised.LabelSpreading,
     #"LabelPropagation": semi_supervised.LabelPropagation,
     # svm
-    "SVC": svm.SVC,
+    #"SVC": svm.SVC,
     # "NuSVC": svm.NuSVC,
-    "LinearSVC": svm.LinearSVC,
+    #"LinearSVC": svm.LinearSVC,
     # tree
     "DecisionTreeClassifier": tree.DecisionTreeClassifier,
     "ExtraTreeClassifier": tree.ExtraTreeClassifier,
@@ -192,9 +192,9 @@ def get_all_classifier():
         #get_configuration_LabelPropagation,
 
         # svm
-        get_configuration_SVC,
+        #get_configuration_SVC,
         # get_configuration_NuSVC,
-        get_configuration_LinearSVC,
+        #get_configuration_LinearSVC,
 
         # tree
         get_configuration_DecisionTreeClassifier,
