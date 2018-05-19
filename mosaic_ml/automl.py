@@ -93,7 +93,7 @@ class AutoML():
             for process in children:
                 process.send_signal(sig)
 
-        def evaluate(config, bestconfig, X=None, y=None, info = {}):
+        def evaluate(config, bestconfig, X=None, y=None, info = {}, obj):
             print("\n#####################################################")
             preprocessing = None
             classifier = None
@@ -123,7 +123,7 @@ class AutoML():
                     #kill_child_processes(os.getpid())
                     with time_limit(36):
                         #searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
-                        score = train_predict_func(pipeline, X_train, y_train, X_valid, y_valid)
+                        score = obj(pipeline, X_train, y_train, X_valid, y_valid)
                         #del searcher
                         if score < bestconfig["score"]:
                             print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
@@ -155,13 +155,13 @@ class AutoML():
                 print(">>>>>>>>>>>>>>>> New best Score: {0}".format(score))
             return score
 
-        eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training)
+        obj = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
+        eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training, obj = obj)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
 
         start_time = time.time()
         self.upgrade_ressource(100)
         with time_limit(3540):
-            obj = pynisher.enforce_limits(mem_in_mb=3072)(self.searcher.run)
             while True:
-                obj(nb_simulation = 1, generate_image_path = self.info_training["images_directory"])
+                self.searcher.run(nb_simulation = 1, generate_image_path = self.info_training["images_directory"])
