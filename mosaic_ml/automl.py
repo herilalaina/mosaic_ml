@@ -116,16 +116,16 @@ class AutoML():
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
-                    #kill_child_processes(os.getpid())
-                    with time_limit(36):
-                        #searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
-                        score = obj(pipeline, X_train, y_train, X_valid, y_valid)
-                        #del searcher
-                        if score < bestconfig["score"]:
-                            print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
-                            return score
-                        else:
-                            list_score.append(score)
+
+                    searcher = pynisher.enforce_limits(mem_in_mb=3072, wall_time_in_s=36)(obj)
+                    score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
+                    kill_child_processes(os.getpid())
+                    del searcher
+                    if score < bestconfig["score"]:
+                        print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
+                        return score
+                    else:
+                        list_score.append(score)
             except TimeoutException as e:
                 print("TimeoutException: {0}".format(e))
                 return 0
