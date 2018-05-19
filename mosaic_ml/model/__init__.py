@@ -2,6 +2,8 @@ from mosaic_ml.model.data_preprocessing.decomposition import *
 from mosaic_ml.model.data_preprocessing.feature_selection import *
 from mosaic_ml.model.data_preprocessing.cluster import *
 from mosaic_ml.model.data_preprocessing.preprocessing import *
+from mosaic_ml.model.data_preprocessing.kernel_approximation import *
+from mosaic_ml.model.data_preprocessing.ensemble import *
 from mosaic_ml.model.classification.discriminant_analysis import *
 from mosaic_ml.model.classification.dummy import *
 from mosaic_ml.model.classification.ensemble import *
@@ -16,6 +18,7 @@ from mosaic_ml.model.classification.tree import *
 
 from sklearn import discriminant_analysis, dummy, ensemble, gaussian_process, linear_model, naive_bayes, cluster
 from sklearn import neighbors, neural_network, semi_supervised, svm, tree, decomposition, feature_selection, preprocessing
+from sklearn import kernel_approximation
 
 Ressource_parameters = [
     "AdaBoostClassifier__n_estimators",
@@ -30,7 +33,8 @@ Ressource_parameters = [
     "MLPClassifier__max_iter",
     "LinearSVC__max_iter",
     "NuSVC__max_iter",
-    "SVC__max_iter"
+    "SVC__max_iter",
+    "RandomTreesEmbedding__n_estimators"
 ]
 
 
@@ -58,7 +62,8 @@ DATA_DEPENDANT_PARAMS = [
     "NMF__n_components",
     "PCA__n_components",
     "SelectKBest__k",
-    "RFE__n_features_to_select"
+    "RFE__n_features_to_select",
+    "RBFSampler__n_components"
 ]
 
 
@@ -102,7 +107,7 @@ list_available_classifiers = {
     "KNeighborsClassifier": neighbors.KNeighborsClassifier,
     # "RadiusNeighborsClassifier": neighbors.RadiusNeighborsClassifier,
     # neural_network
-    "MLPClassifier": neural_network.MLPClassifier,
+    #"MLPClassifier": neural_network.MLPClassifier,
     # semi_supervised
     #"LabelSpreading": semi_supervised.LabelSpreading,
     #"LabelPropagation": semi_supervised.LabelPropagation,
@@ -138,7 +143,10 @@ list_available_preprocessing = {
     # Cluster
     "FeatureAgglomeration": cluster.FeatureAgglomeration,
     # preprocessing
-    "PolynomialFeatures": preprocessing.PolynomialFeatures
+    "PolynomialFeatures": preprocessing.PolynomialFeatures,
+    # Kernel approximation
+    "RBFSampler": kernel_approximation.RBFSampler,
+    "RandomTreesEmbedding": ensemble.RandomTreesEmbedding
 }
 
 
@@ -177,7 +185,7 @@ def get_all_classifier():
         # get_configuration_RadiusNeighborsClassifier,
 
         # neural_network
-        get_configuration_MLPClassifier,
+        #get_configuration_MLPClassifier,
 
         # semi_supervised
         #get_configuration_LabelSpreading,
@@ -221,5 +229,11 @@ def get_all_data_preprocessing():
         get_configuration_FeatureAgglomeration,
 
         # Preprocessing
-        get_configuration_PolynomialFeatures
+        get_configuration_PolynomialFeatures,
+
+        # kernel approximation
+        get_configuration_RBFSampler,
+
+        # Ensemble
+        get_configuration_RandomTreesEmbedding
     ]
