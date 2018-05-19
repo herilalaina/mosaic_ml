@@ -155,7 +155,7 @@ class AutoML():
                 model.fit(X_train, y_train)
                 return balanced_accuracy(y_valid, model.predict(X_valid))
 
-        obj = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
+        obj = pynisher.enforce_limits(mem_in_mb=3072, wall_time_in_s=36)(train_predict_func)
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training, obj = obj)
 
         self.searcher = Search(self.start, self.sampler, self.rules, eval_func, logfile = self.training_log_file)
