@@ -129,7 +129,7 @@ def get_configuration_RandomForestClassifier():
     RandomForestClassifier = ListTask(is_ordered=False, name = "RandomForestClassifier",
                                   tasks = ["RandomForestClassifier__n_estimators",
                                            "RandomForestClassifier__criterion",
-                                           "RandomForestClassifier__max_depth",
+                                           #"RandomForestClassifier__max_depth",
                                            "RandomForestClassifier__min_samples_split",
                                            "RandomForestClassifier__min_samples_leaf",
                                            "RandomForestClassifier__min_weight_fraction_leaf",
@@ -145,7 +145,7 @@ def get_configuration_RandomForestClassifier():
     sampler = {
              "RandomForestClassifier__n_estimators": Parameter("RandomForestClassifier__n_estimators", [50, 500], "uniform", "int"),
              "RandomForestClassifier__criterion": Parameter("RandomForestClassifier__criterion", ["gini", "entropy"], "choice", "string"),
-             "RandomForestClassifier__max_depth": Parameter("RandomForestClassifier__max_depth", None, "constant", "string"),
+             #"RandomForestClassifier__max_depth": Parameter("RandomForestClassifier__max_depth", None, "constant", "string"),
              "RandomForestClassifier__min_samples_split": Parameter("RandomForestClassifier__min_samples_split", [2, 20], "uniform", "int"),
              "RandomForestClassifier__min_samples_leaf": Parameter("RandomForestClassifier__min_samples_leaf", [1, 20], "uniform", "int"),
              "RandomForestClassifier__min_weight_fraction_leaf": Parameter("RandomForestClassifier__min_weight_fraction_leaf", 0.0, "constant", "float"),
