@@ -83,6 +83,7 @@ class AutoML():
         self.X = X
         self.y = y
         self.configure_hyperparameter_space()
+        memory_limit(3072)
 
         def kill_child_processes(parent_pid, sig=signal.SIGTERM):
             try:
@@ -120,11 +121,11 @@ class AutoML():
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
-                    kill_child_processes(os.getpid())
+                    #kill_child_processes(os.getpid())
                     with time_limit(36):
-                        searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
-                        score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
-                        del searcher
+                        #searcher = pynisher.enforce_limits(mem_in_mb=3072)(train_predict_func)
+                        score = train_predict_func(pipeline, X_train, y_train, X_valid, y_valid)
+                        #del searcher
                         if score < bestconfig["score"]:
                             print(">>>>>>>>>>>>>>>> Score: {0} Current best score: {1}".format(score, bestconfig["score"]))
                             return score
