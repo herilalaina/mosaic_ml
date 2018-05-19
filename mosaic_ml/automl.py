@@ -117,7 +117,7 @@ class AutoML():
 
             list_score = []
             try:
-                skf = StratifiedKFold(n_splits=10)
+                skf = StratifiedKFold(n_splits=3)
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
