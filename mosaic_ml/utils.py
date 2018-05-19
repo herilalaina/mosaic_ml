@@ -7,9 +7,19 @@ from sklearn.metrics.classification import _check_targets, type_of_target
 
 class TimeoutException(Exception): pass
 
+def kill_child_processes(parent_pid, sig=signal.SIGTERM):
+    try:
+        parent = psutil.Process(parent_pid)
+    except psutil.NoSuchProcess:
+        return
+    children = parent.children(recursive=True)
+    for process in children:
+        process.send_signal(sig)
+
 @contextmanager
 def time_limit(seconds):
     def signal_handler(signum, frame):
+        kill_child_processes(os.getpid())
         raise TimeoutException("Timed out!")
     signal.signal(signal.SIGALRM, signal_handler)
     signal.alarm(seconds)
