@@ -76,6 +76,70 @@ def get_configuration_SelectFromModel():
     rules = []
     return SelectFromModel, sampler, rules
 
+def get_configuration_LinearSVCPrep():
+    rules = [
+        #ValueRule([("LinearSVCPrep__loss", "hinge"), ("LinearSVCPrep__penalty", "l2"), ("LinearSVCPrep__dual", True)]),
+        #ValueRule([("LinearSVCPrep__loss", "hinge"), ("LinearSVCPrep__penalty", "l2")])
+    ]
+    LinearSVCPrep = ListTask(is_ordered=False, name = "LinearSVCPrep",
+                                  tasks = ["LinearSVCPrep__penalty",
+                                           "LinearSVCPrep__loss",
+                                           "LinearSVCPrep__dual",
+                                           "LinearSVCPrep__tol",
+                                           "LinearSVCPrep__C",
+                                           "LinearSVCPrep__class_weight",
+                                           "LinearSVCPrep__max_iter"],
+                                  rules = rules)
+    sampler = {
+           "LinearSVCPrep__penalty": Parameter("LinearSVCPrep__penalty", "l1", "constant", "string"),
+           "LinearSVCPrep__loss": Parameter("LinearSVCPrep__loss", "squared_hinge", "constant", "string"),
+           "LinearSVCPrep__dual": Parameter("LinearSVCPrep__dual", False, "constant", "bool"),
+           "LinearSVCPrep__tol": Parameter("LinearSVCPrep__tol", [1e-5, 1e-1], "log_uniform", "bool"),
+           "LinearSVCPrep__C": Parameter("LinearSVCPrep__C", [0.03125, 30], "log_uniform", "float"),
+           "LinearSVCPrep__class_weight": Parameter("LinearSVCPrep__class_weight", "balanced", "constant", "string"),
+           "LinearSVCPrep__max_iter": Parameter("LinearSVCPrep__max_iter", [1, 100], "uniform", "int")
+    }
+    return LinearSVCPrep, sampler, rules
+
+def get_configuration_ExtraTreesClassifierPrep():
+    ExtraTreesClassifierPrep = ListTask(is_ordered=False, name = "ExtraTreesClassifierPrep",
+                                  tasks = ["ExtraTreesClassifierPrep__n_estimators",
+                                           "ExtraTreesClassifierPrep__criterion",
+                                           "ExtraTreesClassifierPrep__max_depth",
+                                           "ExtraTreesClassifierPrep__min_samples_split",
+                                           "ExtraTreesClassifierPrep__min_samples_leaf",
+                                           "ExtraTreesClassifierPrep__min_weight_fraction_leaf",
+                                           "ExtraTreesClassifierPrep__max_features",
+                                           "ExtraTreesClassifierPrep__max_leaf_nodes",
+                                           #"ExtraTreesClassifierPrep__min_impurity_decrease",
+                                           "ExtraTreesClassifierPrep__class_weight",
+                                           #"ExtraTreesClassifierPrep__bootstrap",
+                                           "ExtraTreesClassifierPrep__n_jobs",
+                                           #"ExtraTreesClassifierPrep__oob_score",
+                                           #"ExtraTreesClassifierPrep__warm_start"
+                                           ])
+    sampler = {
+             "ExtraTreesClassifierPrep__n_estimators": Parameter("ExtraTreesClassifierPrep__n_estimators", [50, 700], "uniform", "int"),
+             "ExtraTreesClassifierPrep__criterion": Parameter("ExtraTreesClassifierPrep__criterion", ["gini", "entropy"], "choice", "string"),
+             "ExtraTreesClassifierPrep__max_depth": Parameter("ExtraTreesClassifierPrep__max_depth", [1, 10], "uniform", "int"),
+             "ExtraTreesClassifierPrep__min_samples_split": Parameter("ExtraTreesClassifierPrep__min_samples_split", [2, 20], "uniform", "int"),
+             "ExtraTreesClassifierPrep__min_samples_leaf": Parameter("ExtraTreesClassifierPrep__min_samples_leaf", [1, 20], "uniform", "int"),
+             "ExtraTreesClassifierPrep__min_weight_fraction_leaf": Parameter("ExtraTreesClassifierPrep__min_weight_fraction_leaf", 0.0, "constant", "float"),
+             "ExtraTreesClassifierPrep__max_features": Parameter("ExtraTreesClassifierPrep__max_features", ["auto", "sqrt", "log2", None], "choice", "string"),
+             "ExtraTreesClassifierPrep__max_leaf_nodes": Parameter("ExtraTreesClassifierPrep__max_leaf_nodes", None, "constant", "string"),
+             #"ExtraTreesClassifierPrep__min_impurity_decrease": Parameter("ExtraTreesClassifierPrep__min_impurity_decrease", [0, 0.05], "uniform", "float"),
+             "ExtraTreesClassifierPrep__class_weight": Parameter("ExtraTreesClassifierPrep__class_weight", "balanced", "constant", "string"),
+             #"ExtraTreesClassifierPrep__bootstrap": Parameter("ExtraTreesClassifierPrep__bootstrap", [True, False], "choice", "bool"),
+             "ExtraTreesClassifierPrep__n_jobs": Parameter("ExtraTreesClassifierPrep__n_jobs", -1, "constant", "int"),
+             #"ExtraTreesClassifierPrep__oob_score": Parameter("ExtraTreesClassifierPrep__oob_score", [True, False], "choice", "bool"),
+             #"ExtraTreesClassifierPrep__warm_start": Parameter("ExtraTreesClassifierPrep__warm_start", [True, False], "choice", "bool")
+    }
+
+    rules = [
+        # ValueRule([("ExtraTreesClassifierPrep__oob_score", True), ("ExtraTreesClassifierPrep__bootstrap", True), ("ExtraTreesClassifierPrep__warm_start", False)])
+    ]
+    return ExtraTreesClassifierPrep, sampler, rules
+
 
 def get_configuration_RFE():
     RFE = ListTask(is_ordered=False, name = "RFE",

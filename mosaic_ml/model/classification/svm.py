@@ -65,6 +65,11 @@ def get_configuration_NuSVC():
 
 
 def get_configuration_SVC():
+    rules = [
+        ChildRule(applied_to = ["SVC__degree"], parent = "SVC__kernel", value = ["poly"]),
+        ChildRule(applied_to = ["SVC__gamma"], parent = "SVC__kernel", value = ["poly", "rbf", "sigmoid"]),
+        ChildRule(applied_to = ["SVC__coef0"], parent = "SVC__kernel", value = ["poly", "sigmoid"]),
+    ]
     SVC = ListTask(is_ordered=False, name = "SVC",
                                   tasks = ["SVC__C",
                                            "SVC__kernel",
@@ -76,7 +81,8 @@ def get_configuration_SVC():
                                            "SVC__tol",
                                            "SVC__class_weight",
                                            #"SVC__max_iter",
-                                           "SVC__decision_function_shape"])
+                                           "SVC__decision_function_shape"],
+                                    rules = rules)
     sampler = {
            "SVC__C": Parameter("SVC__C", [0.03125, 30], "log_uniform", "float"),
            "SVC__kernel": Parameter("SVC__kernel", ["linear", "poly", "rbf", "sigmoid"], "choice", "string"),
@@ -90,10 +96,4 @@ def get_configuration_SVC():
            #"SVC__max_iter": Parameter("SVC__max_iter", [1, 100], "uniform", "int"),
            "SVC__decision_function_shape": Parameter("SVC__decision_function_shape", "ovr", "constant", "string")
     }
-
-    rules = [
-        ChildRule(applied_to = ["SVC__degree"], parent = "SVC__kernel", value = ["poly"]),
-        ChildRule(applied_to = ["SVC__gamma"], parent = "SVC__kernel", value = ["poly", "rbf", "sigmoid"]),
-        ChildRule(applied_to = ["SVC__coef0"], parent = "SVC__kernel", value = ["poly", "sigmoid"]),
-    ]
     return SVC, sampler, rules
