@@ -100,7 +100,11 @@ class AutoML():
 
             for name, params in config:
                 if name in model.list_available_preprocessing:
-                    preprocessing = model.list_available_preprocessing[name](**params)
+                    if name in ["LinearSVCPrep", "ExtraTreesClassifierPrep"]:
+                        s, m = model.list_available_preprocessing[name]
+                        preprocessing = s(m(**params))
+                    else:
+                        preprocessing = model.list_available_preprocessing[name](**params)
                 if  name in model.list_available_classifiers:
                     classifier = model.list_available_classifiers[name](**params)
 

@@ -13,7 +13,7 @@ def get_configuration_AdaBoostClassifier():
                                             "AdaBoostClassifier__algorithm"])
     sampler = {
           "AdaBoostClassifier__base_estimator": Parameter("AdaBoostClassifier__base_estimator", DecisionTreeClassifier(), "constant", "func"),
-          "AdaBoostClassifier__n_estimators": Parameter("AdaBoostClassifier__n_estimators", [50, 500], "uniform", "int"),
+          "AdaBoostClassifier__n_estimators": Parameter("AdaBoostClassifier__n_estimators", [50, 700], "uniform", "int"),
           "AdaBoostClassifier__learning_rate": Parameter("AdaBoostClassifier__learning_rate", [0.01, 2], "uniform", "float"),
           "AdaBoostClassifier__algorithm": Parameter("AdaBoostClassifier__algorithm", ["SAMME", "SAMME.R"], "choice", "string")
     }
@@ -33,7 +33,7 @@ def get_configuration_BaggingClassifier():
                                             "BaggingClassifier__n_jobs"])
     sampler = {
           "BaggingClassifier__base_estimator": Parameter("BaggingClassifier__base_estimator", DecisionTreeClassifier(), "constant", "func"),
-          "BaggingClassifier__n_estimators": Parameter("BaggingClassifier__n_estimators", [50, 500], "uniform", "int"),
+          "BaggingClassifier__n_estimators": Parameter("BaggingClassifier__n_estimators", [50, 700], "uniform", "int"),
           "BaggingClassifier__max_samples": Parameter("BaggingClassifier__max_samples", [0.1, 0.5], "uniform", "float"),
           "BaggingClassifier__max_features": Parameter("BaggingClassifier__max_features", [0.1, 0.5], "uniform", "float"),
           "BaggingClassifier__bootstrap": Parameter("BaggingClassifier__bootstrap", [True, False], "choice", "bool"),
@@ -67,7 +67,7 @@ def get_configuration_ExtraTreesClassifier():
                                            #"ExtraTreesClassifier__warm_start"
                                            ])
     sampler = {
-             "ExtraTreesClassifier__n_estimators": Parameter("ExtraTreesClassifier__n_estimators", [50, 500], "uniform", "int"),
+             "ExtraTreesClassifier__n_estimators": Parameter("ExtraTreesClassifier__n_estimators", [50, 700], "uniform", "int"),
              "ExtraTreesClassifier__criterion": Parameter("ExtraTreesClassifier__criterion", ["gini", "entropy"], "choice", "string"),
              "ExtraTreesClassifier__max_depth": Parameter("ExtraTreesClassifier__max_depth", [1, 10], "uniform", "int"),
              "ExtraTreesClassifier__min_samples_split": Parameter("ExtraTreesClassifier__min_samples_split", [2, 20], "uniform", "int"),
@@ -108,7 +108,7 @@ def get_configuration_GradientBoostingClassifier():
     sampler = {
              "GradientBoostingClassifier__loss": Parameter("GradientBoostingClassifier__loss", "deviance", "constant", "string"),
              "GradientBoostingClassifier__learning_rate": Parameter("GradientBoostingClassifier__learning_rate", [0.001, 1], "uniform", "float"),
-             "GradientBoostingClassifier__n_estimators": Parameter("GradientBoostingClassifier__n_estimators", [50, 500], "uniform", "int"),
+             "GradientBoostingClassifier__n_estimators": Parameter("GradientBoostingClassifier__n_estimators", [50, 700], "uniform", "int"),
              "GradientBoostingClassifier__max_depth": Parameter("GradientBoostingClassifier__max_depth", [1, 10], "uniform", "int"),
              "GradientBoostingClassifier__criterion": Parameter("GradientBoostingClassifier__criterion", ["friedman_mse", "mse", "mae"], "choice", "string"),
              "GradientBoostingClassifier__min_samples_split": Parameter("GradientBoostingClassifier__min_samples_split", [2, 20], "uniform", "int"),
@@ -143,7 +143,7 @@ def get_configuration_RandomForestClassifier():
                                            #"RandomForestClassifier__warm_start"
                                            ])
     sampler = {
-             "RandomForestClassifier__n_estimators": Parameter("RandomForestClassifier__n_estimators", [50, 500], "uniform", "int"),
+             "RandomForestClassifier__n_estimators": Parameter("RandomForestClassifier__n_estimators", [50, 700], "uniform", "int"),
              "RandomForestClassifier__criterion": Parameter("RandomForestClassifier__criterion", ["gini", "entropy"], "choice", "string"),
              #"RandomForestClassifier__max_depth": Parameter("RandomForestClassifier__max_depth", None, "constant", "string"),
              "RandomForestClassifier__min_samples_split": Parameter("RandomForestClassifier__min_samples_split", [2, 20], "uniform", "int"),
