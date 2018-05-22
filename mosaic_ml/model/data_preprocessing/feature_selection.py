@@ -76,30 +76,6 @@ def get_configuration_SelectFromModel():
     rules = []
     return SelectFromModel, sampler, rules
 
-def get_configuration_LinearSVCPrep():
-    rules = [
-        #ValueRule([("LinearSVCPrep__loss", "hinge"), ("LinearSVCPrep__penalty", "l2"), ("LinearSVCPrep__dual", True)]),
-        #ValueRule([("LinearSVCPrep__loss", "hinge"), ("LinearSVCPrep__penalty", "l2")])
-    ]
-    LinearSVCPrep = ListTask(is_ordered=False, name = "LinearSVCPrep",
-                                  tasks = ["LinearSVCPrep__penalty",
-                                           "LinearSVCPrep__loss",
-                                           "LinearSVCPrep__dual",
-                                           "LinearSVCPrep__tol",
-                                           "LinearSVCPrep__C",
-                                           "LinearSVCPrep__class_weight",
-                                           "LinearSVCPrep__max_iter"],
-                                  rules = rules)
-    sampler = {
-           "LinearSVCPrep__penalty": Parameter("LinearSVCPrep__penalty", "l1", "constant", "string"),
-           "LinearSVCPrep__loss": Parameter("LinearSVCPrep__loss", "squared_hinge", "constant", "string"),
-           "LinearSVCPrep__dual": Parameter("LinearSVCPrep__dual", False, "constant", "bool"),
-           "LinearSVCPrep__tol": Parameter("LinearSVCPrep__tol", [1e-5, 1e-1], "log_uniform", "bool"),
-           "LinearSVCPrep__C": Parameter("LinearSVCPrep__C", [0.03125, 30], "log_uniform", "float"),
-           "LinearSVCPrep__class_weight": Parameter("LinearSVCPrep__class_weight", "balanced", "constant", "string"),
-           "LinearSVCPrep__max_iter": Parameter("LinearSVCPrep__max_iter", [1, 100], "uniform", "int")
-    }
-    return LinearSVCPrep, sampler, rules
 
 def get_configuration_ExtraTreesClassifierPrep():
     ExtraTreesClassifierPrep = ListTask(is_ordered=False, name = "ExtraTreesClassifierPrep",

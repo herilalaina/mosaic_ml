@@ -139,7 +139,7 @@ list_available_preprocessing = {
     #"SelectFwe": feature_selection.SelectFwe,
     "SelectKBest": feature_selection.SelectKBest,
     "SelectPercentile": feature_selection.SelectPercentile,
-    "LinearSVCPrep": (feature_selection.SelectFromModel, svm.LinearSVC),
+    #"LinearSVCPrep": (feature_selection.SelectFromModel, svm.LinearSVC),
     "ExtraTreesClassifierPrep": (feature_selection.SelectFromModel, ensemble.ExtraTreesClassifier),
     # Cluster
     "FeatureAgglomeration": cluster.FeatureAgglomeration,
@@ -225,7 +225,7 @@ def get_all_data_preprocessing():
         #get_configuration_SelectFwe,
         get_configuration_SelectKBest,
         get_configuration_SelectPercentile,
-        get_configuration_LinearSVCPrep,
+        #get_configuration_LinearSVCPrep,
         get_configuration_ExtraTreesClassifierPrep,
 
         # Cluster
