@@ -17,6 +17,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import confusion_matrix
+import numpy as np
 
 
 from functools import partial
@@ -26,7 +28,6 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 LIST_TASK = [""]
-
 
 class AutoML():
     def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}, n_jobs = 1):
@@ -116,13 +117,13 @@ class AutoML():
 
             list_score = []
             try:
-                skf = StratifiedKFold(n_splits=3)
+                skf = StratifiedKFold(n_splits=2)
                 for train_index, valid_index in skf.split(X, y):
                     X_train, X_valid = X[train_index], X[valid_index]
                     y_train, y_valid = y[train_index], y[valid_index]
 
-                    with time_limit(40):
-                        searcher = pynisher.enforce_limits(mem_in_mb=3072, wall_time_in_s=36, cpu_time_in_s=36, grace_period_in_s = 2)(obj)
+                    with time_limit(60):
+                        searcher = pynisher.enforce_limits(mem_in_mb=12072, wall_time_in_s=60, cpu_time_in_s=60, grace_period_in_s = 2)(obj)
                         score = searcher(pipeline, X_train, y_train, X_valid, y_valid)
                         kill_child_processes(os.getpid())
                         del searcher
@@ -160,8 +161,17 @@ class AutoML():
             return score
 
         def train_predict_func(model, X_train, y_train, X_valid, y_valid):
+                taille = len(y_valid)
                 model.fit(X_train, y_train)
-                return balanced_accuracy(y_valid, model.predict(X_valid))
+                matrix_conf = confusion_matrix(y_valid, model.predict(X_valid))
+                cost = [[0, 1, 2, 3, 4, 6],
+                [1, 0, 1, 4, 5, 8],
+                [3, 2, 0, 3, 5, 8],
+                [10, 7, 5, 0, 2, 7],
+                [20, 16, 12, 4, 0, 8],
+                [44, 38, 32, 19, 13, 0]]
+                final_score =  min([np.multiply(matrix_conf, cost).sum() / taille, 1])
+                return 1 - final_score
 
         eval_func = partial(evaluate, X=self.X, y=self.y, info = self.info_training, obj = train_predict_func)
 
@@ -169,5 +179,5 @@ class AutoML():
 
         start_time = time.time()
         # self.upgrade_ressource(100)
-        with time_limit(3600):
+        with time_limit(90000):
             self.searcher.run(nb_simulation = 100000000000, generate_image_path = self.info_training["images_directory"])

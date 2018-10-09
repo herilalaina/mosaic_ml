@@ -107,7 +107,7 @@ list_available_classifiers = {
     "KNeighborsClassifier": neighbors.KNeighborsClassifier,
     # "RadiusNeighborsClassifier": neighbors.RadiusNeighborsClassifier,
     # neural_network
-    #"MLPClassifier": neural_network.MLPClassifier,
+    "MLPClassifier": neural_network.MLPClassifier,
     # semi_supervised
     #"LabelSpreading": semi_supervised.LabelSpreading,
     #"LabelPropagation": semi_supervised.LabelPropagation,
@@ -225,7 +225,7 @@ def get_all_data_preprocessing():
         #get_configuration_SelectFwe,
         get_configuration_SelectKBest,
         get_configuration_SelectPercentile,
-        #get_configuration_LinearSVCPrep,
+        # get_configuration_LinearSVCPrep,
         get_configuration_ExtraTreesClassifierPrep,
 
         # Cluster
