@@ -1,4 +1,5 @@
 from mosaic_ml.model_config.classification import get_classifier
+from mosaic_ml.model_config.data_preprocessing import get_data_preprocessing
 
 def evaluate_imputation(imputation_strategy):
     from sklearn.preprocessing import Imputer
@@ -14,7 +15,7 @@ def evaluate_encoding(choice, config):
     if choice == "no_encoding":
         encoding = FunctionTransformer()
     elif choice == "one_hot_encoding":
-        encoding = OneHotEncoder()
+        encoding = OneHotEncoder(sparse=False)
     else:
         raise NotImplemented("Not implemented {0}".format(choice))
 
@@ -50,6 +51,8 @@ def evaluation_rescaling(choice, config):
     return ("scaler", scaler)
 
 def evaluate(config, bestconfig, X=None, y=None, info = {}, score_func=None):
+    import warnings
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
     from sklearn.pipeline import Pipeline
     from sklearn.model_selection import StratifiedKFold
 
@@ -65,8 +68,9 @@ def evaluate(config, bestconfig, X=None, y=None, info = {}, score_func=None):
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
-        #evaluate_encoding(categorical_encoding__choice__, config),
+        evaluate_encoding(categorical_encoding__choice__, config),
         evaluation_rescaling(rescaling__choice__, config),
+        get_data_preprocessing.evaluate(preprocessor__choice__, config),
         get_classifier.evaluate_classifier(classifier__choice__, config)
     ]
 
