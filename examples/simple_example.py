@@ -18,10 +18,7 @@ info = {
     "images_directory": "examples/img"
 }
 
-digits = datasets.load_digits()
-X_digits = digits.data
-y_digits = digits.target
-X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits, test_size=0.33, random_state=42)
+X_train, y_train, X_test, y_test, cat = load_task(3)
 
 autoML = AutoML(training_log_file = "tmp/result.txt", info_training = info)
 autoML.fit(X_train, y_train)

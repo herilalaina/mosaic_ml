@@ -1,6 +1,3 @@
-import warnings
-import time
-
 # Mosaic library
 from mosaic.mosaic import Search
 from mosaic_ml.evaluator import evaluate
@@ -25,7 +22,7 @@ class AutoML():
         self.n_jobs = n_jobs
 
         # Load config space file
-        self.config_space = cs = pcs.read(open("./mosaic_ml/model_config/1_0.pcs", "r"))
+        self.config_space = pcs.read(open("./mosaic_ml/model_config/1_0.pcs", "r"))
 
 
     def fit(self, X, y):
