@@ -6,7 +6,7 @@ def evaluate(choice, config):
     from sklearn.preprocessing import FunctionTransformer
 
     if choice == "no_preprocessing":
-        return FunctionTransformer()
+        return (choice, FunctionTransformer())
     elif choice == "extra_trees_preproc_for_classification":
         return extra_trees_preproc_for_classification.get_model(choice, config)
     elif choice == "fast_ica":

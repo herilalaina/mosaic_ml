@@ -51,42 +51,48 @@ def evaluation_rescaling(choice, config):
     return ("scaler", scaler)
 
 def evaluate(config, bestconfig, X=None, y=None, info = {}, score_func=None):
-    import warnings
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
-    from sklearn.pipeline import Pipeline
-    from sklearn.model_selection import StratifiedKFold
+    try:
+        import warnings
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        from sklearn.pipeline import Pipeline
+        from sklearn.model_selection import StratifiedKFold
 
-    list_params = config.keys()
+        list_params = config.keys()
 
-    balancing_strategy = config["balancing:strategy"]
-    imputation_strategy = config["imputation:strategy"]
-    categorical_encoding__choice__ = config["categorical_encoding:__choice__"]
-    rescaling__choice__ = config["rescaling:__choice__"]
+        balancing_strategy = config["balancing:strategy"]
+        imputation_strategy = config["imputation:strategy"]
+        categorical_encoding__choice__ = config["categorical_encoding:__choice__"]
+        rescaling__choice__ = config["rescaling:__choice__"]
 
-    classifier__choice__ = config["classifier:__choice__"]
-    preprocessor__choice__ = config["preprocessor:__choice__"]
+        classifier__choice__ = config["classifier:__choice__"]
+        preprocessor__choice__ = config["preprocessor:__choice__"]
 
-    pipeline_list = [
-        evaluate_imputation(imputation_strategy),
-        evaluate_encoding(categorical_encoding__choice__, config),
-        evaluation_rescaling(rescaling__choice__, config),
-        get_data_preprocessing.evaluate(preprocessor__choice__, config),
-        get_classifier.evaluate_classifier(classifier__choice__, config)
-    ]
+        pipeline_list = [
+            evaluate_imputation(imputation_strategy),
+            evaluate_encoding(categorical_encoding__choice__, config),
+            evaluation_rescaling(rescaling__choice__, config),
+            get_data_preprocessing.evaluate(preprocessor__choice__, config),
+            get_classifier.evaluate_classifier(classifier__choice__, config)
+        ]
 
-    list_score = []
-    pipeline = Pipeline(pipeline_list)
+        list_score = []
+        pipeline = Pipeline(pipeline_list)
 
-    skf = StratifiedKFold(n_splits=2, random_state=42)
-    for train_index, test_index in skf.split(X, y):
-        X_train, y_train = X[train_index], y[train_index]
-        X_test, y_test = X[test_index], y[test_index]
-        pipeline.fit(X_train, y_train)
-        list_score.append(score_func(y_test, pipeline.predict(X_test)))
+        skf = StratifiedKFold(n_splits=2, random_state=42)
+        for train_index, test_index in skf.split(X, y):
+            X_train, y_train = X[train_index], y[train_index]
+            X_test, y_test = X[test_index], y[test_index]
+            pipeline.fit(X_train, y_train)
+            list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-        if list_score[-1] < bestconfig["score"]:
-            return list_score[-1]
-
+            if list_score[-1] < bestconfig["score"]:
+                return list_score[-1]
+    except Exception as e:
+        print("*******************************************************************************")
+        print(config)
+        print(pipeline_list)
+        raise e
+        exit(0)
     return min(list_score)
 
 

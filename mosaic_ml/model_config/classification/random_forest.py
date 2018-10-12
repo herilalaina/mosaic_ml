@@ -11,7 +11,7 @@ def get_model(name, config):
         min_impurity_decrease=float(config["classifier:random_forest:min_impurity_decrease"]),
         min_samples_leaf=int(config["classifier:random_forest:min_samples_leaf"]),
         min_samples_split=int(config["classifier:random_forest:min_samples_split"]),
-        min_weight_fraction_leaf=float(config["classifier:random_forest:min_weight_fraction_leaf"]),
+        #TODO min_weight_fraction_leaf=float(config["classifier:random_forest:min_weight_fraction_leaf"]),
         n_estimators=int(config["classifier:random_forest:n_estimators"])
     )
     return (name, model)
