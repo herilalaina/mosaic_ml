@@ -1,12 +1,16 @@
 from mosaic_ml.model_config.data_preprocessing import extra_trees_preproc_for_classification, kernel_pca,\
     kitchen_sinks, liblinear_svc_preprocessor, fast_ica, feature_agglomeration, nystroem_sampler,\
-    pca, polynomial, random_trees_embedding, select_percentile_classification, select_rates
+    pca, polynomial, random_trees_embedding, select_percentile_classification, select_rates, truncatedSVD
+
+from mosaic_ml.model_config.data_preprocessing.densifier import Densifier
 
 def evaluate(choice, config):
     from sklearn.preprocessing import FunctionTransformer
 
     if choice == "no_preprocessing":
         return (choice, FunctionTransformer())
+    elif choice == "densifier":
+        return (choice, Densifier())
     elif choice == "extra_trees_preproc_for_classification":
         return extra_trees_preproc_for_classification.get_model(choice, config)
     elif choice == "fast_ica":
@@ -31,5 +35,7 @@ def evaluate(choice, config):
         return select_percentile_classification.get_model(choice, config)
     elif choice == "select_rates":
         return select_rates.get_model(choice, config)
+    elif choice == "truncatedSVD":
+        return truncatedSVD.get_model(choice, config)
     else:
         raise Exception("Data processing {0} not implemented".format(choice))

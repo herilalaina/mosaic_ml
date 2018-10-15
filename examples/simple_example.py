@@ -14,8 +14,7 @@ from mosaic_ml.utils import balanced_accuracy
 import glob, os
 
 info = {
-    "working_directory": "tmp/",
-    "images_directory": "examples/img"
+    "scoring_path": "../score/1.txt",
 }
 
 X_train, y_train, X_test, y_test, cat = load_task(3)
