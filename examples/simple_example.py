@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0,'/home/herilalaina/Code/software/mosaic_ml')
+sys.path.insert(0,"/home/tau/hrakotoa/Code/reproduce/mosaic_ml")
 import pickle
 
 
@@ -14,13 +15,14 @@ from mosaic_ml.utils import balanced_accuracy
 import glob, os
 
 info = {
-    "scoring_path": "../score/1.txt",
+    "scoring_path": "score/1.txt",
 }
 
 X_train, y_train, X_test, y_test, cat = load_task(3)
 
 autoML = AutoML(training_log_file = "tmp/result.txt", info_training = info)
 autoML.fit(X_train, y_train, X_test, y_test)
+
 
 """
 os.chdir(info["working_directory"])
