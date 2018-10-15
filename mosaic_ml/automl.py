@@ -32,15 +32,11 @@ class AutoML():
         self.info_training = info_training
         self.n_jobs = n_jobs
 
-        # Load config space file
-        self.config_space = pcs.read(open("./mosaic_ml/model_config/1_1.pcs", "r"))
-
-
     def fit(self, X, y, X_test=None, y_test=None):
         if issparse(X):
-            self.config_space = pcs.read(open("./mosaic_ml/model_config/1_1.pcs", "r"))
+            self.config_space = pcs.read(open("../mosaic_ml/model_config/1_1.pcs", "r"))
         else:
-            self.config_space = pcs.read(open("./mosaic_ml/model_config/1_0.pcs", "r"))
+            self.config_space = pcs.read(open("../mosaic_ml/model_config/1_0.pcs", "r"))
 
         eval_func = partial(evaluate, X=X, y=y, X_TEST=X_test, Y_TEST=y_test, info = self.info_training, score_func=balanced_accuracy_score)
 
@@ -49,6 +45,7 @@ class AutoML():
                                config_space=self.config_space,
                                mem_in_mb=self.memory_limit,
                                cpu_time_in_s=self.time_limit_for_evaluation,
-                               logfile=self.info_training["scoring_path"])
-        
+                               logfile=self.info_training["scoring_path"],
+                               time_budget=self.time_budget)
+
         self.searcher.run(nb_simulation=100000000000)

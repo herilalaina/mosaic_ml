@@ -85,7 +85,7 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info 
 
             pred_list = []
 
-            skf = StratifiedKFold(n_splits=2, random_state=42)
+            skf = StratifiedKFold(n_splits=5, random_state=42)
             for train_index, test_index in skf.split(X, y):
                 X_train, y_train = X[train_index], y[train_index]
                 X_test, y_test = X[test_index], y[test_index]
@@ -112,6 +112,3 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info 
             return {"validation_score": min(list_score), "test_score": score_test}
     except Exception as e:
         return {"validation_score": 0, "test_score": 0}
-
-
-
