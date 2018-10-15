@@ -14,9 +14,10 @@ from ConfigSpace.read_and_write import pcs
 from functools import partial
 
 class AutoML():
-    def __init__(self, time_budget = None, time_limit_for_evaluation = None, training_log_file = "", info_training = {}, n_jobs = 1):
+    def __init__(self, time_budget = 3600, time_limit_for_evaluation = 360, memory_limit = 4048, training_log_file = "", info_training = {}, n_jobs = 1):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
+        self.memory_limit = memory_limit
         self.training_log_file = training_log_file
         self.info_training = info_training
         self.n_jobs = n_jobs
@@ -28,5 +29,8 @@ class AutoML():
     def fit(self, X, y):
         eval_func = partial(evaluate, X=X, y=y, info = self.info_training, score_func=roc_auc_score)
 
-        self.searcher = Search(eval_func=eval_func, config_space=self.config_space)
+        self.searcher = Search(eval_func=eval_func,
+                               config_space=self.config_space,
+                               mem_in_mb=self.memory_limit,
+                               cpu_time_in_s=self.time_limit_for_evaluation)
         self.searcher.run(nb_simulation = 100000000000, generate_image_path = self.info_training["images_directory"])

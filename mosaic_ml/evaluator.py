@@ -51,6 +51,8 @@ def evaluation_rescaling(choice, config):
     return ("scaler", scaler)
 
 def evaluate(config, bestconfig, X=None, y=None, info = {}, score_func=None):
+    print("*", end="")
+    #print(config)
     try:
         import warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -87,13 +89,14 @@ def evaluate(config, bestconfig, X=None, y=None, info = {}, score_func=None):
 
             if list_score[-1] < bestconfig["score"]:
                 return list_score[-1]
+
+        return min(list_score)
     except Exception as e:
-        print("*******************************************************************************")
-        print(config)
-        print(pipeline_list)
-        raise e
-        exit(0)
-    return min(list_score)
+        #print("*******************************************************************************")
+        #print(config)
+        #print(pipeline_list)
+        #raise e
+        return 0
 
 
 
