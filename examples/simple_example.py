@@ -11,15 +11,10 @@ from sklearn.model_selection import train_test_split
 from mosaic_ml.automl import AutoML
 from mosaic_ml.utils import balanced_accuracy
 
-import glob, os
-
-info = {
-    "scoring_path": "../score/1.txt",
-}
 
 X_train, y_train, X_test, y_test, cat = load_task(3)
 
-autoML = AutoML(training_log_file = "tmp/result.txt", info_training = info)
+autoML = AutoML(training_log_file = "tmp/result.txt")
 autoML.fit(X_train, y_train, X_test, y_test)
 
 """

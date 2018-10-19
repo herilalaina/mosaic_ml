@@ -2,8 +2,6 @@
 from mosaic.mosaic import Search
 from mosaic_ml.evaluator import evaluate
 
-import pynisher
-
 # scipy
 from scipy.sparse import issparse
 
@@ -20,20 +18,12 @@ from functools import partial
 class AutoML():
     def __init__(self, time_budget = 3600,
                  time_limit_for_evaluation = 360,
-                 memory_limit = 3024, training_log_file = "",
-                 info_training = {
-                     "scoring_path": "../score/1.txt"
-                 },
-                 n_jobs = 1):
+                 memory_limit = 3024,
+                 info_training = {}):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
         self.memory_limit = memory_limit
-        self.training_log_file = training_log_file
         self.info_training = info_training
-        self.n_jobs = n_jobs
-
-        # Load config space file
-        self.config_space = pcs.read(open("./mosaic_ml/model_config/1_1.pcs", "r"))
 
 
     def fit(self, X, y, X_test=None, y_test=None):
@@ -49,6 +39,6 @@ class AutoML():
                                config_space=self.config_space,
                                mem_in_mb=self.memory_limit,
                                cpu_time_in_s=self.time_limit_for_evaluation,
-                               logfile=self.info_training["scoring_path"])
+                               logfile=self.info_training["scoring_path"] if "scoring_path"  in self.info_training else "")
         
         self.searcher.run(nb_simulation=100000000000)
