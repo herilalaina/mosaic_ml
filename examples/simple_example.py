@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0,'/home/herilalaina/Code/software/mosaic_ml')
+sys.path.insert(0,"/home/tau/hrakotoa/Code/reproduce/mosaic_ml")
 import pickle
 
 
@@ -11,18 +12,14 @@ from sklearn.model_selection import train_test_split
 from mosaic_ml.automl import AutoML
 from mosaic_ml.utils import balanced_accuracy
 
-
 X_train, y_train, X_test, y_test, cat = load_task(3)
 
-autoML = AutoML(training_log_file = "tmp/result.txt")
-autoML.fit(X_train, y_train, X_test, y_test)
+autoML = AutoML(time_budget = 300,
+                 time_limit_for_evaluation = 10,
+                 memory_limit = 3024,
+                 multi_fidelity=False,
+                 use_parameter_importance=False,
+                 use_rave=False)
+res = autoML.fit(X_train, y_train, X_test, y_test)
 
-"""
-os.chdir(info["working_directory"])
-for file in glob.glob("*.pkl"):
-    pipeline = pickle.load(open(file, "rb"))
-    pipeline.fit(X_train, y_train)
-    score = balanced_accuracy(y_test, pipeline.predict(X_test))
-    with open("validation.txt", "a+") as f:
-        f.write("{0},{1}\n".format(file, score))
-"""
+print(res)

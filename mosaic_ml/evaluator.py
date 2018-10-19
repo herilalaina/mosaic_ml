@@ -50,68 +50,104 @@ def evaluation_rescaling(choice, config):
 
     return ("scaler", scaler)
 
+
+def get_sample_weight(y):
+    import numpy as np
+    if len(y.shape) > 1:
+        offsets = [2 ** i for i in range(y.shape[1])]
+        Y_ = np.sum(y * offsets, axis=1)
+    else:
+        Y_ = y
+
+    unique, counts = np.unique(Y_, return_counts=True)
+    cw = 1. / counts
+    cw = cw / np.mean(cw)
+
+    sample_weights = np.ones(Y_.shape)
+
+    for i, ue in enumerate(unique):
+        mask = Y_ == ue
+        sample_weights[mask] *= cw[i]
+    return sample_weights
+
+
+def config_to_pipeline(config):
+    from sklearn.pipeline import Pipeline
+    import numpy as np
+
+    list_params = config.keys()
+
+    balancing_strategy = config["balancing:strategy"]
+    imputation_strategy = config["imputation:strategy"]
+    categorical_encoding__choice__ = config["categorical_encoding:__choice__"]
+    rescaling__choice__ = config["rescaling:__choice__"]
+
+    classifier__choice__ = config["classifier:__choice__"]
+    preprocessor__choice__ = config["preprocessor:__choice__"]
+
+    name_pre, model_pre = get_data_preprocessing.evaluate(preprocessor__choice__, config)
+    name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config)
+
+    pipeline_list = [
+        evaluate_imputation(imputation_strategy),
+        evaluate_encoding(categorical_encoding__choice__, config),
+        evaluation_rescaling(rescaling__choice__, config),
+        (name_pre, model_pre),
+        (name_clf, model_clf)
+    ]
+
+    pipeline = Pipeline(pipeline_list)
+    return pipeline, balancing_strategy == "weighting"
+
 def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info = {}, score_func=None):
     print("*", end="")
     try:
         import warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
+        from sklearn.model_selection import StratifiedKFold
         with warnings.catch_warnings():
-            from sklearn.pipeline import Pipeline
-            from sklearn.model_selection import StratifiedKFold
-            import numpy as np
-
             warnings.simplefilter("ignore")
 
-            list_params = config.keys()
-
-            balancing_strategy = config["balancing:strategy"]
-            imputation_strategy = config["imputation:strategy"]
-            categorical_encoding__choice__ = config["categorical_encoding:__choice__"]
-            rescaling__choice__ = config["rescaling:__choice__"]
-
-            classifier__choice__ = config["classifier:__choice__"]
-            preprocessor__choice__ = config["preprocessor:__choice__"]
-
-            pipeline_list = [
-                evaluate_imputation(imputation_strategy),
-                evaluate_encoding(categorical_encoding__choice__, config),
-                evaluation_rescaling(rescaling__choice__, config),
-                get_data_preprocessing.evaluate(preprocessor__choice__, config),
-                get_classifier.evaluate_classifier(classifier__choice__, config)
-            ]
-
+            pipeline, balancing_strategy = config_to_pipeline(config)
             list_score = []
-            pipeline = Pipeline(pipeline_list)
 
-            pred_list = []
+            name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=2, random_state=42)
+            skf = StratifiedKFold(n_splits=5, random_state=42)
             for train_index, test_index in skf.split(X, y):
                 X_train, y_train = X[train_index], y[train_index]
                 X_test, y_test = X[test_index], y[test_index]
-                pipeline.fit(X_train, y_train)
+
+                fit_params = {}
+                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd', 'passive_aggressive', 'xgradient_boosting']:
+                    fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+
+                pipeline.fit(X_train, y_train, **fit_params)
                 list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-                try:
-                    pred_list.append(pipeline.predict_proba(X_TEST))
-                except Exception as e:
-                    pred_list.append(pipeline.predict(X_TEST))
 
                 if list_score[-1] < bestconfig["score_validation"]:
                     return {"validation_score": list_score[-1], "test_score": 0}
 
-            test_preds = np.mean(pred_list, axis=0)
-            if len(np.shape(test_preds)) == 2:
-                test_score_ = np.mean(pred_list, axis=0)
-                test_score = np.argmax(test_score_, 1)
-            else:
-                test_score = np.round(test_preds)
 
-            score_test = score_func(Y_TEST, test_score)
-
-            return {"validation_score": min(list_score), "test_score": score_test}
+            return {"validation_score": min(list_score), "model": pipeline}
     except Exception as e:
-        return {"validation_score": 0, "test_score": 0}
+        print(config)
+        print(e)
+        return {"validation_score": 0, "model": None}
 
 
-
+def test_function(config, X_train, y_train, X_test, y_test):
+    from sklearn.metrics import balanced_accuracy_score
+    import warnings
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    with warnings.catch_warnings():
+        pipeline, balancing_strategy = config_to_pipeline(config)
+        fit_params = {}
+        name_clf = pipeline.steps[4][0]
+        if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd',
+                                               'xgradient_boosting']:
+            fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+        pipeline.fit(X_train, y_train, **fit_params)
+        y_pred = pipeline.predict(X_test)
+        return balanced_accuracy_score(y_pred, y_test)
