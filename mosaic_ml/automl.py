@@ -10,7 +10,7 @@ from scipy.sparse import issparse
 import numpy as np
 
 # Metric
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import balanced_accuracy_score, accuracy_score, roc_auc_score
 
 # Config space
 from ConfigSpace.read_and_write import pcs
@@ -25,6 +25,7 @@ class AutoML():
                  multi_fidelity=False,
                  use_parameter_importance=False,
                  use_rave=False,
+                 scoring_func="balanced_accuracy",
                  seed=1
                  ):
         self.time_budget = time_budget
@@ -33,6 +34,16 @@ class AutoML():
         self.multi_fidelity = multi_fidelity
         self.use_parameter_importance = use_parameter_importance
         self.use_rave = use_rave
+
+        if scoring_func == "balanced_accuracy":
+            self.scoring_func = balanced_accuracy_score
+        elif scoring_func == "accuracy":
+            self.scoring_func = accuracy_score
+        elif scoring_func == "roc_auc":
+            self.scoring_func = roc_auc_score
+        else:
+            raise Exception("Score func {0} unknown".format(scoring_func))
+
         self.seed = seed
         np.random.seed(seed)
 
@@ -50,8 +61,8 @@ class AutoML():
             self.config_space = pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
             print("-> Data is dense")
 
-        eval_func = partial(evaluate, X=X, y=y, X_TEST=X_test, Y_TEST=y_test,
-                            score_func=balanced_accuracy_score, categorical_features=categorical_features, seed=self.seed)
+        eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
+                            categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,

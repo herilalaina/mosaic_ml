@@ -81,7 +81,6 @@ def get_sample_weight(y):
 
 def config_to_pipeline(config, categorical_features, is_sparse):
     from sklearn.pipeline import Pipeline
-    import numpy as np
 
     list_params = config.keys()
 
@@ -96,6 +95,13 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     name_pre, model_pre = get_data_preprocessing.evaluate(preprocessor__choice__, config)
     name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config)
 
+    if balancing_strategy == "weighting":
+        if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
+                        'libsvm_svc', "passive_aggressive", "random_forest"]:
+            model_clf.set_params(class_weight = 'balanced ')
+        if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
+            model_pre.estimator.set_params(class_weight = 'balanced')
+
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
         evaluate_encoding(categorical_encoding__choice__, config, categorical_features, is_sparse),
@@ -107,7 +113,7 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     pipeline = Pipeline(pipeline_list)
     return pipeline, balancing_strategy == "weighting"
 
-def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score_func=None, categorical_features=None, seed=None):
+def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None):
     print("*", end="")
     try:
         from scipy.sparse import issparse
