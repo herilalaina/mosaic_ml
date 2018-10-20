@@ -8,17 +8,24 @@ def evaluate_imputation(imputation_strategy):
     return ("Imputation", imp)
 
 
-def evaluate_encoding(choice, config):
-    from sklearn.preprocessing import OneHotEncoder
+def evaluate_encoding(choice, config, categorical_features):
+    from mosaic_ml.model_config.encoding.OneHotEncoding import OneHotEncoder
     from sklearn.preprocessing import FunctionTransformer
 
     if choice == "no_encoding":
         encoding = FunctionTransformer()
     elif choice == "one_hot_encoding":
-        encoding = OneHotEncoder(sparse=False)
+        if config["use_minimum_fraction"]:
+            minimum_fraction = config["minimum_fraction"]
+        else:
+            minimum_fraction = None
+
+        if categorical_features is None:
+            categorical_features = []
+        encoding = OneHotEncoder(categorical_features=categorical_features,
+                                 minimum_fraction=minimum_fraction)
     else:
         raise NotImplemented("Not implemented {0}".format(choice))
-
 
     return ("categorical_encoding", encoding)
 
@@ -71,7 +78,7 @@ def get_sample_weight(y):
     return sample_weights
 
 
-def config_to_pipeline(config):
+def config_to_pipeline(config, categorical_features):
     from sklearn.pipeline import Pipeline
     import numpy as np
 
@@ -90,7 +97,7 @@ def config_to_pipeline(config):
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
-        evaluate_encoding(categorical_encoding__choice__, config),
+        evaluate_encoding(categorical_encoding__choice__, config, categorical_features),
         evaluation_rescaling(rescaling__choice__, config),
         (name_pre, model_pre),
         (name_clf, model_clf)
@@ -99,7 +106,7 @@ def config_to_pipeline(config):
     pipeline = Pipeline(pipeline_list)
     return pipeline, balancing_strategy == "weighting"
 
-def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info = {}, score_func=None):
+def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score_func=None, categorical_features=None):
     print("*", end="")
     try:
         import warnings
@@ -108,7 +115,7 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
-            pipeline, balancing_strategy = config_to_pipeline(config)
+            pipeline, balancing_strategy = config_to_pipeline(config, categorical_features)
             list_score = []
 
             name_clf = pipeline.steps[4][0]
@@ -119,7 +126,7 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info 
                 X_test, y_test = X[test_index], y[test_index]
 
                 fit_params = {}
-                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd', 'passive_aggressive', 'xgradient_boosting']:
+                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd', 'xgradient_boosting']:
                     fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
                 pipeline.fit(X_train, y_train, **fit_params)
@@ -127,22 +134,22 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, info 
 
 
                 if list_score[-1] < bestconfig["score_validation"]:
-                    return {"validation_score": list_score[-1], "test_score": 0}
+                    return {"validation_score": list_score[-1]}
 
 
-            return {"validation_score": min(list_score), "model": pipeline}
+            return {"validation_score": min(list_score)}
     except Exception as e:
         print(config)
-        print(e)
-        return {"validation_score": 0, "model": None}
+        raise(e)
+        return {"validation_score": 0}
 
 
-def test_function(config, X_train, y_train, X_test, y_test):
+def test_function(config, X_train, y_train, X_test, y_test, categorical_features=None):
     from sklearn.metrics import balanced_accuracy_score
     import warnings
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     with warnings.catch_warnings():
-        pipeline, balancing_strategy = config_to_pipeline(config)
+        pipeline, balancing_strategy = config_to_pipeline(config, categorical_features)
         fit_params = {}
         name_clf = pipeline.steps[4][0]
         if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd',

@@ -45,7 +45,8 @@ def load_task(task_id):
                                  target=task.target_name)
     del _
     del dataset
-    cat = ['categorical' if c else 'numerical' for c in cat]
+    cat = [i for i, x in enumerate(cat) if x]
+    #cat = ['categorical' if c else 'numerical' for c in cat]
 
     unique = np.unique(y_train)
     mapping = {unique_value: i for i, unique_value in enumerate(unique)}
