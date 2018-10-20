@@ -99,7 +99,7 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     if balancing_strategy == "weighting":
         if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
                         'libsvm_svc', "passive_aggressive", "random_forest"]:
-            model_clf.set_params(class_weight='balanced ')
+            model_clf.set_params(class_weight='balanced')
         if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
             model_pre.estimator.set_params(class_weight='balanced')
 
