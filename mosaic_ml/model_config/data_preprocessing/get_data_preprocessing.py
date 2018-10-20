@@ -1,8 +1,9 @@
-from mosaic_ml.model_config.data_preprocessing import extra_trees_preproc_for_classification, kernel_pca,\
-    kitchen_sinks, liblinear_svc_preprocessor, fast_ica, feature_agglomeration, nystroem_sampler,\
+from mosaic_ml.model_config.data_preprocessing import extra_trees_preproc_for_classification, kernel_pca, \
+    kitchen_sinks, liblinear_svc_preprocessor, fast_ica, feature_agglomeration, nystroem_sampler, \
     pca, polynomial, random_trees_embedding, select_percentile_classification, select_rates, truncatedSVD
 
 from mosaic_ml.model_config.data_preprocessing.densifier import Densifier
+
 
 def evaluate(choice, config):
     from sklearn.preprocessing import FunctionTransformer

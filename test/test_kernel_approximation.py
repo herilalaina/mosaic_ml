@@ -15,10 +15,12 @@ X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits, test_siz
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
+
 @pynisher.enforce_limits(wall_time_in_s=40)
 def fit_model(model, X, y):
     model.fit(X, y)
     return model
+
 
 class TestKernelApproximation(unittest.TestCase):
 
@@ -28,8 +30,9 @@ class TestKernelApproximation(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "RBFSampler":
-                        pipeline = Pipeline(steps = [(name, kernel_approximation.RBFSampler(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "RBFSampler":
+                        pipeline = Pipeline(steps=[(name, kernel_approximation.RBFSampler(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -39,4 +42,4 @@ class TestKernelApproximation(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/RBFSampler")
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/RBFSampler")

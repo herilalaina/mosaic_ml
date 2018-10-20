@@ -1,8 +1,8 @@
 import argparse
 import sys
-sys.path.insert(0,'/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
-sys.path.append('.')
 
+sys.path.insert(0, '/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
+sys.path.append('.')
 
 from update_metadata_util import load_task
 
@@ -36,14 +36,12 @@ task_type = args.task_type
 seed = args.seed
 is_test = args.unittest
 
-
 tmp_dir = os.path.join(working_directory, str(task_id))
 
 info = {
     "working_directory": tmp_dir + '/',
     "images_directory": tmp_dir + "/images"
 }
-
 
 X_train, y_train, X_test, y_test, cat = load_task(task_id)
 imp = Imputer(missing_values="NaN", strategy="median")
@@ -63,9 +61,11 @@ else:
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
+
 def train_predict_func(model, X_train, y_train, X_valid, y_valid):
     model.fit(X_train, y_train)
     return balanced_accuracy(y_valid, pipeline.predict(X_valid))
+
 
 os.chdir(info["working_directory"])
 list_score = []

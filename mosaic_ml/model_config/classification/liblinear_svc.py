@@ -1,5 +1,6 @@
 from sklearn.svm import LinearSVC
 
+
 def get_model(choice, config):
     model = LinearSVC(
         C=float(config["classifier:liblinear_svc:C"]),

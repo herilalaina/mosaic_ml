@@ -1,8 +1,8 @@
 import argparse
 import sys
-sys.path.insert(0,'/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
-sys.path.append('.')
 
+sys.path.insert(0, '/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
+sys.path.append('.')
 
 from update_metadata_util import load_task
 
@@ -34,7 +34,6 @@ task_type = args.task_type
 seed = args.seed
 is_test = args.unittest
 
-
 tmp_dir = os.path.join(working_directory, str(task_id))
 try:
     os.makedirs(tmp_dir + '/')
@@ -42,12 +41,10 @@ try:
 except:
     pass
 
-
 info = {
     "working_directory": tmp_dir + '/',
     "images_directory": tmp_dir + "/images"
 }
-
 
 X_train, y_train, X_test, y_test, cat = load_task(task_id)
 imp = Imputer(missing_values="NaN", strategy="median")
@@ -67,7 +64,7 @@ else:
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
-autoML = AutoML(training_log_file = "{0}/result.txt".format(tmp_dir), info_training = info)
+autoML = AutoML(training_log_file="{0}/result.txt".format(tmp_dir), info_training=info)
 autoML.fit(X_train, y_train)
 """
 os.chdir(info["working_directory"])

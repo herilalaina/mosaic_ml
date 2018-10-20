@@ -2,7 +2,6 @@ from sklearn.decomposition import KernelPCA
 
 
 def get_model(name, config):
-
     kernel = config["preprocessor:kernel_pca:kernel"]
     if kernel in ["poly", "sigmoid"]:
         coef0 = int(config["preprocessor:kernel_pca:coef0"])

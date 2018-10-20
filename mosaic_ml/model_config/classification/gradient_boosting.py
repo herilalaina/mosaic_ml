@@ -1,5 +1,6 @@
 from sklearn.ensemble import GradientBoostingClassifier
 
+
 def get_model(name, config):
     model = GradientBoostingClassifier(
         criterion=config["classifier:gradient_boosting:criterion"],

@@ -1,5 +1,6 @@
 from sklearn.base import BaseEstimator
 
+
 class Densifier(BaseEstimator):
     def __init__(self, random_state=None):
         pass

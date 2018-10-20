@@ -1,5 +1,6 @@
 from sklearn.ensemble import ExtraTreesClassifier
 
+
 def get_model(name, config):
     model = ExtraTreesClassifier(
         bootstrap=bool(config["classifier:extra_trees:bootstrap"]),

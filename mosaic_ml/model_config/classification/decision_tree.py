@@ -1,5 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 
+
 def get_model(name, config):
     model = DecisionTreeClassifier(
         criterion=config["classifier:decision_tree:criterion"],

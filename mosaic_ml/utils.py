@@ -9,6 +9,7 @@ from sklearn.metrics.classification import _check_targets, type_of_target
 
 class TimeoutException(Exception): pass
 
+
 def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     try:
         parent = psutil.Process(parent_pid)
@@ -18,11 +19,13 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     for process in children:
         process.send_signal(sig)
 
+
 @contextmanager
 def time_limit(seconds):
     def signal_handler(signum, frame):
         kill_child_processes(os.getpid())
         raise TimeoutException("Timed out!")
+
     signal.signal(signal.SIGALRM, signal_handler)
     signal.alarm(seconds)
     try:
@@ -30,9 +33,11 @@ def time_limit(seconds):
     finally:
         signal.alarm(0)
 
+
 def memory_limit(memory_limit_MB):
     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
     resource.setrlimit(resource.RLIMIT_AS, (memory_limit_MB * 1024, hard))
+
 
 def get_memory():
     with open('/proc/meminfo', 'r') as mem:
@@ -42,6 +47,7 @@ def get_memory():
             if str(sline[0]) in ('MemFree:', 'Buffers:', 'Cached:'):
                 free_memory += int(sline[1])
     return free_memory
+
 
 def balanced_accuracy(solution, prediction):
     y_type, solution, prediction = _check_targets(solution, prediction)

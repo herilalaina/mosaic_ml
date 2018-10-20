@@ -15,10 +15,12 @@ X_train, X_test, y_train, y_test = train_test_split(X_digits, y_digits, test_siz
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
+
 @pynisher.enforce_limits(wall_time_in_s=20)
 def fit_model(model, X, y):
     model.fit(X, y)
     return model
+
 
 class TestDecomposition(unittest.TestCase):
 
@@ -28,8 +30,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "DictionaryLearning":
-                        pipeline = Pipeline(steps = [(name, decomposition.DictionaryLearning(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "DictionaryLearning":
+                        pipeline = Pipeline(steps=[(name, decomposition.DictionaryLearning(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -39,8 +42,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/DictionaryLearning")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/DictionaryLearning")
 
     def test_FactorAnalysis(self):
         scenario, sampler, rules = get_configuration_FactorAnalysis()
@@ -48,8 +50,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "FactorAnalysis":
-                        pipeline = Pipeline(steps = [(name, decomposition.FactorAnalysis(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "FactorAnalysis":
+                        pipeline = Pipeline(steps=[(name, decomposition.FactorAnalysis(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -59,8 +62,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/FactorAnalysis")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/FactorAnalysis")
 
     def test_FastICA(self):
         scenario, sampler, rules = get_configuration_FastICA()
@@ -68,8 +70,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "FastICA":
-                        pipeline = Pipeline(steps = [(name, decomposition.FastICA(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "FastICA":
+                        pipeline = Pipeline(steps=[(name, decomposition.FastICA(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -79,8 +82,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/FastICA")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/FastICA")
 
     def test_IncrementalPCA(self):
         scenario, sampler, rules = get_configuration_IncrementalPCA()
@@ -88,8 +90,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "IncrementalPCA":
-                        pipeline = Pipeline(steps = [(name, decomposition.IncrementalPCA(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "IncrementalPCA":
+                        pipeline = Pipeline(steps=[(name, decomposition.IncrementalPCA(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -99,8 +102,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/IncrementalPCA")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/IncrementalPCA")
 
     def test_KernelPCA(self):
         scenario, sampler, rules = get_configuration_KernelPCA()
@@ -108,8 +110,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "KernelPCA":
-                        pipeline = Pipeline(steps = [(name, decomposition.KernelPCA(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "KernelPCA":
+                        pipeline = Pipeline(steps=[(name, decomposition.KernelPCA(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         try:
                             pipeline = fit_model(pipeline, X_train, y_train)
                         except TimedOutExc:
@@ -120,8 +123,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/KernelPCA")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/KernelPCA")
 
     def test_LatentDirichletAllocation(self):
         scenario, sampler, rules = get_configuration_LatentDirichletAllocation()
@@ -129,8 +131,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "LatentDirichletAllocation":
-                        pipeline = Pipeline(steps = [(name, decomposition.LatentDirichletAllocation(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "LatentDirichletAllocation":
+                        pipeline = Pipeline(steps=[(name, decomposition.LatentDirichletAllocation(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -140,8 +143,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/LatentDirichletAllocation")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/LatentDirichletAllocation")
 
     def test_MiniBatchDictionaryLearning(self):
         scenario, sampler, rules = get_configuration_MiniBatchDictionaryLearning()
@@ -149,8 +151,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "MiniBatchDictionaryLearning":
-                        pipeline = Pipeline(steps = [(name, decomposition.MiniBatchDictionaryLearning(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "MiniBatchDictionaryLearning":
+                        pipeline = Pipeline(steps=[(name, decomposition.MiniBatchDictionaryLearning(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -160,8 +163,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/MiniBatchDictionaryLearning")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/MiniBatchDictionaryLearning")
 
     def test_NMF(self):
         scenario, sampler, rules = get_configuration_NMF()
@@ -169,8 +171,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "NMF":
-                        pipeline = Pipeline(steps = [(name, decomposition.NMF(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "NMF":
+                        pipeline = Pipeline(steps=[(name, decomposition.NMF(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -180,8 +183,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/NMF")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/NMF")
 
     def test_MiniBatchSparsePCA(self):
         scenario, sampler, rules = get_configuration_MiniBatchSparsePCA()
@@ -189,8 +191,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "MiniBatchSparsePCA":
-                        pipeline = Pipeline(steps = [(name, decomposition.MiniBatchSparsePCA(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "MiniBatchSparsePCA":
+                        pipeline = Pipeline(steps=[(name, decomposition.MiniBatchSparsePCA(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline.fit(X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -198,8 +201,7 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/MiniBatchSparsePCA")
-
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/MiniBatchSparsePCA")
 
     def test_PCA(self):
         scenario, sampler, rules = get_configuration_PCA()
@@ -207,8 +209,9 @@ class TestDecomposition(unittest.TestCase):
         def evaluate(config, bestconfig):
             try:
                 for name, params in config:
-                    if  name == "PCA":
-                        pipeline = Pipeline(steps = [(name, decomposition.PCA(**params)), ("logistic_regression", linear_model.LogisticRegression())])
+                    if name == "PCA":
+                        pipeline = Pipeline(steps=[(name, decomposition.PCA(**params)),
+                                                   ("logistic_regression", linear_model.LogisticRegression())])
                         pipeline = fit_model(pipeline, X_train, y_train)
                         return pipeline.score(X_test, y_test)
                 raise Exception("Classifier not found")
@@ -218,4 +221,4 @@ class TestDecomposition(unittest.TestCase):
                 return 0
 
         searcher = Search(scenario, sampler, rules, evaluate)
-        searcher.run(nb_simulation = 10, generate_image_path = "out/data_preprocessing/PCA")
+        searcher.run(nb_simulation=10, generate_image_path="out/data_preprocessing/PCA")

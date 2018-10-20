@@ -224,9 +224,9 @@ class OneHotEncoder(BaseEstimator, TransformerMixin):
             row_indices = X.indices
             column_indices = []
             for i in range(len(X.indptr) - 1):
-                nbr = X.indptr[i+1] - X.indptr[i]
+                nbr = X.indptr[i + 1] - X.indptr[i]
                 column_indices_ = [indices[i]] * nbr
-                column_indices_ += X.data[X.indptr[i]:X.indptr[i+1]]
+                column_indices_ += X.data[X.indptr[i]:X.indptr[i + 1]]
                 column_indices.extend(column_indices_)
             data = np.ones(X.data.size)
         else:
@@ -314,9 +314,9 @@ class OneHotEncoder(BaseEstimator, TransformerMixin):
                 if (n_value_check - 1) >= self.n_values_[i]:
                     if sparse.issparse(X):
                         indptr_start = X.indptr[i]
-                        indptr_end = X.indptr[i+1]
+                        indptr_end = X.indptr[i + 1]
                         X.data[indptr_start:indptr_end][X.data
-                            [indptr_start:indptr_end] >= self.n_values_[i]] = 0
+                                                        [indptr_start:indptr_end] >= self.n_values_[i]] = 0
                     else:
                         X[:, i][X[:, i] >= self.n_values_[i]] = 0
 

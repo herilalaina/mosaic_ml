@@ -1,5 +1,6 @@
 from sklearn.kernel_approximation import Nystroem
 
+
 def get_model(name, config):
     kernel = config["preprocessor:nystroem_sampler:kernel"]
     if kernel in ["poly", "sigmoid"]:
@@ -16,7 +17,6 @@ def get_model(name, config):
         gamma = float(config["preprocessor:nystroem_sampler:gamma"])
     else:
         gamma = None
-
 
     model = Nystroem(
         n_components=int(config["preprocessor:nystroem_sampler:n_components"]),

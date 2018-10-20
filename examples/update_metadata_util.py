@@ -1,7 +1,6 @@
 import numpy as np
 import openml
 
-
 classification_tasks = [233, 236, 242, 244, 246, 75090, 248, 251, 75124, 253,
                         254, 75092, 258,
                         75093, 260, 261, 262, 75095, 266, 3043, 75097, 75098,
@@ -46,7 +45,7 @@ def load_task(task_id):
     del _
     del dataset
     cat = [i for i, x in enumerate(cat) if x]
-    #cat = ['categorical' if c else 'numerical' for c in cat]
+    # cat = ['categorical' if c else 'numerical' for c in cat]
 
     unique = np.unique(y_train)
     mapping = {unique_value: i for i, unique_value in enumerate(unique)}

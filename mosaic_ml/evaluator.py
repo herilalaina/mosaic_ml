@@ -1,6 +1,7 @@
 from mosaic_ml.model_config.classification import get_classifier
 from mosaic_ml.model_config.data_preprocessing import get_data_preprocessing
 
+
 def evaluate_imputation(imputation_strategy):
     from sklearn.preprocessing import Imputer
 
@@ -98,9 +99,9 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     if balancing_strategy == "weighting":
         if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
                         'libsvm_svc', "passive_aggressive", "random_forest"]:
-            model_clf.set_params(class_weight = 'balanced ')
+            model_clf.set_params(class_weight='balanced ')
         if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
-            model_pre.estimator.set_params(class_weight = 'balanced')
+            model_pre.estimator.set_params(class_weight='balanced')
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
@@ -112,6 +113,7 @@ def config_to_pipeline(config, categorical_features, is_sparse):
 
     pipeline = Pipeline(pipeline_list)
     return pipeline, balancing_strategy == "weighting"
+
 
 def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None):
     print("*", end="")
@@ -134,21 +136,20 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                 X_test, y_test = X[test_index], y[test_index]
 
                 fit_params = {}
-                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd', 'xgradient_boosting']:
+                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
+                                                       'sgd', 'xgradient_boosting']:
                     fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
                 pipeline.fit(X_train, y_train, **fit_params)
                 list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-
                 if list_score[-1] < bestconfig["score_validation"]:
                     return {"validation_score": list_score[-1]}
-
 
             return {"validation_score": min(list_score)}
     except Exception as e:
         print(config)
-        raise(e)
+        raise (e)
         return {"validation_score": 0}
 
 

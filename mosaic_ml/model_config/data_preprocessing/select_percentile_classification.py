@@ -1,6 +1,7 @@
 from sklearn.feature_selection import SelectPercentile
 from sklearn.feature_selection import f_classif, mutual_info_classif, chi2
 
+
 def get_model(name, config):
     score_name = config["preprocessor:select_percentile_classification:score_func"]
     if score_name == "chi2":
