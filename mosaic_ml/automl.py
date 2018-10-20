@@ -41,6 +41,7 @@ class AutoML():
         print("-> y shape: {0}".format(str(y.shape)))
         print("-> X_test shape: {0}".format(str(X_test.shape)))
         print("-> y_test shape: {0}".format(str(y_test.shape)))
+        print("-> Categorical features: {0}".format(str(categorical_features)))
 
         if issparse(X):
             self.config_space = pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
