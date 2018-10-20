@@ -7,7 +7,7 @@ import pynisher
 
 # scipy
 from scipy.sparse import issparse
-
+import numpy as np
 
 # Metric
 from sklearn.metrics import balanced_accuracy_score
@@ -15,7 +15,7 @@ from sklearn.metrics import balanced_accuracy_score
 # Config space
 from ConfigSpace.read_and_write import pcs
 
-
+import os
 from functools import partial
 
 class AutoML():
@@ -24,7 +24,8 @@ class AutoML():
                  memory_limit = 3024,
                  multi_fidelity=False,
                  use_parameter_importance=False,
-                 use_rave=False
+                 use_rave=False,
+                 seed=1
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
@@ -32,6 +33,8 @@ class AutoML():
         self.multi_fidelity = multi_fidelity
         self.use_parameter_importance = use_parameter_importance
         self.use_rave = use_rave
+        self.seed = seed
+        np.random.seed(seed)
 
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None):
         print("-> X shape: {0}".format(str(X.shape)))
@@ -40,14 +43,14 @@ class AutoML():
         print("-> y_test shape: {0}".format(str(y_test.shape)))
 
         if issparse(X):
-            self.config_space = pcs.read(open("mosaic_ml/model_config/1_1.pcs", "r"))
+            self.config_space = pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
             print("-> Data is sparse")
         else:
-            self.config_space = pcs.read(open("mosaic_ml/model_config/1_0.pcs", "r"))
+            self.config_space = pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
             print("-> Data is dense")
 
         eval_func = partial(evaluate, X=X, y=y, X_TEST=X_test, Y_TEST=y_test,
-                            score_func=balanced_accuracy_score, categorical_features=categorical_features)
+                            score_func=balanced_accuracy_score, categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,

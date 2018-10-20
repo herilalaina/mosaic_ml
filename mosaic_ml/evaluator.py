@@ -106,7 +106,7 @@ def config_to_pipeline(config, categorical_features):
     pipeline = Pipeline(pipeline_list)
     return pipeline, balancing_strategy == "weighting"
 
-def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score_func=None, categorical_features=None):
+def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score_func=None, categorical_features=None, seed=None):
     print("*", end="")
     try:
         import warnings
@@ -120,7 +120,7 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score
 
             name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=5, random_state=42)
+            skf = StratifiedKFold(n_splits=5, random_state=seed)
             for train_index, test_index in skf.split(X, y):
                 X_train, y_train = X[train_index], y[train_index]
                 X_test, y_test = X[test_index], y[test_index]

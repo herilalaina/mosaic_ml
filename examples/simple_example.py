@@ -9,6 +9,7 @@ autoML = AutoML(time_budget = 100,
                  memory_limit = 3024,
                  multi_fidelity=False,
                  use_parameter_importance=False,
-                 use_rave=False)
+                 use_rave=False,
+                 seed=1)
 res = autoML.fit(X_train, y_train, X_test, y_test, categorical_features=cat)
 print(res)
