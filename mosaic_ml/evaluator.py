@@ -8,7 +8,7 @@ def evaluate_imputation(imputation_strategy):
     return ("Imputation", imp)
 
 
-def evaluate_encoding(choice, config, categorical_features):
+def evaluate_encoding(choice, config, categorical_features, is_sparse):
     from mosaic_ml.model_config.encoding.OneHotEncoding import OneHotEncoder
     from sklearn.preprocessing import FunctionTransformer
 
@@ -23,7 +23,8 @@ def evaluate_encoding(choice, config, categorical_features):
         if categorical_features is None:
             categorical_features = []
         encoding = OneHotEncoder(categorical_features=categorical_features,
-                                 minimum_fraction=minimum_fraction)
+                                 minimum_fraction=minimum_fraction,
+                                 sparse=is_sparse)
     else:
         raise NotImplemented("Not implemented {0}".format(choice))
 
@@ -78,7 +79,7 @@ def get_sample_weight(y):
     return sample_weights
 
 
-def config_to_pipeline(config, categorical_features):
+def config_to_pipeline(config, categorical_features, is_sparse):
     from sklearn.pipeline import Pipeline
     import numpy as np
 
@@ -97,7 +98,7 @@ def config_to_pipeline(config, categorical_features):
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
-        evaluate_encoding(categorical_encoding__choice__, config, categorical_features),
+        evaluate_encoding(categorical_encoding__choice__, config, categorical_features, is_sparse),
         evaluation_rescaling(rescaling__choice__, config),
         (name_pre, model_pre),
         (name_clf, model_clf)
@@ -109,13 +110,14 @@ def config_to_pipeline(config, categorical_features):
 def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score_func=None, categorical_features=None, seed=None):
     print("*", end="")
     try:
+        from scipy.sparse import issparse
         import warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         from sklearn.model_selection import StratifiedKFold
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
-            pipeline, balancing_strategy = config_to_pipeline(config, categorical_features)
+            pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X))
             list_score = []
 
             name_clf = pipeline.steps[4][0]
@@ -145,11 +147,12 @@ def evaluate(config, bestconfig, X=None, y=None, X_TEST=None, Y_TEST=None, score
 
 
 def test_function(config, X_train, y_train, X_test, y_test, categorical_features=None):
+    from scipy.sparse import issparse
     from sklearn.metrics import balanced_accuracy_score
     import warnings
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     with warnings.catch_warnings():
-        pipeline, balancing_strategy = config_to_pipeline(config, categorical_features)
+        pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X_train))
         fit_params = {}
         name_clf = pipeline.steps[4][0]
         if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd',
