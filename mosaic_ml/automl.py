@@ -32,6 +32,7 @@ class AutoML():
         self.multi_fidelity = multi_fidelity
         self.use_parameter_importance = use_parameter_importance
         self.use_rave = use_rave
+        self.config_space = None
 
         if scoring_func == "balanced_accuracy":
             self.scoring_func = balanced_accuracy_score
@@ -65,20 +66,20 @@ class AutoML():
                             categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
-        self.searcher = Search(eval_func=eval_func,
-                               config_space=self.config_space,
-                               mem_in_mb=self.memory_limit,
-                               cpu_time_in_s=self.time_limit_for_evaluation,
-                               # logfile=self.info_training["scoring_path"] if "scoring_path"  in self.info_training else "",
-                               time_budget=self.time_budget,
-                               multi_fidelity=self.multi_fidelity,
-                               use_parameter_importance=self.use_parameter_importance,
-                               use_rave=self.use_rave)
-        self.searcher.print_config()
+        searcher = Search(eval_func=eval_func,
+                          config_space=self.config_space,
+                          mem_in_mb=self.memory_limit,
+                          cpu_time_in_s=self.time_limit_for_evaluation,
+                          # logfile=self.info_training["scoring_path"] if "scoring_path"  in self.info_training else "",
+                          time_budget=self.time_budget,
+                          multi_fidelity=self.multi_fidelity,
+                          use_parameter_importance=self.use_parameter_importance,
+                          use_rave=self.use_rave)
+        searcher.print_config()
 
-        self.searcher.run(nb_simulation=100000000000)
+        searcher.run(nb_simulation=100000000000)
 
         test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,
                                             cpu_time_in_s=self.time_limit_for_evaluation * 3
                                             )(test_function)
-        return self.searcher.test_performance(X, y, X_test, y_test, test_func)
+        return searcher.test_performance(X, y, X_test, y_test, test_func)
