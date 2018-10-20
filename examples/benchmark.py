@@ -1,7 +1,4 @@
 import argparse
-import json
-import logging
-import os
 import sys
 sys.path.insert(0,'/home/tau/hrakotoa/Code/mosaic_project/mosaic_ml')
 sys.path.append('.')
@@ -9,21 +6,14 @@ sys.path.append('.')
 
 from update_metadata_util import load_task
 
-import warnings
-import pickle
-import pynisher
 import scipy
 
-from sklearn import datasets, feature_selection, linear_model, feature_selection
-from sklearn.model_selection import train_test_split
-
 from mosaic_ml.automl import AutoML
-from mosaic_ml.utils import balanced_accuracy
 
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import StandardScaler
 
-import glob, os
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--working-directory', type=str, required=True)

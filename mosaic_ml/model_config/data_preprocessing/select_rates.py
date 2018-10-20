@@ -1,6 +1,6 @@
+from sklearn.feature_selection import SelectFdr
 from sklearn.feature_selection import SelectFpr
 from sklearn.feature_selection import SelectFwe
-from sklearn.feature_selection import SelectFdr
 from sklearn.feature_selection import f_classif, chi2
 
 

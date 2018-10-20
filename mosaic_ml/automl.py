@@ -1,22 +1,20 @@
 # Mosaic library
-from mosaic.mosaic import Search
-from mosaic_ml.evaluator import evaluate, test_function
+import os
+from functools import partial
 
+import numpy as np
 # pynisher
 import pynisher
-
+# Config space
+from ConfigSpace.read_and_write import pcs
+from mosaic.mosaic import Search
 # scipy
 from scipy.sparse import issparse
-import numpy as np
-
 # Metric
 from sklearn.metrics import balanced_accuracy_score, accuracy_score, roc_auc_score
 
-# Config space
-from ConfigSpace.read_and_write import pcs
+from mosaic_ml.evaluator import evaluate, test_function
 
-import os
-from functools import partial
 
 class AutoML():
     def __init__(self, time_budget = 3600,

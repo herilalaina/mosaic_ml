@@ -1,9 +1,11 @@
 import resource
 import signal
+from contextlib import contextmanager
+
 import numpy as np
 import scipy as sp
-from contextlib import contextmanager
 from sklearn.metrics.classification import _check_targets, type_of_target
+
 
 class TimeoutException(Exception): pass
 

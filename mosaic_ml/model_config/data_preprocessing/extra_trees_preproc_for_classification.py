@@ -1,5 +1,5 @@
-from sklearn.feature_selection import SelectFromModel
 from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import SelectFromModel
 
 
 def get_model(name, config):

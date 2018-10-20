@@ -1,13 +1,12 @@
 import unittest
 import warnings
+
 import pynisher
-
-from sklearn import datasets, feature_selection, linear_model, feature_selection
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-
 from mosaic.mosaic import Search
 from mosaic_ml.model_config.data_preprocessing.feature_selection import *
+from sklearn import datasets, linear_model, feature_selection
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
 digits = datasets.load_digits()
 X_digits = digits.data
