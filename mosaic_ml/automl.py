@@ -82,4 +82,5 @@ class AutoML():
         test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,
                                             cpu_time_in_s=self.time_limit_for_evaluation * 3
                                             )(test_function)
+        print("Get test performance ...")
         return searcher.test_performance(X, y, X_test, y_test, test_func)

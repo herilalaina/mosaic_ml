@@ -1,6 +1,8 @@
 from mosaic_ml.model_config.classification import get_classifier
 from mosaic_ml.model_config.data_preprocessing import get_data_preprocessing
 
+from pynisher import TimeoutException, MemorylimitException
+
 
 def evaluate_imputation(imputation_strategy):
     from sklearn.preprocessing import Imputer
@@ -147,10 +149,13 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                     return {"validation_score": list_score[-1]}
 
             return {"validation_score": min(list_score)}
+    except TimeoutException as e:
+        raise(e)
+    except MemorylimitException as e:
+        raise(e)
     except Exception as e:
         print(config)
         raise (e)
-        return {"validation_score": 0}
 
 
 def test_function(config, X_train, y_train, X_test, y_test, categorical_features=None):
