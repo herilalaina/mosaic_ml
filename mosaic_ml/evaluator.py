@@ -145,10 +145,10 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                 pipeline.fit(X_train, y_train, **fit_params)
                 list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-                if list_score[-1] < bestconfig["score_validation"]:
-                    return {"validation_score": list_score[-1]}
+                #if list_score[-1] < bestconfig["score_validation"]:
+                #    return {"validation_score": list_score[-1]}
 
-            return {"validation_score": min(list_score)}
+            return {"validation_score": sum(list_score) / len(list_score)}
     except TimeoutException as e:
         raise(e)
     except MemorylimitException as e:
