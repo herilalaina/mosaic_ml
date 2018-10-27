@@ -1,8 +1,8 @@
 balancing:strategy {none, weighting} [none]
 categorical_encoding:__choice__ {no_encoding, one_hot_encoding} [one_hot_encoding]
-classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, k_nearest_neighbors, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [logistic_regression]
+classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [logistic_regression]
 imputation:strategy {mean, median, most_frequent} [mean]
-preprocessor:__choice__ {extra_trees_preproc_for_classification, fast_ica, feature_agglomeration, kernel_pca, no_preprocessing, nystroem_sampler, pca, random_trees_embedding, select_percentile_classification, select_rates} [no_preprocessing]
+preprocessor:__choice__ {extra_trees_preproc_for_classification, fast_ica, no_preprocessing, nystroem_sampler, pca, random_trees_embedding, select_percentile_classification} [no_preprocessing]
 rescaling:__choice__ {minmax, none, normalize, quantile_transformer, robust_scaler, standardize} [standardize]
 categorical_encoding:one_hot_encoding:use_minimum_fraction {True, False} [True]
 classifier:adaboost:algorithm {SAMME.R, SAMME} [SAMME.R]
@@ -41,9 +41,6 @@ classifier:gradient_boosting:min_samples_split [2, 20] [2]i
 classifier:gradient_boosting:min_weight_fraction_leaf {0.0} [0.0]
 classifier:gradient_boosting:n_estimators [50, 500] [100]i
 classifier:gradient_boosting:subsample [0.01, 1.0] [1.0]
-classifier:k_nearest_neighbors:n_neighbors [1, 100] [1]il
-classifier:k_nearest_neighbors:p {1, 2} [2]
-classifier:k_nearest_neighbors:weights {uniform, distance} [uniform]
 classifier:lda:n_components [1, 250] [10]i
 classifier:lda:shrinkage {None, auto, manual} [None]
 classifier:lda:tol [1e-05, 0.1] [0.0001]l
@@ -100,12 +97,6 @@ preprocessor:extra_trees_preproc_for_classification:n_estimators {10} [10]i
 preprocessor:fast_ica:algorithm {parallel, deflation} [parallel]
 preprocessor:fast_ica:fun {logcosh, exp, cube} [logcosh]
 preprocessor:fast_ica:whiten {False, True} [False]
-preprocessor:feature_agglomeration:affinity {euclidean, manhattan, cosine} [euclidean]
-preprocessor:feature_agglomeration:linkage {ward, complete, average} [ward]
-preprocessor:feature_agglomeration:n_clusters [2, 400] [25]i
-preprocessor:feature_agglomeration:pooling_func {mean, median, max} [mean]
-preprocessor:kernel_pca:kernel {poly, rbf, sigmoid, cosine} [rbf]
-preprocessor:kernel_pca:n_components [5, 50] [15]i
 preprocessor:nystroem_sampler:kernel {poly, rbf, sigmoid, cosine} [rbf]
 preprocessor:nystroem_sampler:n_components [50, 10000] [100]il
 preprocessor:pca:keep_variance [0.5, 0.9999] [0.9999]
@@ -119,9 +110,6 @@ preprocessor:random_trees_embedding:min_weight_fraction_leaf {1.0} [1.0]
 preprocessor:random_trees_embedding:n_estimators [1, 10] [5]i
 preprocessor:select_percentile_classification:percentile [1.0, 99.0] [50.0]
 preprocessor:select_percentile_classification:score_func {f_classif, mutual_info} [f_classif]
-preprocessor:select_rates:alpha [0.01, 0.5] [0.1]
-preprocessor:select_rates:mode {fpr, fdr, fwe} [fpr]
-preprocessor:select_rates:score_func {f_classif} [f_classif]
 rescaling:quantile_transformer:n_quantiles [10, 2000] [1000]i
 rescaling:quantile_transformer:output_distribution {uniform, normal} [uniform]
 rescaling:robust_scaler:q_max [0.7, 0.999] [0.75]
@@ -136,9 +124,6 @@ classifier:xgradient_boosting:normalize_type {tree, forest} [tree]
 classifier:xgradient_boosting:rate_drop [1e-10, 0.9999999999] [0.5]
 classifier:xgradient_boosting:sample_type {uniform, weighted} [uniform]
 preprocessor:fast_ica:n_components [10, 2000] [100]i
-preprocessor:kernel_pca:coef0 [-1.0, 1.0] [0.0]
-preprocessor:kernel_pca:degree [2, 5] [3]i
-preprocessor:kernel_pca:gamma [3.0517578125e-05, 8.0] [1.0]l
 preprocessor:nystroem_sampler:coef0 [-1.0, 1.0] [0.0]
 preprocessor:nystroem_sampler:degree [2, 5] [3]i
 preprocessor:nystroem_sampler:gamma [3.0517578125e-05, 8.0] [0.1]l
@@ -180,9 +165,6 @@ classifier:gradient_boosting:min_samples_split | classifier:__choice__ in {gradi
 classifier:gradient_boosting:min_weight_fraction_leaf | classifier:__choice__ in {gradient_boosting}
 classifier:gradient_boosting:n_estimators | classifier:__choice__ in {gradient_boosting}
 classifier:gradient_boosting:subsample | classifier:__choice__ in {gradient_boosting}
-classifier:k_nearest_neighbors:n_neighbors | classifier:__choice__ in {k_nearest_neighbors}
-classifier:k_nearest_neighbors:p | classifier:__choice__ in {k_nearest_neighbors}
-classifier:k_nearest_neighbors:weights | classifier:__choice__ in {k_nearest_neighbors}
 classifier:lda:n_components | classifier:__choice__ in {lda}
 classifier:lda:shrinkage | classifier:__choice__ in {lda}
 classifier:lda:tol | classifier:__choice__ in {lda}
@@ -239,12 +221,6 @@ preprocessor:extra_trees_preproc_for_classification:n_estimators | preprocessor:
 preprocessor:fast_ica:algorithm | preprocessor:__choice__ in {fast_ica}
 preprocessor:fast_ica:fun | preprocessor:__choice__ in {fast_ica}
 preprocessor:fast_ica:whiten | preprocessor:__choice__ in {fast_ica}
-preprocessor:feature_agglomeration:affinity | preprocessor:__choice__ in {feature_agglomeration}
-preprocessor:feature_agglomeration:linkage | preprocessor:__choice__ in {feature_agglomeration}
-preprocessor:feature_agglomeration:n_clusters | preprocessor:__choice__ in {feature_agglomeration}
-preprocessor:feature_agglomeration:pooling_func | preprocessor:__choice__ in {feature_agglomeration}
-preprocessor:kernel_pca:kernel | preprocessor:__choice__ in {kernel_pca}
-preprocessor:kernel_pca:n_components | preprocessor:__choice__ in {kernel_pca}
 preprocessor:nystroem_sampler:kernel | preprocessor:__choice__ in {nystroem_sampler}
 preprocessor:nystroem_sampler:n_components | preprocessor:__choice__ in {nystroem_sampler}
 preprocessor:pca:keep_variance | preprocessor:__choice__ in {pca}
@@ -258,9 +234,6 @@ preprocessor:random_trees_embedding:min_weight_fraction_leaf | preprocessor:__ch
 preprocessor:random_trees_embedding:n_estimators | preprocessor:__choice__ in {random_trees_embedding}
 preprocessor:select_percentile_classification:percentile | preprocessor:__choice__ in {select_percentile_classification}
 preprocessor:select_percentile_classification:score_func | preprocessor:__choice__ in {select_percentile_classification}
-preprocessor:select_rates:alpha | preprocessor:__choice__ in {select_rates}
-preprocessor:select_rates:mode | preprocessor:__choice__ in {select_rates}
-preprocessor:select_rates:score_func | preprocessor:__choice__ in {select_rates}
 rescaling:quantile_transformer:n_quantiles | rescaling:__choice__ in {quantile_transformer}
 rescaling:quantile_transformer:output_distribution | rescaling:__choice__ in {quantile_transformer}
 rescaling:robust_scaler:q_max | rescaling:__choice__ in {robust_scaler}
@@ -275,35 +248,20 @@ classifier:xgradient_boosting:normalize_type | classifier:xgradient_boosting:boo
 classifier:xgradient_boosting:rate_drop | classifier:xgradient_boosting:booster in {dart}
 classifier:xgradient_boosting:sample_type | classifier:xgradient_boosting:booster in {dart}
 preprocessor:fast_ica:n_components | preprocessor:fast_ica:whiten in {True}
-preprocessor:kernel_pca:coef0 | preprocessor:kernel_pca:kernel in {poly, sigmoid}
-preprocessor:kernel_pca:degree | preprocessor:kernel_pca:kernel in {poly}
-preprocessor:kernel_pca:gamma | preprocessor:kernel_pca:kernel in {poly, rbf}
 preprocessor:nystroem_sampler:coef0 | preprocessor:nystroem_sampler:kernel in {poly, sigmoid}
 preprocessor:nystroem_sampler:degree | preprocessor:nystroem_sampler:kernel in {poly}
 preprocessor:nystroem_sampler:gamma | preprocessor:nystroem_sampler:kernel in {poly, rbf, sigmoid}
 
-{classifier:__choice__=adaboost, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=adaboost, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=decision_tree, preprocessor:__choice__=kernel_pca}
-{classifier:__choice__=decision_tree, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=decision_tree, preprocessor:__choice__=nystroem_sampler}
 {classifier:__choice__=decision_tree, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=extra_trees, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=extra_trees, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=gaussian_nb, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=gaussian_nb, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=gradient_boosting, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=gradient_boosting, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=k_nearest_neighbors, preprocessor:__choice__=kernel_pca}
-{classifier:__choice__=k_nearest_neighbors, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=random_forest, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=random_forest, preprocessor:__choice__=nystroem_sampler}
-{classifier:__choice__=xgradient_boosting, preprocessor:__choice__=kernel_pca}
 {classifier:__choice__=xgradient_boosting, preprocessor:__choice__=nystroem_sampler}
 {preprocessor:__choice__=fast_ica, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=fast_ica, classifier:__choice__=multinomial_nb}
-{preprocessor:__choice__=kernel_pca, classifier:__choice__=multinomial_nb}
-{preprocessor:__choice__=kernel_pca, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=nystroem_sampler, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=nystroem_sampler, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=pca, classifier:__choice__=multinomial_nb}
@@ -312,5 +270,3 @@ preprocessor:nystroem_sampler:gamma | preprocessor:nystroem_sampler:kernel in {p
 {preprocessor:__choice__=random_trees_embedding, classifier:__choice__=gradient_boosting}
 {preprocessor:__choice__=random_trees_embedding, classifier:__choice__=lda}
 {preprocessor:__choice__=random_trees_embedding, classifier:__choice__=qda}
-{preprocessor:feature_agglomeration:affinity=cosine, preprocessor:feature_agglomeration:linkage=ward}
-{preprocessor:feature_agglomeration:affinity=manhattan, preprocessor:feature_agglomeration:linkage=ward}

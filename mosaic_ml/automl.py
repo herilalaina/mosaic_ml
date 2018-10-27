@@ -13,6 +13,11 @@ from scipy.sparse import issparse
 # Metric
 from sklearn.metrics import accuracy_score, roc_auc_score
 
+try:
+    from sklearn.metrics import balanced_accuracy_score
+except:
+    pass
+
 from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
 
 
@@ -35,9 +40,9 @@ class AutoML():
         self.use_rave = use_rave
         self.config_space = None
 
-        #if scoring_func == "balanced_accuracy":
-        #    self.scoring_func = balanced_accuracy_score
-        if scoring_func == "accuracy":
+        if scoring_func == "balanced_accuracy":
+            self.scoring_func = balanced_accuracy_score
+        elif scoring_func == "accuracy":
             self.scoring_func = accuracy_score
         elif scoring_func == "roc_auc":
             self.scoring_func = roc_auc_score
@@ -60,11 +65,11 @@ class AutoML():
 
         if issparse(X):
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1_competition.pcs", "r"))
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
             print("-> Data is sparse")
         else:
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0_competition.pcs", "r"))
             print("-> Data is dense")
 
         eval_func = partial(evaluate_competition, X=X, y=y, score_func=self.scoring_func,

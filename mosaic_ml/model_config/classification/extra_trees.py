@@ -12,6 +12,7 @@ def get_model(name, config):
         min_samples_leaf=int(config["classifier:extra_trees:min_samples_leaf"]),
         min_samples_split=int(config["classifier:extra_trees:min_samples_split"]),
         min_weight_fraction_leaf=float(config["classifier:extra_trees:min_weight_fraction_leaf"]),
-        n_estimators=int(config["classifier:extra_trees:n_estimators"])
+        n_estimators=int(config["classifier:extra_trees:n_estimators"]),
+        n_jobs=-1
     )
     return (name, model)

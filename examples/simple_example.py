@@ -10,6 +10,7 @@ autoML = AutoML(time_budget=360,
                 multi_fidelity=False,
                 use_parameter_importance=False,
                 use_rave=False,
-                seed=1)
+                seed=1,
+                scoring_func="balanced_accuracy")
 res = autoML.fit(X_train, y_train, X_test, y_test, categorical_features=cat)
 print(res)

@@ -16,6 +16,7 @@ def get_model(name, config):
         reg_alpha=float(config["classifier:xgradient_boosting:reg_alpha"]),
         reg_lambda=float(config["classifier:xgradient_boosting:reg_lambda"]),
         scale_pos_weight=float(config["classifier:xgradient_boosting:scale_pos_weight"]),
-        subsample=float(config["classifier:xgradient_boosting:subsample"])
+        subsample=float(config["classifier:xgradient_boosting:subsample"]),
+        n_jobs=-1
     )
     return (name, model)
