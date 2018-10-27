@@ -11,7 +11,7 @@ from mosaic.mosaic import Search
 # scipy
 from scipy.sparse import issparse
 # Metric
-from sklearn.metrics import balanced_accuracy_score, accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 
 from mosaic_ml.evaluator import evaluate, test_function
 
@@ -23,7 +23,7 @@ class AutoML():
                  multi_fidelity=False,
                  use_parameter_importance=False,
                  use_rave=False,
-                 scoring_func="balanced_accuracy",
+                 scoring_func="roc_auc",
                  seed=1
                  ):
         self.time_budget = time_budget
@@ -34,9 +34,9 @@ class AutoML():
         self.use_rave = use_rave
         self.config_space = None
 
-        if scoring_func == "balanced_accuracy":
-            self.scoring_func = balanced_accuracy_score
-        elif scoring_func == "accuracy":
+        #if scoring_func == "balanced_accuracy":
+        #    self.scoring_func = balanced_accuracy_score
+        if scoring_func == "accuracy":
             self.scoring_func = accuracy_score
         elif scoring_func == "roc_auc":
             self.scoring_func = roc_auc_score
