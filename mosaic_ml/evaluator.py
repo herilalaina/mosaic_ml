@@ -176,7 +176,7 @@ def test_function(config, X_train, y_train, X_test, y_test, categorical_features
 
 
 
-def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, data_mananger=None):
+def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, data_manager=None):
     print("*", end="")
     try:
         from scipy.sparse import issparse

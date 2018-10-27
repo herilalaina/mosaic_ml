@@ -1,6 +1,6 @@
 balancing:strategy {none, weighting} [none]
 categorical_encoding:__choice__ {no_encoding, one_hot_encoding} [one_hot_encoding]
-classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, k_nearest_neighbors, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [random_forest]
+classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, k_nearest_neighbors, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [logistic_regression]
 imputation:strategy {mean, median, most_frequent} [mean]
 preprocessor:__choice__ {extra_trees_preproc_for_classification, fast_ica, feature_agglomeration, kernel_pca, no_preprocessing, nystroem_sampler, pca, random_trees_embedding, select_percentile_classification, select_rates} [no_preprocessing]
 rescaling:__choice__ {minmax, none, normalize, quantile_transformer, robust_scaler, standardize} [standardize]

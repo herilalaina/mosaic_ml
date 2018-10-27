@@ -19,14 +19,14 @@ class DataManager():
 
     def init_batch(self, batch, X_train, y_train):
         self.current_batch = batch
-        dir_batch = os.path.join(self.dirpath, batch)
+        dir_batch = os.path.join(self.dirpath, str(batch))
         if not os.path.exists(dir_batch):
             os.makedirs(dir_batch)
             pickle.dump(X_train, open(os.path.join(dir_batch, "X_train.p"), "wb"))
-            pickle.load(y_train, open(os.path.join(dir_batch, "y_train.p"), "wb"))
+            pickle.dump(y_train, open(os.path.join(dir_batch, "y_train.p"), "wb"))
 
     def add_data(self, score, models):
-        dir_batch = os.path.join(self.dirpath, self.current_batch)
+        dir_batch = os.path.join(self.dirpath, str(self.current_batch))
         self.nb_models = len(models)
         if len(self.list_score) < self.nb_ensemble:
             self.list_score.append(score)
@@ -41,14 +41,14 @@ class DataManager():
                             open(os.path.join(dir_batch, "model_{0}_{1}.p".format(index_new, i)), "wb"))
 
     def get_X_y(self, batch):
-        dir_batch = os.path.join(self.dirpath, batch)
+        dir_batch = os.path.join(self.dirpath, str(batch))
         if os.path.exists(dir_batch):
             return (pickle.load(open(os.path.join(dir_batch, "X_train.p"), "rb")),
                     pickle.load(open(os.path.join(dir_batch, "y_train.p"), "rb")))
         return None
 
     def _get_model(self, batch, index):
-        dir_batch = os.path.join(self.dirpath, batch)
+        dir_batch = os.path.join(self.dirpath, str(batch))
         if os.path.exists(dir_batch):
             list_model = []
             for i, model in range(self.nb_models):
@@ -65,7 +65,7 @@ class DataManager():
         return all_precedent_model
 
     def get_nb_model(self, batch):
-        dir_batch = os.path.join(self.dirpath, batch)
+        dir_batch = os.path.join(self.dirpath, str(batch))
         nb = 0
         for f in glob.glob(dir_batch):
             if "model_" in f:
@@ -75,5 +75,3 @@ class DataManager():
     def __exit__(self, exc_type, exc_value, traceback):
         if os.path.exists(self.dirpath) and os.path.isdir(self.dirpath):
             shutil.rmtree(self.dirpath)
-
-
