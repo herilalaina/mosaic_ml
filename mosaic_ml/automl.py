@@ -23,7 +23,7 @@ class AutoML():
                  multi_fidelity=False,
                  use_parameter_importance=False,
                  use_rave=False,
-                 scoring_func="balanced_accuracy",
+                 scoring_func="roc_auc",
                  seed=1
                  ):
         self.time_budget = time_budget
