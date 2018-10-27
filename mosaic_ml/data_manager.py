@@ -47,13 +47,22 @@ class DataManager():
                     pickle.load(open(os.join(dir_batch, "y_train.p"), "rb")))
         return None
 
-    def get_model(self, batch, index):
+    def _get_model(self, batch, index):
         dir_batch = os.join(self.dirpath, batch)
         if os.path.exists(dir_batch):
             list_model = []
             for i, model in range(self.nb_models):
                 list_model.append(pickle.load(open(os.join(dir_batch, "model_{0}_{1}.p".format(index, i)), "rb")))
             return list_model
+
+    def get_models(self, batch):
+        all_precedent_model = []
+        for b in range(batch + 1):
+            nb = self.get_nb_model(b)
+            if nb > 0:
+                for i in range(nb):
+                    all_precedent_model.extend(self._get_model(b, i))
+        return all_precedent_model
 
     def get_nb_model(self, batch):
         dir_batch = os.join(self.dirpath, batch)

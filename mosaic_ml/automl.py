@@ -24,7 +24,8 @@ class AutoML():
                  use_parameter_importance=False,
                  use_rave=False,
                  scoring_func="roc_auc",
-                 seed=1
+                 seed=1,
+                 data_manager=None
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
@@ -47,12 +48,14 @@ class AutoML():
         np.random.seed(seed)
 
         self.searcher = None
+        self.data_manager = data_manager
 
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
-        print("-> X_test shape: {0}".format(str(X_test.shape)))
-        print("-> y_test shape: {0}".format(str(y_test.shape)))
+        if X_test is not None:
+            print("-> X_test shape: {0}".format(str(X_test.shape)))
+            print("-> y_test shape: {0}".format(str(y_test.shape)))
         print("-> Categorical features: {0}".format(str(categorical_features)))
 
         if issparse(X):
@@ -65,7 +68,7 @@ class AutoML():
             print("-> Data is dense")
 
         eval_func = partial(evaluate_competition, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed)
+                            categorical_features=categorical_features, seed=self.seed, data_manager=self.data_manager)
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,
@@ -85,12 +88,13 @@ class AutoML():
         print("Fit with warmstart")
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
-        print("-> X_test shape: {0}".format(str(X_test.shape)))
-        print("-> y_test shape: {0}".format(str(y_test.shape)))
+        if X_test is not None:
+            print("-> X_test shape: {0}".format(str(X_test.shape)))
+            print("-> y_test shape: {0}".format(str(y_test.shape)))
         print("-> Categorical features: {0}".format(str(categorical_features)))
 
         eval_func = partial(evaluate_competition, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed)
+                            categorical_features=categorical_features, seed=self.seed, data_manager=self.data_manager)
 
         self.searcher.print_config()
         self.searcher.run_warmstrat(eval_func,
