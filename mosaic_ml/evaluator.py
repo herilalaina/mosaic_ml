@@ -173,3 +173,48 @@ def test_function(config, X_train, y_train, X_test, y_test, categorical_features
         pipeline.fit(X_train, y_train, **fit_params)
         y_pred = pipeline.predict(X_test)
         return balanced_accuracy_score(y_pred, y_test)
+
+
+
+def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, data_mananger=None):
+    print("*", end="")
+    try:
+        from scipy.sparse import issparse
+        import warnings
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        from sklearn.model_selection import StratifiedKFold
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+
+            pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X))
+            list_score = []
+
+            name_clf = pipeline.steps[4][0]
+
+            skf = StratifiedKFold(n_splits=3, random_state=seed)
+            list_model = []
+            for train_index, test_index in skf.split(X, y):
+                X_train, y_train = X[train_index], y[train_index]
+                X_test, y_test = X[test_index], y[test_index]
+
+                fit_params = {}
+                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
+                                                       'sgd', 'xgradient_boosting']:
+                    fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+
+                pipeline.fit(X_train, y_train, **fit_params)
+                list_score.append(score_func(y_test, pipeline.predict(X_test)))
+
+                list_model.append(pipeline)
+
+            score = sum(list_score) / len(list_score)
+            data_mananger.add_data(score, list_model)
+
+            return {"validation_score": score}
+    except TimeoutException as e:
+        raise(e)
+    except MemorylimitException as e:
+        raise(e)
+    except Exception as e:
+        print(config)
+        raise (e)

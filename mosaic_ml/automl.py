@@ -13,7 +13,7 @@ from scipy.sparse import issparse
 # Metric
 from sklearn.metrics import accuracy_score, roc_auc_score
 
-from mosaic_ml.evaluator import evaluate, test_function
+from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
 
 
 class AutoML():
@@ -64,7 +64,7 @@ class AutoML():
                 open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
             print("-> Data is dense")
 
-        eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
+        eval_func = partial(evaluate_competition, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
@@ -89,7 +89,7 @@ class AutoML():
         print("-> y_test shape: {0}".format(str(y_test.shape)))
         print("-> Categorical features: {0}".format(str(categorical_features)))
 
-        eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
+        eval_func = partial(evaluate_competition, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed)
 
         self.searcher.print_config()
