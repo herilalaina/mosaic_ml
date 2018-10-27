@@ -46,6 +46,8 @@ class AutoML():
         self.seed = seed
         np.random.seed(seed)
 
+        self.searcher = None
+
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
@@ -55,7 +57,7 @@ class AutoML():
 
         if issparse(X):
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1_competition.pcs", "r"))
             print("-> Data is sparse")
         else:
             self.config_space = pcs.read(
@@ -66,21 +68,42 @@ class AutoML():
                             categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
-        searcher = Search(eval_func=eval_func,
+        self.searcher = Search(eval_func=eval_func,
                           config_space=self.config_space,
                           mem_in_mb=self.memory_limit,
                           cpu_time_in_s=self.time_limit_for_evaluation,
-                          # logfile=self.info_training["scoring_path"] if "scoring_path"  in self.info_training else "",
                           time_budget=self.time_budget,
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
                           use_rave=self.use_rave)
-        searcher.print_config()
+        self.searcher.print_config()
 
-        searcher.run(nb_simulation=100000000000)
+        self.searcher.run(nb_simulation=100000000000)
 
+
+    def refit(self, X, y, X_test=None, y_test=None, categorical_features=None, cpu_time_in_s=360, time_budget=3600):
+        print("Fit with warmstart")
+        print("-> X shape: {0}".format(str(X.shape)))
+        print("-> y shape: {0}".format(str(y.shape)))
+        print("-> X_test shape: {0}".format(str(X_test.shape)))
+        print("-> y_test shape: {0}".format(str(y_test.shape)))
+        print("-> Categorical features: {0}".format(str(categorical_features)))
+
+        eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
+                            categorical_features=categorical_features, seed=self.seed)
+
+        self.searcher.print_config()
+        self.searcher.run_warmstrat(eval_func,
+                      mem_in_mb=self.memory_limit,
+                      cpu_time_in_s=cpu_time_in_s,
+                      time_budget=time_budget,
+                      nb_simulation = 100000000000)
+
+
+    def get_test_performance(self, X, y, X_test=None, y_test=None):
         test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,
                                             cpu_time_in_s=self.time_limit_for_evaluation * 3
                                             )(test_function)
         print("Get test performance ...")
-        return searcher.test_performance(X, y, X_test, y_test, test_func)
+        return self.searcher.test_performance(X, y, X_test, y_test, test_func)
+

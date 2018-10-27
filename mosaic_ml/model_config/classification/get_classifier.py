@@ -1,6 +1,6 @@
 from mosaic_ml.model_config.classification import decision_tree, adaboost, bernouilli_nb, extra_trees, \
     gaussian_nb, gradient_boosting, lda, liblinear_svc, libsvm_svc, multinomial_nb, passive_aggressive, \
-    qda, random_forest, sgd, k_nearest_neighbors, xgradient_boosting
+    qda, random_forest, sgd, k_nearest_neighbors, xgradient_boosting, logistc_regression
 
 
 def evaluate_classifier(choice, config):
@@ -24,6 +24,8 @@ def evaluate_classifier(choice, config):
         return liblinear_svc.get_model(choice, config)
     elif choice == "libsvm_svc":
         return libsvm_svc.get_model(choice, config)
+    elif choice == "logistic_regression":
+        return logistc_regression.get_model(choice, config)
     elif choice == "multinomial_nb":
         return multinomial_nb.get_model(choice, config)
     elif choice == "passive_aggressive":

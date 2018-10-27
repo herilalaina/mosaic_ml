@@ -132,7 +132,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
 
             name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=5, random_state=seed)
+            skf = StratifiedKFold(n_splits=3, random_state=seed)
             for train_index, test_index in skf.split(X, y):
                 X_train, y_train = X[train_index], y[train_index]
                 X_test, y_test = X[test_index], y[test_index]
