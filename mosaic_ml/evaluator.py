@@ -98,12 +98,12 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     name_pre, model_pre = get_data_preprocessing.evaluate(preprocessor__choice__, config)
     name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config)
 
-    if balancing_strategy == "weighting":
-        if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
-                        'libsvm_svc', "passive_aggressive", "random_forest"]:
-            model_clf.set_params(class_weight='balanced')
-        if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
-            model_pre.estimator.set_params(class_weight='balanced')
+    #if balancing_strategy == "weighting":
+    #    if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
+    #                    'libsvm_svc', "passive_aggressive", "random_forest"]:
+    #        model_clf.set_params(class_weight='balanced')
+    #    if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
+    #        model_pre.estimator.set_params(class_weight='balanced')
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
@@ -213,9 +213,9 @@ def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None,
             skf = StratifiedKFold(n_splits=3, random_state=seed).split(X, y)
 
             if bestconfig["score_validation"] == 0:
-                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
+                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
             else:
-                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
+                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
 
             sum_score = 0
             for s, m in r:
