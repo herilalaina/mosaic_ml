@@ -11,6 +11,6 @@ def get_model(name, config):
         penalty=config["classifier:sgd:penalty"],
         tol=float(config["classifier:sgd:tol"]),
         eta0=0.1,
-        n_jobs=-1
+        n_jobs=1
     )
     return (name, model)

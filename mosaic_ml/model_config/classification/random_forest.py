@@ -13,6 +13,6 @@ def get_model(name, config):
         min_samples_split=int(config["classifier:random_forest:min_samples_split"]),
         # TODO min_weight_fraction_leaf=float(config["classifier:random_forest:min_weight_fraction_leaf"]),
         n_estimators=int(config["classifier:random_forest:n_estimators"]),
-        n_jobs=-1
+        n_jobs=1
     )
     return (name, model)

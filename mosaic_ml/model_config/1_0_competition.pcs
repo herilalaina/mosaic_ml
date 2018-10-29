@@ -1,9 +1,9 @@
 balancing:strategy {none, weighting} [none]
 categorical_encoding:__choice__ {no_encoding, one_hot_encoding} [one_hot_encoding]
-classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [logistic_regression]
+classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [xgradient_boosting]
 imputation:strategy {mean, median, most_frequent} [mean]
-preprocessor:__choice__ {extra_trees_preproc_for_classification, fast_ica, no_preprocessing, nystroem_sampler, pca, random_trees_embedding, select_percentile_classification} [no_preprocessing]
-rescaling:__choice__ {minmax, none, normalize, quantile_transformer, robust_scaler, standardize} [standardize]
+preprocessor:__choice__ {extra_trees_preproc_for_classification, no_preprocessing, nystroem_sampler, pca, select_percentile_classification} [no_preprocessing]
+rescaling:__choice__ {none} [none]
 categorical_encoding:one_hot_encoding:use_minimum_fraction {True, False} [True]
 classifier:adaboost:algorithm {SAMME.R, SAMME} [SAMME.R]
 classifier:adaboost:learning_rate [0.01, 2.0] [0.1]l
@@ -79,7 +79,7 @@ classifier:xgradient_boosting:learning_rate [0.001, 1.0] [0.1]l
 classifier:xgradient_boosting:max_delta_step {0} [0]
 classifier:xgradient_boosting:max_depth [1, 20] [3]i
 classifier:xgradient_boosting:min_child_weight [0, 20] [1]i
-classifier:xgradient_boosting:n_estimators [1, 15] [5]i
+classifier:xgradient_boosting:n_estimators [1, 50] [35]i
 classifier:xgradient_boosting:reg_alpha [1e-10, 0.1] [1e-10]l
 classifier:xgradient_boosting:reg_lambda [1e-10, 0.1] [1e-10]l
 classifier:xgradient_boosting:scale_pos_weight {1} [1]
@@ -94,26 +94,12 @@ preprocessor:extra_trees_preproc_for_classification:min_samples_leaf [1, 20] [1]
 preprocessor:extra_trees_preproc_for_classification:min_samples_split [2, 20] [2]i
 preprocessor:extra_trees_preproc_for_classification:min_weight_fraction_leaf {0.0} [0.0]
 preprocessor:extra_trees_preproc_for_classification:n_estimators {10} [10]i
-preprocessor:fast_ica:algorithm {parallel, deflation} [parallel]
-preprocessor:fast_ica:fun {logcosh, exp, cube} [logcosh]
-preprocessor:fast_ica:whiten {False, True} [False]
 preprocessor:nystroem_sampler:kernel {poly, rbf, sigmoid, cosine} [rbf]
 preprocessor:nystroem_sampler:n_components [50, 10000] [100]il
 preprocessor:pca:keep_variance [0.5, 0.9999] [0.9999]
 preprocessor:pca:whiten {False, True} [False]
-preprocessor:random_trees_embedding:bootstrap {True, False} [True]
-preprocessor:random_trees_embedding:max_depth [2, 10] [5]i
-preprocessor:random_trees_embedding:max_leaf_nodes {None} [None]
-preprocessor:random_trees_embedding:min_samples_leaf [1, 20] [1]i
-preprocessor:random_trees_embedding:min_samples_split [2, 20] [2]i
-preprocessor:random_trees_embedding:min_weight_fraction_leaf {1.0} [1.0]
-preprocessor:random_trees_embedding:n_estimators [1, 10] [5]i
 preprocessor:select_percentile_classification:percentile [1.0, 99.0] [50.0]
 preprocessor:select_percentile_classification:score_func {f_classif, mutual_info} [f_classif]
-rescaling:quantile_transformer:n_quantiles [10, 2000] [1000]i
-rescaling:quantile_transformer:output_distribution {uniform, normal} [uniform]
-rescaling:robust_scaler:q_max [0.7, 0.999] [0.75]
-rescaling:robust_scaler:q_min [0.001, 0.3] [0.25]
 categorical_encoding:one_hot_encoding:minimum_fraction [0.0001, 0.5] [0.01]l
 classifier:lda:shrinkage_factor [0.0, 1.0] [0.5]
 classifier:sgd:epsilon [1e-05, 0.1] [0.0001]l
@@ -123,7 +109,6 @@ classifier:sgd:power_t [1e-05, 1.0] [0.5]
 classifier:xgradient_boosting:normalize_type {tree, forest} [tree]
 classifier:xgradient_boosting:rate_drop [1e-10, 0.9999999999] [0.5]
 classifier:xgradient_boosting:sample_type {uniform, weighted} [uniform]
-preprocessor:fast_ica:n_components [10, 2000] [100]i
 preprocessor:nystroem_sampler:coef0 [-1.0, 1.0] [0.0]
 preprocessor:nystroem_sampler:degree [2, 5] [3]i
 preprocessor:nystroem_sampler:gamma [3.0517578125e-05, 8.0] [0.1]l
@@ -218,26 +203,12 @@ preprocessor:extra_trees_preproc_for_classification:min_samples_leaf | preproces
 preprocessor:extra_trees_preproc_for_classification:min_samples_split | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
 preprocessor:extra_trees_preproc_for_classification:min_weight_fraction_leaf | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
 preprocessor:extra_trees_preproc_for_classification:n_estimators | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
-preprocessor:fast_ica:algorithm | preprocessor:__choice__ in {fast_ica}
-preprocessor:fast_ica:fun | preprocessor:__choice__ in {fast_ica}
-preprocessor:fast_ica:whiten | preprocessor:__choice__ in {fast_ica}
 preprocessor:nystroem_sampler:kernel | preprocessor:__choice__ in {nystroem_sampler}
 preprocessor:nystroem_sampler:n_components | preprocessor:__choice__ in {nystroem_sampler}
 preprocessor:pca:keep_variance | preprocessor:__choice__ in {pca}
 preprocessor:pca:whiten | preprocessor:__choice__ in {pca}
-preprocessor:random_trees_embedding:bootstrap | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:max_depth | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:max_leaf_nodes | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:min_samples_leaf | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:min_samples_split | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:min_weight_fraction_leaf | preprocessor:__choice__ in {random_trees_embedding}
-preprocessor:random_trees_embedding:n_estimators | preprocessor:__choice__ in {random_trees_embedding}
 preprocessor:select_percentile_classification:percentile | preprocessor:__choice__ in {select_percentile_classification}
 preprocessor:select_percentile_classification:score_func | preprocessor:__choice__ in {select_percentile_classification}
-rescaling:quantile_transformer:n_quantiles | rescaling:__choice__ in {quantile_transformer}
-rescaling:quantile_transformer:output_distribution | rescaling:__choice__ in {quantile_transformer}
-rescaling:robust_scaler:q_max | rescaling:__choice__ in {robust_scaler}
-rescaling:robust_scaler:q_min | rescaling:__choice__ in {robust_scaler}
 categorical_encoding:one_hot_encoding:minimum_fraction | categorical_encoding:one_hot_encoding:use_minimum_fraction in {True}
 classifier:lda:shrinkage_factor | classifier:lda:shrinkage in {manual}
 classifier:sgd:eta0 | classifier:sgd:learning_rate in {invscaling, constant}
@@ -247,7 +218,6 @@ classifier:sgd:l1_ratio | classifier:sgd:penalty in {elasticnet}
 classifier:xgradient_boosting:normalize_type | classifier:xgradient_boosting:booster in {dart}
 classifier:xgradient_boosting:rate_drop | classifier:xgradient_boosting:booster in {dart}
 classifier:xgradient_boosting:sample_type | classifier:xgradient_boosting:booster in {dart}
-preprocessor:fast_ica:n_components | preprocessor:fast_ica:whiten in {True}
 preprocessor:nystroem_sampler:coef0 | preprocessor:nystroem_sampler:kernel in {poly, sigmoid}
 preprocessor:nystroem_sampler:degree | preprocessor:nystroem_sampler:kernel in {poly}
 preprocessor:nystroem_sampler:gamma | preprocessor:nystroem_sampler:kernel in {poly, rbf, sigmoid}
@@ -260,13 +230,7 @@ preprocessor:nystroem_sampler:gamma | preprocessor:nystroem_sampler:kernel in {p
 {classifier:__choice__=gradient_boosting, preprocessor:__choice__=nystroem_sampler}
 {classifier:__choice__=random_forest, preprocessor:__choice__=nystroem_sampler}
 {classifier:__choice__=xgradient_boosting, preprocessor:__choice__=nystroem_sampler}
-{preprocessor:__choice__=fast_ica, classifier:__choice__=multinomial_nb}
-{preprocessor:__choice__=fast_ica, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=nystroem_sampler, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=nystroem_sampler, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=pca, classifier:__choice__=multinomial_nb}
 {preprocessor:__choice__=pca, classifier:__choice__=multinomial_nb}
-{preprocessor:__choice__=random_trees_embedding, classifier:__choice__=gaussian_nb}
-{preprocessor:__choice__=random_trees_embedding, classifier:__choice__=gradient_boosting}
-{preprocessor:__choice__=random_trees_embedding, classifier:__choice__=lda}
-{preprocessor:__choice__=random_trees_embedding, classifier:__choice__=qda}
