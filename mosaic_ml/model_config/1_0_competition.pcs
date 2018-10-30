@@ -1,6 +1,6 @@
 balancing:strategy {none, weighting} [none]
 categorical_encoding:__choice__ {no_encoding, one_hot_encoding} [one_hot_encoding]
-classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [xgradient_boosting]
+classifier:__choice__ {adaboost, bernoulli_nb, decision_tree, extra_trees, gaussian_nb, gradient_boosting, lda, logistic_regression, multinomial_nb, passive_aggressive, qda, random_forest, sgd, xgradient_boosting} [random_forest]
 imputation:strategy {mean, median, most_frequent} [mean]
 preprocessor:__choice__ {extra_trees_preproc_for_classification, no_preprocessing, nystroem_sampler, pca, select_percentile_classification} [no_preprocessing]
 rescaling:__choice__ {none} [none]
@@ -39,7 +39,7 @@ classifier:gradient_boosting:min_impurity_decrease {0.0} [0.0]
 classifier:gradient_boosting:min_samples_leaf [1, 20] [1]i
 classifier:gradient_boosting:min_samples_split [2, 20] [2]i
 classifier:gradient_boosting:min_weight_fraction_leaf {0.0} [0.0]
-classifier:gradient_boosting:n_estimators [50, 500] [100]i
+classifier:gradient_boosting:n_estimators [1, 15] [10]i
 classifier:gradient_boosting:subsample [0.01, 1.0] [1.0]
 classifier:lda:n_components [1, 250] [10]i
 classifier:lda:shrinkage {None, auto, manual} [None]
@@ -62,7 +62,7 @@ classifier:random_forest:min_impurity_decrease {0.0} [0.0]
 classifier:random_forest:min_samples_leaf [1, 20] [1]i
 classifier:random_forest:min_samples_split [2, 20] [2]i
 classifier:random_forest:min_weight_fraction_leaf {0.0} [0.0]
-classifier:random_forest:n_estimators [1, 15] [15]i
+classifier:random_forest:n_estimators [1, 15] [5]i
 classifier:sgd:alpha [1e-07, 0.1] [0.0001]l
 classifier:sgd:average {False, True} [False]
 classifier:sgd:fit_intercept {True} [True]
@@ -79,7 +79,7 @@ classifier:xgradient_boosting:learning_rate [0.001, 1.0] [0.1]l
 classifier:xgradient_boosting:max_delta_step {0} [0]
 classifier:xgradient_boosting:max_depth [1, 20] [3]i
 classifier:xgradient_boosting:min_child_weight [0, 20] [1]i
-classifier:xgradient_boosting:n_estimators [1, 50] [35]i
+classifier:xgradient_boosting:n_estimators [1, 15] [5]i
 classifier:xgradient_boosting:reg_alpha [1e-10, 0.1] [1e-10]l
 classifier:xgradient_boosting:reg_lambda [1e-10, 0.1] [1e-10]l
 classifier:xgradient_boosting:scale_pos_weight {1} [1]

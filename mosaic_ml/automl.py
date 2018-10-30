@@ -107,7 +107,7 @@ class AutoML():
         self.searcher.run_warmstrat(eval_func,
                       mem_in_mb=self.memory_limit,
                       cpu_time_in_s=cpu_time_in_s,
-                      time_budget=self.time_budget,
+                      time_budget=self.time_limit_for_evaluation,
                       nb_simulation = 100000000000)
 
 

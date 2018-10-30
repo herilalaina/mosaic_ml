@@ -32,6 +32,7 @@ class DataManager():
     def add_data(self, score, model):
         dir_batch = os.path.join(self.dirpath, str(self.current_batch))
         self.list_score = pickle.load(open(os.path.join(self.dirpath, "scores_list.p"), "rb"))
+        pickle.dump(self.list_score, open(os.path.join(self.dirpath, "scores_list.p"), "wb"))
         if len(self.list_score[self.current_batch]) < self.nb_ensemble:
             self.list_score[self.current_batch].append(score)
             index_new = len(self.list_score[self.current_batch]) - 1

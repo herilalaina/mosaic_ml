@@ -98,12 +98,12 @@ def config_to_pipeline(config, categorical_features, is_sparse):
     name_pre, model_pre = get_data_preprocessing.evaluate(preprocessor__choice__, config)
     name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config)
 
-    #if balancing_strategy == "weighting":
-    #    if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
-    #                    'libsvm_svc', "passive_aggressive", "random_forest"]:
-    #        model_clf.set_params(class_weight='balanced')
-    #    if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
-    #        model_pre.estimator.set_params(class_weight='balanced')
+    if balancing_strategy == "weighting":
+        if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
+                        'libsvm_svc', "passive_aggressive", "random_forest"]:
+            model_clf.set_params(class_weight='balanced')
+        if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
+            model_pre.estimator.set_params(class_weight='balanced')
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
@@ -145,9 +145,6 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                 pipeline.fit(X_train, y_train, **fit_params)
                 list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-                #if list_score[-1] < bestconfig["score_validation"]:
-                #    return {"validation_score": list_score[-1]}
-
             return {"validation_score": sum(list_score) / len(list_score)}
     except TimeoutException as e:
         raise(e)
@@ -176,16 +173,19 @@ def test_function(config, X_train, y_train, X_test, y_test, categorical_features
 
 
 def run_pipeline(params):
-    model, X, y, index = params
     from sklearn.metrics import roc_auc_score
+    from sklearn.base import clone
+    model_, X, y, index, data_manager = params
     X_train, y_train = X[index[0]], y[index[0]]
     X_test, y_test = X[index[1]], y[index[1]]
 
+    model = clone(model_)
     model.fit(X_train, y_train)
     if hasattr(model, 'predict_proba'):
         score_ = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
     else:
         score_ = roc_auc_score(y_test, model.predict(X_test))
+    data_manager.add_data(score_, model)
 
     return (score_, model)
 
@@ -201,6 +201,9 @@ def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None,
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         from sklearn.model_selection import StratifiedKFold
         from sklearn.externals.joblib import Parallel, delayed
+        from sklearn.base import clone
+        from sklearn.utils import resample
+        import random
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -210,17 +213,17 @@ def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None,
 
             name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=3, random_state=seed).split(X, y)
+            X_, y_ = resample(X, y, random_state=random.randint(0, 10000), n_samples=min([X.shape[0], 50000]))
+            skf = StratifiedKFold(n_splits=3, random_state=seed).split(X_, y_)
 
             if bestconfig["score_validation"] == 0:
-                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
+                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
             else:
-                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X, y, index)) for index in skf)
+                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
 
             sum_score = 0
             for s, m in r:
                 sum_score += s
-                data_manager.add_data(s, m)
 
             score = sum_score / 3
             print("Score", score)
