@@ -128,11 +128,13 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
             warnings.simplefilter("ignore")
 
             pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X))
-            list_score = []
+            #list_score = []
 
             name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=3, random_state=seed)
+            skf = StratifiedKFold(n_splits=5, random_state=seed)
+            true_test = []
+            pred_test = []
             for train_index, test_index in skf.split(X, y):
                 X_train, y_train = X[train_index], y[train_index]
                 X_test, y_test = X[test_index], y[test_index]
@@ -143,9 +145,12 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                     fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
                 pipeline.fit(X_train, y_train, **fit_params)
-                list_score.append(score_func(y_test, pipeline.predict(X_test)))
+                # list_score.append(score_func(y_test, pipeline.predict(X_test)))
+                true_test.extend(y_test)
+                pred_test.extend(pipeline.predict(X_test))
 
-            return {"validation_score": sum(list_score) / len(list_score)}
+            score = score_func(true_test, pred_test)
+            return {"validation_score": score}
     except TimeoutException as e:
         raise(e)
     except MemorylimitException as e:

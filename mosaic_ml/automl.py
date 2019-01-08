@@ -28,7 +28,7 @@ class AutoML():
                  multi_fidelity=False,
                  use_parameter_importance=False,
                  use_rave=False,
-                 scoring_func="roc_auc",
+                 scoring_func="balanced_accuracy",
                  seed=1,
                  data_manager=None
                  ):
