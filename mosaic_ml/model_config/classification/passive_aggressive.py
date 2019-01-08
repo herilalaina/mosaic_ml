@@ -8,6 +8,6 @@ def get_model(name, config):
         fit_intercept=eval(config["classifier:passive_aggressive:fit_intercept"]),
         loss=config["classifier:passive_aggressive:loss"],
         tol=float(config["classifier:passive_aggressive:tol"]),
-        n_jobs=-1
+        n_jobs=1
     )
     return (name, model)

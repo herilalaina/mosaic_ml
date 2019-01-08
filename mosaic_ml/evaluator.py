@@ -145,9 +145,6 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                 pipeline.fit(X_train, y_train, **fit_params)
                 list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
-                #if list_score[-1] < bestconfig["score_validation"]:
-                #    return {"validation_score": list_score[-1]}
-
             return {"validation_score": sum(list_score) / len(list_score)}
     except TimeoutException as e:
         raise(e)
@@ -175,14 +172,39 @@ def test_function(config, X_train, y_train, X_test, y_test, categorical_features
         return balanced_accuracy_score(y_pred, y_test)
 
 
+def run_pipeline(params):
+    from sklearn.metrics import roc_auc_score
+    from sklearn.base import clone
+    model_, X, y, index, data_manager = params
+    X_train, y_train = X[index[0]], y[index[0]]
+    X_test, y_test = X[index[1]], y[index[1]]
 
-def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, data_manager=None):
-    print("*", end="")
+    model = clone(model_)
+    model.fit(X_train, y_train)
+    if hasattr(model, 'predict_proba'):
+        score_ = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+    else:
+        score_ = roc_auc_score(y_test, model.predict(X_test))
+    data_manager.add_data(score_, model)
+
+    return (score_, model)
+
+
+def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None,
+                         categorical_features=None, seed=None, data_manager=None,
+                         time_limit_for_evaluation=None):
+    print("-----------------------------------------------------------------------------------------------")
+    print(config)
     try:
         from scipy.sparse import issparse
         import warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         from sklearn.model_selection import StratifiedKFold
+        from sklearn.externals.joblib import Parallel, delayed
+        from sklearn.base import clone
+        from sklearn.utils import resample
+        import random
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
@@ -191,30 +213,28 @@ def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, ca
 
             name_clf = pipeline.steps[4][0]
 
-            skf = StratifiedKFold(n_splits=3, random_state=seed)
-            list_model = []
-            for train_index, test_index in skf.split(X, y):
-                X_train, y_train = X[train_index], y[train_index]
-                X_test, y_test = X[test_index], y[test_index]
+            X_, y_ = resample(X, y, random_state=random.randint(0, 10000), n_samples=min([X.shape[0], 50000]))
+            skf = StratifiedKFold(n_splits=3, random_state=seed).split(X_, y_)
 
-                fit_params = {}
-                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
-                                                       'sgd', 'xgradient_boosting']:
-                    fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+            if bestconfig["score_validation"] == 0:
+                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
+            else:
+                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
 
-                pipeline.fit(X_train, y_train, **fit_params)
-                list_score.append(score_func(y_test, pipeline.predict(X_test)))
+            sum_score = 0
+            for s, m in r:
+                sum_score += s
 
-                list_model.append(pipeline)
-
-            score = sum(list_score) / len(list_score)
-            data_manager.add_data(score, list_model)
+            score = sum_score / 3
+            print("Score", score)
 
             return {"validation_score": score}
     except TimeoutException as e:
+        print("Timout!!!")
         raise(e)
     except MemorylimitException as e:
+        print("Memout!!!")
         raise(e)
     except Exception as e:
-        print(config)
+        print(e)
         raise (e)

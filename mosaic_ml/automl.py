@@ -84,7 +84,6 @@ class AutoML():
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
                           use_rave=self.use_rave)
-        self.searcher.print_config()
 
         self.searcher.run(nb_simulation=100000000000)
 
@@ -97,15 +96,16 @@ class AutoML():
             print("-> X_test shape: {0}".format(str(X_test.shape)))
             print("-> y_test shape: {0}".format(str(y_test.shape)))
         print("-> Categorical features: {0}".format(str(categorical_features)))
+        self.time_budget = time_budget
+        self.time_limit_for_evaluation = cpu_time_in_s
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed)
 
-        self.searcher.print_config()
         self.searcher.run_warmstrat(eval_func,
                       mem_in_mb=self.memory_limit,
                       cpu_time_in_s=cpu_time_in_s,
-                      time_budget=time_budget,
+                      time_budget=self.time_limit_for_evaluation,
                       nb_simulation = 100000000000)
 
 
@@ -115,4 +115,3 @@ class AutoML():
                                             )(test_function)
         print("Get test performance ...")
         return self.searcher.test_performance(X, y, X_test, y_test, test_func)
-
