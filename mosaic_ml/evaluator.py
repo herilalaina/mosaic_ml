@@ -208,7 +208,7 @@ def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None, ca
                 list_model.append(pipeline)
 
             score = sum(list_score) / len(list_score)
-            data_mananger.add_data(score, list_model)
+            data_manager.add_data(score, list_model)
 
             return {"validation_score": score}
     except TimeoutException as e:
