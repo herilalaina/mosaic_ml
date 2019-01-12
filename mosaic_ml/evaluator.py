@@ -42,6 +42,7 @@ def evaluation_rescaling(choice, config):
     from sklearn.preprocessing import RobustScaler
     from sklearn.preprocessing import StandardScaler
 
+
     if choice == "minmax":
         scaler = MinMaxScaler()
     elif choice == "none":
@@ -82,8 +83,13 @@ def get_sample_weight(y):
     return sample_weights
 
 
-def config_to_pipeline(config, categorical_features, is_sparse):
+def config_to_pipeline(config, type_features, is_sparse):
     from sklearn.pipeline import Pipeline
+    from sklearn.compose import ColumnTransformer
+
+    numerical_features = [i for i, x in enumerate(type_features) if x != "categorical"]
+    categorical_features = [i for i, x in enumerate(type_features) if x == "categorical"]
+
 
     list_params = config.keys()
 
@@ -105,10 +111,13 @@ def config_to_pipeline(config, categorical_features, is_sparse):
         if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
             model_pre.estimator.set_params(class_weight='balanced')
 
+    resc_name, res_method = evaluation_rescaling(rescaling__choice__, config)
+    enc_name, enc_method = evaluate_encoding(categorical_encoding__choice__, config, categorical_features, is_sparse)
+    preprocessing_pipeline = ColumnTransformer(transformers=[(resc_name, res_method, numerical_features), (enc_name, enc_method, categorical_features)])
+
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
-        evaluate_encoding(categorical_encoding__choice__, config, categorical_features, is_sparse),
-        evaluation_rescaling(rescaling__choice__, config),
+        ("cleaning", preprocessing_pipeline),
         (name_pre, model_pre),
         (name_clf, model_clf)
     ]
@@ -128,9 +137,10 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
             warnings.simplefilter("ignore")
 
             pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X))
-            #list_score = []
+            list_score_train = []
+            list_score_test = []
 
-            name_clf = pipeline.steps[4][0]
+            name_clf = pipeline.steps[3][0]
 
             skf = StratifiedKFold(n_splits=5, random_state=seed)
             true_test = []
@@ -145,7 +155,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                     fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
                 pipeline.fit(X_train, y_train, **fit_params)
-                # list_score.append(score_func(y_test, pipeline.predict(X_test)))
+                #list_score.append(score_func(y_test, pipeline.predict(X_test)))
                 true_test.extend(y_test)
                 pred_test.extend(pipeline.predict(X_test))
 
@@ -160,7 +170,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
         raise (e)
 
 
-def test_function(config, X_train, y_train, X_test, y_test, categorical_features=None):
+def test_function(config, X_train, y_train, X_test, y_test, categorical_features):
     from scipy.sparse import issparse
     from sklearn.metrics import balanced_accuracy_score
     import warnings
@@ -168,7 +178,7 @@ def test_function(config, X_train, y_train, X_test, y_test, categorical_features
     with warnings.catch_warnings():
         pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X_train))
         fit_params = {}
-        name_clf = pipeline.steps[4][0]
+        name_clf = pipeline.steps[3][0]
         if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees', 'sgd',
                                                'xgradient_boosting']:
             fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)

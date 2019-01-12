@@ -61,7 +61,7 @@ class AutoML():
         if X_test is not None:
             print("-> X_test shape: {0}".format(str(X_test.shape)))
             print("-> y_test shape: {0}".format(str(y_test.shape)))
-        print("-> Categorical features: {0}".format(str(categorical_features)))
+        print("-> Categorical features: {0}".format(str([i for i, x in enumerate(categorical_features) if x == "categorical"])))
 
         if issparse(X):
             self.config_space = pcs.read(
@@ -69,7 +69,7 @@ class AutoML():
             print("-> Data is sparse")
         else:
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0_competition.pcs", "r"))
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
             print("-> Data is dense")
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
@@ -83,7 +83,8 @@ class AutoML():
                           time_budget=self.time_budget,
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
-                          use_rave=self.use_rave)
+                          use_rave=self.use_rave,
+                          seed=self.seed)
 
         self.searcher.run(nb_simulation=100000000000)
 
@@ -108,10 +109,13 @@ class AutoML():
                       time_budget=self.time_limit_for_evaluation,
                       nb_simulation = 100000000000)
 
+    def get_history(self):
+        return self.searcher.get_history_run()
 
-    def get_test_performance(self, X, y, X_test=None, y_test=None):
+
+    def get_test_performance(self, X, y, categorical_features, X_test=None, y_test=None):
         test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,
                                             cpu_time_in_s=self.time_limit_for_evaluation * 3
                                             )(test_function)
         print("Get test performance ...")
-        return self.searcher.test_performance(X, y, X_test, y_test, test_func)
+        return self.searcher.test_performance(X, y, X_test, y_test, test_func, categorical_features)
