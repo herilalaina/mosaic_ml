@@ -73,7 +73,8 @@ class AutoML():
             print("-> Data is dense")
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed)
+                            categorical_features=categorical_features, seed=self.seed,
+                            test_data = {"X_test": X_test, "y_test": y_test})
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,
@@ -101,7 +102,8 @@ class AutoML():
         self.time_limit_for_evaluation = cpu_time_in_s
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed)
+                            categorical_features=categorical_features, seed=self.seed,
+                            test_data = {"X_data": X_test, "y_test": y_test})
 
         self.searcher.run_warmstrat(eval_func,
                       mem_in_mb=self.memory_limit,

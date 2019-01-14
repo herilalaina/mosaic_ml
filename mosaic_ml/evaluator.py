@@ -154,30 +154,13 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
             #list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
             score = score_func(y_test, pipeline.predict(X_test))
-            if "X_test" in test_data and "y_test" in test_data:
-                test_score = score_func(test_data["y_test"], pipeline.predict(test_data["X_test"]))
-            return {"validation_score": score, "test_score": test_score}
+            info = {"validation_score": score}
 
-            """skf = StratifiedKFold(n_splits=5, random_state=seed)
-            true_test = []
-            pred_test = []
-            for train_index, test_index in skf.split(X, y):
-                X_train, y_train = X[train_index], y[train_index]
-                X_test, y_test = X[test_index], y[test_index]
+            if test_data:
+                info["test_score"] = score_func(test_data["y_test"], pipeline.predict(test_data["X_test"]))
 
-                fit_params = {}
-                if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
-                                                       'sgd', 'xgradient_boosting']:
-                    fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+            return info
 
-                pipeline.fit(X_train, y_train, **fit_params)
-                #list_score.append(score_func(y_test, pipeline.predict(X_test)))
-                true_test.extend(y_test)
-                pred_test.extend(pipeline.predict(X_test))
-
-            score = score_func(true_test, pred_test)
-            return {"validation_score": score}
-            """
     except TimeoutException as e:
         raise(e)
     except MemorylimitException as e:
