@@ -126,13 +126,14 @@ def config_to_pipeline(config, type_features, is_sparse):
     return pipeline, balancing_strategy == "weighting"
 
 
-def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None):
+def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, test_data = {}):
     print("*", end="")
     try:
         from scipy.sparse import issparse
         import warnings
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         from sklearn.model_selection import StratifiedKFold
+        from sklearn.model_selection import train_test_split
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
@@ -142,7 +143,22 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
 
             name_clf = pipeline.steps[3][0]
 
-            skf = StratifiedKFold(n_splits=5, random_state=seed)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.329)
+
+            fit_params = {}
+            if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
+                                                   'sgd', 'xgradient_boosting']:
+                fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+
+            pipeline.fit(X_train, y_train, **fit_params)
+            #list_score.append(score_func(y_test, pipeline.predict(X_test)))
+
+            score = score_func(y_test, pipeline.predict(X_test))
+            if "X_test" in test_data and "y_test" in test_data:
+                test_score = score_func(test_data["y_test"], pipeline.predict(test_data["X_test"]))
+            return {"validation_score": score, "test_score": test_score}
+
+            """skf = StratifiedKFold(n_splits=5, random_state=seed)
             true_test = []
             pred_test = []
             for train_index, test_index in skf.split(X, y):
@@ -161,6 +177,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
 
             score = score_func(true_test, pred_test)
             return {"validation_score": score}
+            """
     except TimeoutException as e:
         raise(e)
     except MemorylimitException as e:

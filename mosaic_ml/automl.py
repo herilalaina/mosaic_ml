@@ -6,7 +6,7 @@ import numpy as np
 # pynisher
 import pynisher
 # Config space
-from ConfigSpace.read_and_write import pcs
+from ConfigSpace.read_and_write import pcs_new as pcs
 from mosaic.mosaic import Search
 # scipy
 from scipy.sparse import issparse
@@ -69,7 +69,7 @@ class AutoML():
             print("-> Data is sparse")
         else:
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
             print("-> Data is dense")
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
