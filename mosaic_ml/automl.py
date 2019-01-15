@@ -27,7 +27,6 @@ class AutoML():
                  memory_limit=3024,
                  multi_fidelity=False,
                  use_parameter_importance=False,
-                 use_rave=False,
                  scoring_func="balanced_accuracy",
                  seed=1,
                  data_manager=None
@@ -37,7 +36,6 @@ class AutoML():
         self.memory_limit = memory_limit
         self.multi_fidelity = multi_fidelity
         self.use_parameter_importance = use_parameter_importance
-        self.use_rave = use_rave
         self.config_space = None
 
         if scoring_func == "balanced_accuracy":
@@ -84,7 +82,6 @@ class AutoML():
                           time_budget=self.time_budget,
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
-                          use_rave=self.use_rave,
                           seed=self.seed)
 
         self.searcher.run(nb_simulation=100000000000)
