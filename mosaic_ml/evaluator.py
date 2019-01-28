@@ -112,7 +112,7 @@ def config_to_pipeline(config, type_features, is_sparse):
             model_pre.estimator.set_params(class_weight='balanced')
 
     resc_name, res_method = evaluation_rescaling(rescaling__choice__, config)
-    enc_name, enc_method = evaluate_encoding(categorical_encoding__choice__, config, categorical_features, is_sparse)
+    enc_name, enc_method = evaluate_encoding(categorical_encoding__choice__, config, "all", is_sparse)
     preprocessing_pipeline = ColumnTransformer(transformers=[(resc_name, res_method, numerical_features), (enc_name, enc_method, categorical_features)])
 
     pipeline_list = [
@@ -134,6 +134,8 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         from sklearn.model_selection import StratifiedKFold
         from sklearn.model_selection import train_test_split
+        import traceback
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
@@ -163,11 +165,10 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
 
     except TimeoutException as e:
         raise(e)
-    except MemorylimitException as e:
-        raise(e)
-    except Exception as e:
-        print(config)
-        raise (e)
+
+    print(sys.exc_info()[0])
+
+    return {"validation_score": 0, "test_score": 0}
 
 
 def test_function(config, X_train, y_train, X_test, y_test, categorical_features):
