@@ -5,9 +5,10 @@ from pynisher import TimeoutException, MemorylimitException
 
 
 def evaluate_imputation(imputation_strategy):
-    from sklearn.preprocessing import Imputer
+    #from sklearn.preprocessing import Imputer
+    from sklearn.impute import SimpleImputer
 
-    imp = Imputer(strategy=imputation_strategy)
+    imp = SimpleImputer(strategy=imputation_strategy)
     return ("Imputation", imp)
 
 
@@ -89,6 +90,8 @@ def config_to_pipeline(config, type_features, is_sparse):
 
     numerical_features = [i for i, x in enumerate(type_features) if x != "categorical"]
     categorical_features = [i for i, x in enumerate(type_features) if x == "categorical"]
+    print("numerical_features", numerical_features)
+    print("categorical_features", categorical_features)
 
 
     list_params = config.keys()
@@ -113,7 +116,9 @@ def config_to_pipeline(config, type_features, is_sparse):
 
     resc_name, res_method = evaluation_rescaling(rescaling__choice__, config)
     enc_name, enc_method = evaluate_encoding(categorical_encoding__choice__, config, "all", is_sparse)
-    preprocessing_pipeline = ColumnTransformer(transformers=[(resc_name, res_method, numerical_features), (enc_name, enc_method, categorical_features)])
+    preprocessing_pipeline = ColumnTransformer(transformers=[(enc_name, enc_method, categorical_features),
+                                                (resc_name, res_method, numerical_features)],
+                                                remainder = "drop")
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
@@ -152,6 +157,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                                                    'sgd', 'xgradient_boosting']:
                 fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
+            print(X_train)
             pipeline.fit(X_train, y_train, **fit_params)
             #list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
