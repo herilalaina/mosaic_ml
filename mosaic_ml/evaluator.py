@@ -157,7 +157,6 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
                                                    'sgd', 'xgradient_boosting']:
                 fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
-            print(X_train)
             pipeline.fit(X_train, y_train, **fit_params)
             #list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
