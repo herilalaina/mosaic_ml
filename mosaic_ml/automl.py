@@ -54,7 +54,7 @@ class AutoML():
         self.searcher = None
         self.data_manager = data_manager
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None):
+    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = []):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
         if X_test is not None:
@@ -85,7 +85,7 @@ class AutoML():
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed)
 
-        self.searcher.run(nb_simulation=100000000000)
+        self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
 
 
     def refit(self, X, y, X_test=None, y_test=None, categorical_features=None, cpu_time_in_s=360, time_budget=3600):
