@@ -9,6 +9,7 @@ import pynisher
 # Config space
 from ConfigSpace.read_and_write import pcs_new as pcs
 from mosaic.mosaic import Search
+from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
 # scipy
 from scipy.sparse import issparse
 # Metric
@@ -54,7 +55,7 @@ class AutoML():
         self.searcher = None
         self.data_manager = data_manager
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None):
+    def fit(self, X, y, id_task, X_test=None, y_test=None, categorical_features=None):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
         if X_test is not None:
@@ -70,6 +71,8 @@ class AutoML():
             self.config_space = pcs.read(
                 open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
             print("-> Data is dense")
+
+        dataset_features = get_dataset_metafeature_from_openml(id_task)
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed,
