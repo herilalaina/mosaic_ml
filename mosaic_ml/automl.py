@@ -2,6 +2,7 @@
 import os
 import json
 from functools import partial
+import simplejson as json
 
 import numpy as np
 # pynisher
@@ -20,6 +21,8 @@ try:
 except:
     pass
 
+from networkx.readwrite.gpickle import write_gpickle
+from networkx.readwrite import json_graph
 from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
 
 
@@ -31,7 +34,8 @@ class AutoML():
                  use_parameter_importance=False,
                  scoring_func="balanced_accuracy",
                  seed=1,
-                 data_manager=None
+                 data_manager=None,
+                 exec_dir=""
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
@@ -54,9 +58,15 @@ class AutoML():
 
         self.searcher = None
         self.data_manager = data_manager
+        self.exec_dir = exec_dir
+        try:
+            os.mkdir(self.exec_dir)
+        except Exception as e:
+            raise(e)
 
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = []):
+
+    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
         if X_test is not None:
@@ -66,7 +76,7 @@ class AutoML():
 
         if issparse(X):
             self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
+                open(os.path.dirname(os.path4.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
             print("-> Data is sparse")
         else:
             self.config_space = pcs.read(
@@ -89,7 +99,18 @@ class AutoML():
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed)
 
-        self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
+        try:
+            self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
+        except:
+            pass
+
+        # Save X, y, y_time performance
+        self.searcher.mcts.env.score_model.save_data(self.exec_dir)
+        # Save tree
+        write_gpickle(self.searcher.mcts.tree.tree, os.path.join(self.exec_dir, "tree.json"))
+        # Save full log
+        self.save_full_log(os.path.join(self.exec_dir, "full_log.json"))
+
 
 
     def refit(self, X, y, X_test=None, y_test=None, categorical_features=None, cpu_time_in_s=360, time_budget=3600):
