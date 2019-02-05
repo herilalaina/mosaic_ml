@@ -101,7 +101,7 @@ class AutoML():
 
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
-        except:
+        except Exception as e:
             pass
 
         # Save X, y, y_time performance
