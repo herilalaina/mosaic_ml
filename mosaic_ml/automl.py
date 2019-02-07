@@ -28,7 +28,7 @@ from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
 
 class AutoML():
     def __init__(self, time_budget=3600,
-                 time_limit_for_evaluation=360,
+                 time_limit_for_evaluation=300,
                  memory_limit=3024,
                  multi_fidelity=False,
                  use_parameter_importance=False,
@@ -102,7 +102,7 @@ class AutoML():
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
         except Exception as e:
-            pass
+            raise(e)
 
         # Save X, y, y_time performance
         self.searcher.mcts.env.score_model.save_data(self.exec_dir)
@@ -110,6 +110,16 @@ class AutoML():
         write_gpickle(self.searcher.mcts.tree.tree, os.path.join(self.exec_dir, "tree.json"))
         # Save full log
         self.save_full_log(os.path.join(self.exec_dir, "full_log.json"))
+
+        # Save score test
+        history = self.searcher.get_history_run()
+        if len(history) > 0:
+            with open(os.path.join(self.exec_dir, "score.json"), 'w') as fh:
+                fh.write("Time,Test Performance,Train Performance\n")
+                fh.write("0,0.0,0.0\n")
+                for res in history:
+                    fh.write("{0},{1},{2}\n".format(res["elapsed_time"], res["test_score"], res["validation_score"]))
+
 
 
 
