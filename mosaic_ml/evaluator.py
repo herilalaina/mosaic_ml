@@ -171,7 +171,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
     except TimeoutException as e:
         raise(e)
 
-    print(sys.exc_info()[0])
+    print(sys.exc_info())
 
     return {"validation_score": 0, "test_score": 0}
 
