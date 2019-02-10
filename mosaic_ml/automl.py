@@ -25,6 +25,8 @@ from networkx.readwrite.gpickle import write_gpickle
 from networkx.readwrite import json_graph
 from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
 
+from mosaic_ml.model_config.encoding import OneHotEncoding
+
 
 class AutoML():
     def __init__(self, time_budget=3600,
@@ -65,6 +67,29 @@ class AutoML():
             raise(e)
 
 
+    def adapt_search_space(self, X):
+        self.problem_dependant_parameter = ["preprocessor:feature_agglomeration:n_clusters",
+                                            "preprocessor:kernel_pca:n_components",
+                                            "reprocessor:kitchen_sinks:n_components",
+                                            "preprocessor:nystroem_sampler:n_components",
+                                            "preprocessor:fast_ica:n_components"]
+
+        enc = OneHotEncoding.OneHotEncoder()
+        nb_normal, nb_onehot_enc = np.shape(X)[1], np.shape(enc.fit_transform(X))[1]
+
+        self.searcher.mcts.env.problem_dependant_param = self.problem_dependant_parameter
+        self.problem_dependant_value = {
+            "max_features_normal": nb_normal,
+            "max_features_onehotenc": nb_onehot_enc
+        }
+
+        for param_problem in self.problem_dependant_parameter:
+            if self.config_space._hyperparameters[param_problem].upper > nb_onehot_enc:
+                self.config_space._hyperparameters[param_problem].upper = nb_onehot_enc
+                self.config_space._hyperparameters[param_problem].default_value = int(nb_normal / 2)
+
+
+
 
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None):
         print("-> X shape: {0}".format(str(X.shape)))
@@ -98,6 +123,8 @@ class AutoML():
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed)
+
+        self.adapt_search_space(X)
 
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)

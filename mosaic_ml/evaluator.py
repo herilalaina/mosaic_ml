@@ -169,6 +169,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
             return info
 
     except TimeoutException as e:
+        print(sys.exc_info())
         raise(e)
 
     print(sys.exc_info())
