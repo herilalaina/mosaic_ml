@@ -114,7 +114,7 @@ class AutoML():
             a = CSH.CategoricalHyperparameter("preprocessor:select_rates:score_func", choices = ["f_classif"], default_value = "f_classif")
             self.config_space._hyperparameters["preprocessor:select_rates:score_func"] = a"""
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None):
+    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None, policy_arg = {}):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
         if X_test is not None:
@@ -145,7 +145,8 @@ class AutoML():
                           time_budget=self.time_budget,
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
-                          seed=self.seed)
+                          seed=self.seed,
+                          policy_arg=policy_arg)
 
         self.adapt_search_space(X, y)
 
