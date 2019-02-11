@@ -12,7 +12,7 @@ classifier:adaboost:n_estimators integer [50, 500] [50]
 classifier:bernoulli_nb:alpha real [0.01, 100.0] [1.0]log
 classifier:bernoulli_nb:fit_prior categorical {True, False} [True]
 classifier:decision_tree:criterion categorical {gini, entropy} [gini]
-classifier:decision_tree:max_depth_factor real [0.0, 2.0] [0.5]
+classifier:decision_tree:max_depth real [0.0, 2.0] [0.5]
 classifier:decision_tree:max_features categorical {1.0} [1.0]
 classifier:decision_tree:max_leaf_nodes categorical {None} [None]
 classifier:decision_tree:min_impurity_decrease categorical {0.0} [0.0]
@@ -179,7 +179,7 @@ classifier:adaboost:n_estimators | classifier:__choice__ == adaboost
 classifier:bernoulli_nb:alpha | classifier:__choice__ == bernoulli_nb
 classifier:bernoulli_nb:fit_prior | classifier:__choice__ == bernoulli_nb
 classifier:decision_tree:criterion | classifier:__choice__ == decision_tree
-classifier:decision_tree:max_depth_factor | classifier:__choice__ == decision_tree
+classifier:decision_tree:max_depth | classifier:__choice__ == decision_tree
 classifier:decision_tree:max_features | classifier:__choice__ == decision_tree
 classifier:decision_tree:max_leaf_nodes | classifier:__choice__ == decision_tree
 classifier:decision_tree:min_impurity_decrease | classifier:__choice__ == decision_tree

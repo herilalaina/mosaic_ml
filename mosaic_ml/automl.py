@@ -67,29 +67,52 @@ class AutoML():
             raise(e)
 
 
-    def adapt_search_space(self, X):
+    def adapt_search_space(self, X, y):
+        import ConfigSpace.hyperparameters as CSH
         self.problem_dependant_parameter = ["preprocessor:feature_agglomeration:n_clusters",
                                             "preprocessor:kernel_pca:n_components",
-                                            "reprocessor:kitchen_sinks:n_components",
+                                            "preprocessor:kitchen_sinks:n_components",
                                             "preprocessor:nystroem_sampler:n_components",
-                                            "preprocessor:fast_ica:n_components"]
+                                            #"preprocessor:fast_ica:n_components"
+                                            ]
 
-        enc = OneHotEncoding.OneHotEncoder()
-        nb_normal, nb_onehot_enc = np.shape(X)[1], np.shape(enc.fit_transform(X))[1]
+        try:
+            enc = OneHotEncoding.OneHotEncoder()
+            nb_normal, nb_onehot_enc = np.shape(X)[1], np.shape(enc.fit_transform(X))[1]
+        except:
+            nb_normal, nb_onehot_enc = np.shape(X)[1], np.shape(X)[1]
 
         self.searcher.mcts.env.problem_dependant_param = self.problem_dependant_parameter
-        self.problem_dependant_value = {
-            "max_features_normal": nb_normal,
-            "max_features_onehotenc": nb_onehot_enc
-        }
 
+        try:
+            from sklearn.naive_bayes import MultinomialNB
+            MultinomialNB().fit(X, y)
+            is_positive = True
+        except:
+            is_positive = False
+
+        self.searcher.mcts.env.problem_dependant_value = {
+            "no_encoding": nb_normal,
+            "one_hot_encoding": nb_onehot_enc,
+            "is_positive": is_positive
+        }
+        print(self.searcher.mcts.env.problem_dependant_value)
+
+        """
         for param_problem in self.problem_dependant_parameter:
             if self.config_space._hyperparameters[param_problem].upper > nb_onehot_enc:
-                self.config_space._hyperparameters[param_problem].upper = nb_onehot_enc
-                self.config_space._hyperparameters[param_problem].default_value = int(nb_normal / 2)
+                #self.config_space._hyperparameters[param_problem].upper = nb_onehot_enc
+                #self.config_space._hyperparameters[param_problem].default_value = int(nb_normal / 2)
+                new_range = CSH.UniformIntegerHyperparameter(param_problem, lower = 10, upper = int(nb_onehot_enc), default_value = 25 if int(nb_onehot_enc) > 25 else 10, log = False)
+                self.config_space._hyperparameters[param_problem] = new_range
 
-
-
+        is_positive = np.all(np.nan_to_num(X) >= 0)
+        if not is_positive:
+            print("X is not positive. Remove chi2 and naive bayes")
+            a = CSH.CategoricalHyperparameter("preprocessor:select_percentile_classification:score_func", choices = ["f_classif", "mutual_info"], default_value = "f_classif")
+            self.config_space._hyperparameters["preprocessor:select_percentile_classification:score_func"] = a
+            a = CSH.CategoricalHyperparameter("preprocessor:select_rates:score_func", choices = ["f_classif"], default_value = "f_classif")
+            self.config_space._hyperparameters["preprocessor:select_rates:score_func"] = a"""
 
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None):
         print("-> X shape: {0}".format(str(X.shape)))
@@ -124,7 +147,7 @@ class AutoML():
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed)
 
-        self.adapt_search_space(X)
+        self.adapt_search_space(X, y)
 
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
@@ -146,6 +169,10 @@ class AutoML():
                 fh.write("0,0.0,0.0\n")
                 for res in history:
                     fh.write("{0},{1},{2}\n".format(res["elapsed_time"], res["test_score"], res["validation_score"]))
+
+        # Save image
+        self.searcher.mcts.tree.draw_tree(os.path.join(self.exec_dir, "image.dot"))
+
 
 
 
