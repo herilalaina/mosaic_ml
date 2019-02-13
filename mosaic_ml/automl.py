@@ -149,6 +149,7 @@ class AutoML():
                           policy_arg=policy_arg)
 
         self.adapt_search_space(X, y)
+        self.searcher.mcts.env.load_metalearning_x_y(id_task)
 
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
