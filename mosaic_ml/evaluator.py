@@ -131,7 +131,7 @@ def config_to_pipeline(config, type_features, is_sparse):
     return pipeline, balancing_strategy == "weighting"
 
 
-def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_features=None, seed=None, test_data = {}):
+def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, categorical_features=None, seed=None, test_data = {}, store_directory = ""):
     print("*", end="")
     try:
         from scipy.sparse import issparse
@@ -140,6 +140,8 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
         from sklearn.model_selection import StratifiedKFold
         from sklearn.model_selection import train_test_split
         import traceback
+        import sys, os
+        import numpy as np
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -150,7 +152,7 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
 
             name_clf = pipeline.steps[3][0]
 
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.329)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.329, seed = seed)
 
             fit_params = {}
             if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
@@ -160,11 +162,15 @@ def evaluate(config, bestconfig, X=None, y=None, score_func=None, categorical_fe
             pipeline.fit(X_train, y_train, **fit_params)
             #list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
+            pred_valid = pipeline.predict(X_test)
             score = score_func(y_test, pipeline.predict(X_test))
             info = {"validation_score": score}
 
             if test_data:
-                info["test_score"] = score_func(test_data["y_test"], pipeline.predict(test_data["X_test"]))
+                pred_test = pipeline.predict(test_data["X_test"])
+                info["test_score"] = score_func(test_data["y_test"], pred_test)
+                np.save(os.path.join(store_directory, "pred_test_{0}.npy".format(id_run)), pred_test)
+                np.save(os.path.join(store_directory, "pred_valid_{0}.npy".format(id_run)), pred_valid)
 
             return info
 
