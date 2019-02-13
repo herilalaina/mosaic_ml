@@ -114,6 +114,21 @@ class AutoML():
             a = CSH.CategoricalHyperparameter("preprocessor:select_rates:score_func", choices = ["f_classif"], default_value = "f_classif")
             self.config_space._hyperparameters["preprocessor:select_rates:score_func"] = a"""
 
+
+    def prepare_ensemble(self, X, y):
+        from sklearn.model_selection import train_test_split
+
+        self.ensemble_dir = os.path.join(self.exec_dir, "ensemble_files")
+        try:
+            os.mkdir(self.ensemble_dir)
+        except Exception as e:
+            raise (e)
+
+        _, _, y_train, y_test = train_test_split(X, y, test_size=0.329, seed=self.seed)
+        np.save(os.path.join(self.ensemble_dir, "y_valid.npy"), y_test)
+        np.save(os.path.join(self.ensemble_dir, "y_test.npy"), y)
+
+
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None):
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
@@ -132,10 +147,12 @@ class AutoML():
             print("-> Data is dense")
 
         dataset_features = get_dataset_metafeature_from_openml(id_task)
+        self.prepare_ensemble(X)
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed,
-                            test_data = {"X_test": X_test, "y_test": y_test})
+                            test_data = {"X_test": X_test, "y_test": y_test},
+                            store_directory = self.ensemble_dir)
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,
@@ -171,7 +188,7 @@ class AutoML():
                     fh.write("{0},{1},{2}\n".format(res["elapsed_time"], res["test_score"], res["validation_score"]))
 
         # Save image
-        self.searcher.mcts.tree.draw_tree(os.path.join(self.exec_dir, "image.dot"))
+        self.searcher.mcts.tree.draw_tree(os.path.join(self.exec_dir, "image"))
 
 
 
