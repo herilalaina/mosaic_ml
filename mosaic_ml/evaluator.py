@@ -152,7 +152,7 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
 
             name_clf = pipeline.steps[3][0]
 
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.329, seed = seed)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.329, random_state = seed)
 
             fit_params = {}
             if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',

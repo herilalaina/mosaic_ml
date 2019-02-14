@@ -124,7 +124,7 @@ class AutoML():
         except Exception as e:
             raise (e)
 
-        _, _, y_train, y_test = train_test_split(X, y, test_size=0.329, seed=self.seed)
+        _, _, y_train, y_test = train_test_split(X, y, test_size=0.329, random_state=self.seed)
         np.save(os.path.join(self.ensemble_dir, "y_valid.npy"), y_test)
         np.save(os.path.join(self.ensemble_dir, "y_test.npy"), y)
 
@@ -147,7 +147,7 @@ class AutoML():
             print("-> Data is dense")
 
         dataset_features = get_dataset_metafeature_from_openml(id_task)
-        self.prepare_ensemble(X)
+        self.prepare_ensemble(X, y)
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed,
