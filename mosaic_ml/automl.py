@@ -17,13 +17,13 @@ from scipy.sparse import issparse
 from sklearn.metrics import accuracy_score, roc_auc_score
 
 try:
-    from sklearn.metrics import balanced_accuracy_score
+    from autosklearn.metrics.classification_metrics import balanced_accuracy
 except:
     pass
 
 from networkx.readwrite.gpickle import write_gpickle
 from networkx.readwrite import json_graph
-from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition
+from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition, evaluate_generate_metadata
 
 from mosaic_ml.model_config.encoding import OneHotEncoding
 
@@ -47,7 +47,7 @@ class AutoML():
         self.config_space = None
 
         if scoring_func == "balanced_accuracy":
-            self.scoring_func = balanced_accuracy_score
+            self.scoring_func = balanced_accuracy
         elif scoring_func == "accuracy":
             self.scoring_func = accuracy_score
         elif scoring_func == "roc_auc":
@@ -130,6 +130,11 @@ class AutoML():
 
 
     def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None, policy_arg = {}):
+        X = np.array(X)
+        y = np.array(y)
+        if X_test is not None:
+            X_test = np.array(X_test)
+            y_test = np.array(y_test)
         print("-> X shape: {0}".format(str(X.shape)))
         print("-> y shape: {0}".format(str(y.shape)))
         if X_test is not None:
@@ -183,7 +188,74 @@ class AutoML():
         # Save score test
         history = self.searcher.get_history_run()
         if len(history) > 0:
-            with open(os.path.join(self.exec_dir, "score.json"), 'w') as fh:
+            with open(os.path.join(self.exec_dir, "score.csv"), 'w') as fh:
+                fh.write("Time,Test Performance,Train Performance\n")
+                fh.write("0,0.0,0.0\n")
+                for res in history:
+                    fh.write("{0},{1},{2}\n".format(res["elapsed_time"], res["test_score"], res["validation_score"]))
+
+        # Save image
+        self.searcher.mcts.tree.draw_tree(os.path.join(self.exec_dir, "image"))
+
+
+    def fit_generate_metadata(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations = [], id_task = None, policy_arg = {}):
+        X = np.array(X)
+        y = np.array(y)
+        if X_test is not None:
+            X_test = np.array(X_test)
+            y_test = np.array(y_test)
+        print("-> X shape: {0}".format(str(X.shape)))
+        print("-> y shape: {0}".format(str(y.shape)))
+        if X_test is not None:
+            print("-> X_test shape: {0}".format(str(X_test.shape)))
+            print("-> y_test shape: {0}".format(str(y_test.shape)))
+        print("-> Categorical features: {0}".format(str([i for i, x in enumerate(categorical_features) if x == "categorical"])))
+
+        if issparse(X):
+            self.config_space = pcs.read(
+                open(os.path.dirname(os.path4.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
+            print("-> Data is sparse")
+        else:
+            self.config_space = pcs.read(
+                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
+            print("-> Data is dense")
+
+        dataset_features = get_dataset_metafeature_from_openml(id_task)
+        self.prepare_ensemble(X, y)
+
+        eval_func = partial(evaluate_generate_metadata, X=X, y=y, score_func=self.scoring_func,
+                            categorical_features=categorical_features, seed=self.seed)
+
+        # This function may hang indefinitely
+        self.searcher = Search(eval_func=eval_func,
+                          config_space=self.config_space,
+                          mem_in_mb=self.memory_limit,
+                          cpu_time_in_s=self.time_limit_for_evaluation,
+                          time_budget=self.time_budget,
+                          multi_fidelity=self.multi_fidelity,
+                          use_parameter_importance=self.use_parameter_importance,
+                          seed=self.seed,
+                          policy_arg=policy_arg)
+
+        self.adapt_search_space(X, y)
+        self.searcher.mcts.env.load_metalearning_x_y(id_task)
+
+        try:
+            self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
+        except Exception as e:
+            raise(e)
+
+        # Save X, y, y_time performance
+        self.searcher.mcts.env.score_model.save_data(self.exec_dir)
+        # Save tree
+        write_gpickle(self.searcher.mcts.tree.tree, os.path.join(self.exec_dir, "tree.json"))
+        # Save full log
+        self.save_full_log(os.path.join(self.exec_dir, "full_log.json"))
+
+        # Save score test
+        history = self.searcher.get_history_run()
+        if len(history) > 0:
+            with open(os.path.join(self.exec_dir, "score.csv"), 'w') as fh:
                 fh.write("Time,Test Performance,Train Performance\n")
                 fh.write("0,0.0,0.0\n")
                 for res in history:

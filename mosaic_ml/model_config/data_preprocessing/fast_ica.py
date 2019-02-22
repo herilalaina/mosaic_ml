@@ -1,15 +1,11 @@
-from sklearn.decomposition import FastICA
+from autosklearn.pipeline.components.feature_preprocessing.fast_ica import FastICA
 
 
-def get_model(name, config):
-    if eval(config["preprocessor:fast_ica:whiten"]):
-        n_components = int(config["preprocessor:fast_ica:n_components"])
-    else:
-        n_components = None
-    model = FastICA(
-        algorithm=config["preprocessor:fast_ica:algorithm"],
-        fun=config["preprocessor:fast_ica:fun"],
-        whiten=eval(config["preprocessor:fast_ica:whiten"]),
-        n_components=n_components
-    )
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:fast_ica:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+    model = FastICA(**list_param)
     return (name, model)

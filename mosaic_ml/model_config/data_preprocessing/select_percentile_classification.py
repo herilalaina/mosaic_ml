@@ -1,18 +1,12 @@
-from sklearn.feature_selection import SelectPercentile
-from sklearn.feature_selection import f_classif, mutual_info_classif, chi2
+from autosklearn.pipeline.components.feature_preprocessing.select_percentile_classification import SelectPercentileClassification
 
 
-def get_model(name, config):
-    score_name = config["preprocessor:select_percentile_classification:score_func"]
-    if score_name == "chi2":
-        score = chi2
-    elif score_name == "f_classif":
-        score = f_classif
-    elif score_name == "mutual_info":
-        score = mutual_info_classif
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:select_percentile_classification:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
 
-    model = SelectPercentile(
-        percentile=float(config["preprocessor:select_percentile_classification:percentile"]),
-        score_func=score
-    )
+    model = SelectPercentileClassification(**list_param)
     return (name, model)

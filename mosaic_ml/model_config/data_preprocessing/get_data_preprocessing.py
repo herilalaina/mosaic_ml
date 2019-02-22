@@ -5,7 +5,7 @@ from mosaic_ml.model_config.data_preprocessing import extra_trees_preproc_for_cl
 from mosaic_ml.model_config.data_preprocessing.densifier import Densifier
 
 
-def evaluate(choice, config):
+def evaluate(choice, config, random_state):
     from sklearn.preprocessing import FunctionTransformer
 
     if choice == "no_preprocessing":
@@ -13,30 +13,30 @@ def evaluate(choice, config):
     elif choice == "densifier":
         return (choice, Densifier())
     elif choice == "extra_trees_preproc_for_classification":
-        return extra_trees_preproc_for_classification.get_model(choice, config)
+        return extra_trees_preproc_for_classification.get_model(choice, config, random_state)
     elif choice == "fast_ica":
-        return fast_ica.get_model(choice, config)
+        return fast_ica.get_model(choice, config, random_state)
     elif choice == "feature_agglomeration":
-        return feature_agglomeration.get_model(choice, config)
+        return feature_agglomeration.get_model(choice, config, random_state)
     elif choice == "kernel_pca":
-        return kernel_pca.get_model(choice, config)
+        return kernel_pca.get_model(choice, config, random_state)
     elif choice == "kitchen_sinks":
-        return kitchen_sinks.get_model(choice, config)
+        return kitchen_sinks.get_model(choice, config, random_state)
     elif choice == "liblinear_svc_preprocessor":
-        return liblinear_svc_preprocessor.get_model(choice, config)
+        return liblinear_svc_preprocessor.get_model(choice, config, random_state)
     elif choice == "nystroem_sampler":
-        return nystroem_sampler.get_model(choice, config)
+        return nystroem_sampler.get_model(choice, config, random_state)
     elif choice == "pca":
-        return pca.get_model(choice, config)
+        return pca.get_model(choice, config, random_state)
     elif choice == "polynomial":
-        return polynomial.get_model(choice, config)
+        return polynomial.get_model(choice, config, random_state)
     elif choice == "random_trees_embedding":
-        return random_trees_embedding.get_model(choice, config)
+        return random_trees_embedding.get_model(choice, config, random_state)
     elif choice == "select_percentile_classification":
-        return select_percentile_classification.get_model(choice, config)
+        return select_percentile_classification.get_model(choice, config, random_state)
     elif choice == "select_rates":
-        return select_rates.get_model(choice, config)
+        return select_rates.get_model(choice, config, random_state)
     elif choice == "truncatedSVD":
-        return truncatedSVD.get_model(choice, config)
+        return truncatedSVD.get_model(choice, config, random_state)
     else:
         raise Exception("Data processing {0} not implemented".format(choice))

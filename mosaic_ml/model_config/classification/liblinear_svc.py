@@ -1,15 +1,11 @@
-from sklearn.svm import LinearSVC
+from autosklearn.pipeline.components.classification.liblinear_svc import LibLinear_SVC
 
+def get_model(choice, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("classifier:liblinear_svc:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
 
-def get_model(choice, config):
-    model = LinearSVC(
-        C=float(config["classifier:liblinear_svc:C"]),
-        dual=eval(config["classifier:liblinear_svc:dual"]),
-        fit_intercept=eval(config["classifier:liblinear_svc:fit_intercept"]),
-        intercept_scaling=int(config["classifier:liblinear_svc:intercept_scaling"]),
-        loss=config["classifier:liblinear_svc:loss"],
-        multi_class=config["classifier:liblinear_svc:multi_class"],
-        penalty=config["classifier:liblinear_svc:penalty"],
-        tol=float(config["classifier:liblinear_svc:tol"])
-    )
+    model = LibLinear_SVC(**list_param)
     return (choice, model)

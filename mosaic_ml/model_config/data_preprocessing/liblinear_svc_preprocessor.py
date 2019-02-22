@@ -1,18 +1,11 @@
-from sklearn.feature_selection import SelectFromModel
-from sklearn.svm import LinearSVC
+from autosklearn.pipeline.components.feature_preprocessing.liblinear_svc_preprocessor import LibLinear_Preprocessor
 
 
-def get_model(name, config):
-    model = SelectFromModel(
-        estimator=LinearSVC(
-            C=float(config["preprocessor:liblinear_svc_preprocessor:C"]),
-            dual=eval(config["preprocessor:liblinear_svc_preprocessor:dual"]),
-            fit_intercept=eval(config["preprocessor:liblinear_svc_preprocessor:fit_intercept"]),
-            intercept_scaling=int(config["preprocessor:liblinear_svc_preprocessor:intercept_scaling"]),
-            loss=config["preprocessor:liblinear_svc_preprocessor:loss"],
-            multi_class=config["preprocessor:liblinear_svc_preprocessor:multi_class"],
-            penalty=config["preprocessor:liblinear_svc_preprocessor:penalty"],
-            tol=float(config["preprocessor:liblinear_svc_preprocessor:tol"])
-        )
-    )
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:liblinear_svc_preprocessor:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+    model = LibLinear_Preprocessor(**list_param)
     return (name, model)

@@ -1,7 +1,7 @@
 from sklearn.neighbors import KNeighborsClassifier
 
 
-def get_model(name, config):
+def get_model(name, config, random_state):
     model = KNeighborsClassifier(
         n_neighbors=int(config["classifier:k_nearest_neighbors:n_neighbors"]),
         p=int(config["classifier:k_nearest_neighbors:p"]),

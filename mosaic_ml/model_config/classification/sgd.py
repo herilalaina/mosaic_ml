@@ -1,16 +1,12 @@
-from sklearn.linear_model import SGDClassifier
+from autosklearn.pipeline.components.classification.sgd import SGD
 
 
-def get_model(name, config):
-    model = SGDClassifier(
-        alpha=float(config["classifier:sgd:alpha"]),
-        average=eval(config["classifier:sgd:average"]),
-        learning_rate=config["classifier:sgd:learning_rate"],
-        fit_intercept=eval(config["classifier:sgd:fit_intercept"]),
-        loss=config["classifier:sgd:loss"],
-        penalty=config["classifier:sgd:penalty"],
-        tol=float(config["classifier:sgd:tol"]),
-        eta0=0.1,
-        n_jobs=1
-    )
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("classifier:sgd:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+
+    model = SGD(**list_param)
     return (name, model)

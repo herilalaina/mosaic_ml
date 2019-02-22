@@ -1,7 +1,7 @@
 from xgboost import XGBClassifier
 
 
-def get_model(name, config):
+def get_model(name, config, random_state):
     model = XGBClassifier(
         base_score=float(config["classifier:xgradient_boosting:base_score"]),
         booster=config["classifier:xgradient_boosting:booster"],
@@ -17,6 +17,7 @@ def get_model(name, config):
         reg_lambda=float(config["classifier:xgradient_boosting:reg_lambda"]),
         scale_pos_weight=float(config["classifier:xgradient_boosting:scale_pos_weight"]),
         subsample=float(config["classifier:xgradient_boosting:subsample"]),
-        n_jobs=1
+        n_jobs=1,
+        random_state=random_state
     )
     return (name, model)

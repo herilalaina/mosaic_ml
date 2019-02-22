@@ -1,18 +1,13 @@
-from sklearn.cluster import FeatureAgglomeration
+from autosklearn.pipeline.components.feature_preprocessing.feature_agglomeration import FeatureAgglomeration
 import numpy as np
 
-def get_model(name, config):
-    if config["preprocessor:feature_agglomeration:pooling_func"] == "mean":
-        pooling_func_ = np.mean
-    elif config["preprocessor:feature_agglomeration:pooling_func"] == "max":
-        pooling_func_ = np.max
-    else:
-        pooling_func_ = np.median
 
-    model = FeatureAgglomeration(
-        affinity=config["preprocessor:feature_agglomeration:affinity"],
-        linkage=config["preprocessor:feature_agglomeration:linkage"],
-        n_clusters=int(config["preprocessor:feature_agglomeration:n_clusters"]),
-        pooling_func=pooling_func_
-    )
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:feature_agglomeration:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+
+    model = FeatureAgglomeration(**list_param)
     return (name, model)
