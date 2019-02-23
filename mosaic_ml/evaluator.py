@@ -210,14 +210,14 @@ def evaluate_generate_metadata(config, bestconfig, id_run, X=None, y=None, score
             fit_params = {}
             if balancing_strategy and name_clf in ['adaboost', 'gradient_boosting', 'random_forest', 'extra_trees',
                                                    'sgd', 'xgradient_boosting']:
-                fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
+                fit_params[name_clf + "__sample_weight"] = get_sample_weight(y)
 
-            pipeline.fit(np.array(X_train), np.array(y_train), **fit_params)
+            #pipeline.fit(np.array(X_train), np.array(y_train), **fit_params)
             #list_score.append(score_func(y_test, pipeline.predict(X_test)))
-            scores = cross_val_score(pipeline, X, y, cv=StratifiedKFold(10), fit_params=fit_params)
+            scores = cross_val_score(pipeline, X, y, cv=StratifiedKFold(10), fit_params=fit_params, scoring="balanced_accuracy")
             #pred_valid = pipeline.predict(np.array(X_test))
             #score = score_func(y_test, pipeline.predict(X_test))
-            info = {"validation_score": np.mean(score), "list_scores": scores}
+            info = {"validation_score": np.median(scores), "list_scores": list(scores)}
 
             return info
 

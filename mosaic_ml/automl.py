@@ -152,12 +152,10 @@ class AutoML():
             print("-> Data is dense")
 
         dataset_features = get_dataset_metafeature_from_openml(id_task)
-        self.prepare_ensemble(X, y)
+        # self.prepare_ensemble(X, y)
 
-        eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed,
-                            test_data = {"X_test": X_test, "y_test": y_test},
-                            store_directory = self.ensemble_dir)
+        eval_func = partial(evaluate_generate_metadata, X=X, y=y, score_func=self.scoring_func,
+                            categorical_features=categorical_features, seed=self.seed)
 
         # This function may hang indefinitely
         self.searcher = Search(eval_func=eval_func,
@@ -168,10 +166,11 @@ class AutoML():
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed,
-                          policy_arg=policy_arg)
+                          policy_arg=policy_arg,
+                          exec_dir = self.exec_dir)
 
         self.adapt_search_space(X, y)
-        self.searcher.mcts.env.load_metalearning_x_y(id_task)
+        #self.searcher.mcts.env.load_metalearning_x_y(id_task)
 
         try:
             self.searcher.run(nb_simulation=100000000000, intial_configuration=intial_configurations)
@@ -235,7 +234,8 @@ class AutoML():
                           multi_fidelity=self.multi_fidelity,
                           use_parameter_importance=self.use_parameter_importance,
                           seed=self.seed,
-                          policy_arg=policy_arg)
+                          policy_arg=policy_arg,
+                          exec_dir=self.exec_dir)
 
         self.adapt_search_space(X, y)
         self.searcher.mcts.env.load_metalearning_x_y(id_task)
