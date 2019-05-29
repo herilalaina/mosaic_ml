@@ -169,8 +169,8 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
             if test_data:
                 pred_test = pipeline.predict(np.array(test_data["X_test"]))
                 info["test_score"] = score_func(test_data["y_test"], pred_test)
-                np.save(os.path.join(store_directory, "pred_test_{0}.npy".format(id_run)), pred_test)
-                np.save(os.path.join(store_directory, "pred_valid_{0}.npy".format(id_run)), pred_valid)
+                #np.save(os.path.join(store_directory, "pred_test_{0}.npy".format(id_run)), pred_test)
+                #np.save(os.path.join(store_directory, "pred_valid_{0}.npy".format(id_run)), pred_valid)
 
             return info
 

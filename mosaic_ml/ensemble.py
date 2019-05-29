@@ -26,19 +26,19 @@ class Ensemble():
             if run["id"] >= id:
                 break
 
-        valids_dis = sorted(fetched_files, key= lambda i: i[1]) #[:self.nb_best]
+        valids_dis = sorted(fetched_files, key= lambda i: i[1]) #, reverse=True) #[:self.nb_best]
         id_ensemble = {}
         for id, s, model in valids_dis:
             id_ensemble[model["classifier:__choice__"]] = (id, s)
 
         final_id = []
-        for name_clf, (id_to_fetch, s) in id_ensemble.items():
+        for name, (id_to_fetch, s) in id_ensemble.items():
             val_file = np.load(os.path.join(self.ensemble_directory, "pred_valid_{0}.npy".format(id_to_fetch)))
             test_file = np.load(os.path.join(self.ensemble_directory, "pred_test_{0}.npy".format(id_to_fetch)))
             valids_files.append(val_file)
             test_files.append(test_file)
             final_id.append(id_to_fetch)
-            #self.last_validation = s
+            self.last_validation = s
 
         return final_id, valids_files, test_files
 
@@ -72,6 +72,7 @@ class Ensemble():
             model = run["model"]
             print(".", end=".")
             if run["validation_score"] > 0 and (model["classifier:__choice__"] not in best_score or run["validation_score"] > best_score[model["classifier:__choice__"]]): #self.last_validation:
+            #if run["validation_score"] > 0 and  run["validation_score"] > self.last_validation:
                 valids_dis, valids_files, test_files = self._get_data(run["id"])
                 ens_set = self._build_ensemble(valids_dis, valids_files)
                 score_valid = self.predict_ensemble(ens_set, valids_files, self.y_valid)
