@@ -5,14 +5,11 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter, \
     UniformIntegerHyperparameter, CategoricalHyperparameter, \
     UnParametrizedHyperparameter, Constant
 
-from autosklearn.pipeline.components.base import \
-    AutoSklearnClassificationAlgorithm
-from autosklearn.pipeline.constants import *
-from autosklearn.pipeline.implementations.util import convert_multioutput_multiclass_to_multilabel
-from autosklearn.util.common import check_none
+from mosaic_ml.model_config.util import convert_multioutput_multiclass_to_multilabel
+from mosaic_ml.model_config.util import check_none
 
 
-class DecisionTree(AutoSklearnClassificationAlgorithm):
+class DecisionTree():
     def __init__(self, criterion, max_features, max_depth,
                  min_samples_split, min_samples_leaf, min_weight_fraction_leaf,
                  max_leaf_nodes, min_impurity_decrease, class_weight=None,
@@ -73,45 +70,7 @@ class DecisionTree(AutoSklearnClassificationAlgorithm):
         if self.estimator is None:
             raise NotImplementedError()
         probas = self.estimator.predict_proba(X)
-        probas = convert_multioutput_multiclass_to_multilabel(probas)
         return probas
-
-    @staticmethod
-    def get_properties(dataset_properties=None):
-        return {'shortname': 'DT',
-                'name': 'Decision Tree Classifier',
-                'handles_regression': False,
-                'handles_classification': True,
-                'handles_multiclass': True,
-                'handles_multilabel': True,
-                'is_deterministic': True,
-                'input': (DENSE, SPARSE, UNSIGNED_DATA),
-                'output': (PREDICTIONS,)}
-
-    @staticmethod
-    def get_hyperparameter_search_space(dataset_properties=None):
-        cs = ConfigurationSpace()
-
-        criterion = CategoricalHyperparameter(
-            "criterion", ["gini", "entropy"], default_value="gini")
-        max_depth_factor = UniformFloatHyperparameter(
-            'max_depth_factor', 0., 2., default_value=0.5)
-        min_samples_split = UniformIntegerHyperparameter(
-            "min_samples_split", 2, 20, default_value=2)
-        min_samples_leaf = UniformIntegerHyperparameter(
-            "min_samples_leaf", 1, 20, default_value=1)
-        min_weight_fraction_leaf = Constant("min_weight_fraction_leaf", 0.0)
-        max_features = UnParametrizedHyperparameter('max_features', 1.0)
-        max_leaf_nodes = UnParametrizedHyperparameter("max_leaf_nodes", "None")
-        min_impurity_decrease = UnParametrizedHyperparameter('min_impurity_decrease', 0.0)
-
-        cs.add_hyperparameters([criterion, max_features, max_depth_factor,
-                                min_samples_split, min_samples_leaf,
-                                min_weight_fraction_leaf, max_leaf_nodes,
-                                min_impurity_decrease])
-
-        return cs
-
 
 def get_model(name, config, random_state):
     list_param = {"random_state": random_state}

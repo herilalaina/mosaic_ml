@@ -1,14 +1,7 @@
-#from autosklearn.pipeline.components.feature_preprocessing.random_trees_embedding import RandomTreesEmbedding
 
-from ConfigSpace.configuration_space import ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformIntegerHyperparameter, \
-    UnParametrizedHyperparameter, Constant, CategoricalHyperparameter
+from mosaic_ml.model_config.util import check_none, check_for_bool
 
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import *
-from autosklearn.util.common import check_none, check_for_bool
-
-class RandomTreesEmbedding(AutoSklearnPreprocessingAlgorithm):
+class RandomTreesEmbedding:
 
     def __init__(self, n_estimators, max_depth, min_samples_split,
                  min_samples_leaf, min_weight_fraction_leaf, max_leaf_nodes,
@@ -66,42 +59,6 @@ class RandomTreesEmbedding(AutoSklearnPreprocessingAlgorithm):
         if self.preprocessor is None:
             raise NotImplementedError()
         return self.preprocessor.transform(X)
-
-    @staticmethod
-    def get_properties(dataset_properties=None):
-        return {'shortname': 'RandomTreesEmbedding',
-                'name': 'Random Trees Embedding',
-                'handles_regression': True,
-                'handles_classification': True,
-                'handles_multiclass': True,
-                'handles_multilabel': True,
-                'is_deterministic': True,
-                'input': (DENSE, SPARSE, UNSIGNED_DATA),
-                'output': (SPARSE, SIGNED_DATA)}
-
-    @staticmethod
-    def get_hyperparameter_search_space(dataset_properties=None):
-        n_estimators = UniformIntegerHyperparameter(name="n_estimators",
-                                                    lower=10, upper=100,
-                                                    default_value=10)
-        max_depth = UniformIntegerHyperparameter(name="max_depth",
-                                                 lower=2, upper=10,
-                                                 default_value=5)
-        min_samples_split = UniformIntegerHyperparameter(name="min_samples_split",
-                                                         lower=2, upper=20,
-                                                         default_value=2)
-        min_samples_leaf = UniformIntegerHyperparameter(name="min_samples_leaf",
-                                                        lower=1, upper=20,
-                                                        default_value=1)
-        min_weight_fraction_leaf = Constant('min_weight_fraction_leaf', 1.0)
-        max_leaf_nodes = UnParametrizedHyperparameter(name="max_leaf_nodes",
-                                                      value="None")
-        bootstrap = CategoricalHyperparameter('bootstrap', ['True', 'False'])
-        cs = ConfigurationSpace()
-        cs.add_hyperparameters([n_estimators, max_depth, min_samples_split,
-                                min_samples_leaf, min_weight_fraction_leaf,
-                                max_leaf_nodes, bootstrap])
-        return cs
 
 
 def get_model(name, config, random_state):

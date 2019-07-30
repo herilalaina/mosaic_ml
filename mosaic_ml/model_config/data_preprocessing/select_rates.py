@@ -1,24 +1,5 @@
-from ConfigSpace.configuration_space import ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, \
-    CategoricalHyperparameter, Constant
 
-from autosklearn.pipeline.components.base import \
-    AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import *
-
-def get_model(name, config, random_state):
-    list_param = {"random_state": random_state}
-    for k in config:
-        if k.startswith("preprocessor:select_rates:"):
-            param_name = k.split(":")[2]
-            list_param[param_name] = config[k]
-
-    model = SelectRates(**list_param)
-
-    return (name, model)
-
-
-class SelectRates(AutoSklearnPreprocessingAlgorithm):
+class SelectRates:
     def __init__(self, alpha, mode='fpr',
                  score_func="chi2", random_state=None):
         import sklearn.feature_selection
@@ -86,3 +67,15 @@ class SelectRates(AutoSklearnPreprocessingAlgorithm):
             raise ValueError(
                 "%s removed all features." % self.__class__.__name__)
         return Xt
+
+
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:select_rates:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+
+    model = SelectRates(**list_param)
+
+    return (name, model)

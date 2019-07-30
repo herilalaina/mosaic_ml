@@ -1,24 +1,25 @@
-from ConfigSpace.configuration_space import ConfigurationSpace
-from ConfigSpace.hyperparameters import UniformFloatHyperparameter, CategoricalHyperparameter, Constant
 
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.components.feature_preprocessing.select_percentile import SelectPercentileBase
-from autosklearn.pipeline.constants import *
+class SelectPercentileBase(object):
 
+    def fit(self, X, y):
+        import sklearn.feature_selection
 
-def get_model(name, config, random_state):
-    list_param = {"random_state": random_state}
-    for k in config:
-        if k.startswith("preprocessor:select_percentile_classification:"):
-            param_name = k.split(":")[2]
-            list_param[param_name] = config[k]
+        self.preprocessor = sklearn.feature_selection.SelectPercentile(
+            score_func=self.score_func,
+            percentile=self.percentile)
 
-    model = SelectPercentileClassification(**list_param)
-    return (name, model)
+        self.preprocessor.fit(X, y)
+        return self
 
+    def transform(self, X):
+        if self.preprocessor is None:
+            raise NotImplementedError()
+        Xt = self.preprocessor.transform(X)
+        if Xt.shape[1] == 0:
+            raise ValueError("%s removed all features." % self.__class__.__name__)
+        return Xt
 
-class SelectPercentileClassification(SelectPercentileBase,
-                                     AutoSklearnPreprocessingAlgorithm):
+class SelectPercentileClassification:
 
     def __init__(self, percentile, score_func="chi2", random_state=None):
         """ Parameters:
@@ -81,3 +82,14 @@ class SelectPercentileClassification(SelectPercentileBase,
             raise ValueError(
                 "%s removed all features." % self.__class__.__name__)
         return Xt
+
+
+def get_model(name, config, random_state):
+    list_param = {"random_state": random_state}
+    for k in config:
+        if k.startswith("preprocessor:select_percentile_classification:"):
+            param_name = k.split(":")[2]
+            list_param[param_name] = config[k]
+
+    model = SelectPercentileClassification(**list_param)
+    return (name, model)
