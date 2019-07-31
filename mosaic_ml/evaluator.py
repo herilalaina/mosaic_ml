@@ -116,9 +116,14 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
 
     resc_name, res_method = evaluation_rescaling(rescaling__choice__, config)
     enc_name, enc_method = evaluate_encoding(categorical_encoding__choice__, config, "all", is_sparse)
-    preprocessing_pipeline = ColumnTransformer(transformers=[(enc_name, enc_method, categorical_features),
-                                                (resc_name, res_method, numerical_features)],
-                                                remainder = "drop")
+
+    list_preprocessing = []
+    if len(categorical_features) > 0:
+        list_preprocessing.append((enc_name, enc_method, categorical_features))
+    if len(numerical_features) > 0:
+        list_preprocessing.append((resc_name, res_method, numerical_features))
+
+    preprocessing_pipeline = ColumnTransformer(transformers=list_preprocessing, remainder = "drop")
 
     pipeline_list = [
         evaluate_imputation(imputation_strategy),
@@ -160,7 +165,6 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
                 fit_params[name_clf + "__sample_weight"] = get_sample_weight(y_train)
 
             pipeline.fit(np.array(X_train), np.array(y_train), **fit_params)
-            #list_score.append(score_func(y_test, pipeline.predict(X_test)))
 
             pred_valid = pipeline.predict(np.array(X_test))
             score = score_func(y_test, pipeline.predict(X_test))
