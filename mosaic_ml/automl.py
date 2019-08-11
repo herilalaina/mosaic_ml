@@ -159,7 +159,20 @@ class AutoML():
         return self.searcher.get_history_run()
 
     def save_full_log(self, file):
+        def get_history(self):
+        return self.searcher.get_history_run()
+
+    def save_full_log(self, file):
         with open(file, 'w') as outfile:
+            json.dump(self.searcher.mcts.env.history_score, outfile)
+
+    def get_test_performance(self, X, y, categorical_features, X_test=None, y_test=None):
+        test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,
+                                            cpu_time_in_s=self.time_limit_for_evaluation * 3
+                                            )(test_function)
+        print("Get test performance ...")
+        return self.searcher.test_performance(X, y, X_test, y_test, test_func, categorical_features)
+    with open(file, 'w') as outfile:
             json.dump(self.searcher.mcts.env.history_score, outfile)
 
     def get_test_performance(self, X, y, categorical_features, X_test=None, y_test=None):

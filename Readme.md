@@ -6,6 +6,11 @@ using Monte Carlo Tree Search.
 A simple example of using `mosaic` to configure machine 
 learning pipeline.
 
+```bash
+cd examples
+python simple_example.py
+```
+
 ```python
 from mosaic_ml.automl import AutoML
 
