@@ -1,9 +1,16 @@
 # Automated machine learning with MCTS
-Mosaic ML is a Python library for machine learning pipeline configuration 
+Mosaic ML is a Python library for machine learning pipeline configuration
 using Monte Carlo Tree Search.
 
+
+### Installation
+```bash
+pip install git+https://github.com/herilalaina/mosaic
+pip install git+https://github.com/herilalaina/mosaic_ml
+```
+
 ### Example of usage: machine learning
-A simple example of using `mosaic` to configure machine 
+A simple example of using `mosaic` to configure machine
 learning pipeline.
 
 ```bash
