@@ -159,10 +159,6 @@ class AutoML():
         return self.searcher.get_history_run()
 
     def save_full_log(self, file):
-        def get_history(self):
-        return self.searcher.get_history_run()
-
-    def save_full_log(self, file):
         with open(file, 'w') as outfile:
             json.dump(self.searcher.mcts.env.history_score, outfile)
 
