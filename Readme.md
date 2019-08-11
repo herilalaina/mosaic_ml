@@ -18,6 +18,8 @@ cd examples
 python simple_example.py
 ```
 
+If you want to use mosaic_ml inside your code:
+
 ```python
 from mosaic_ml.automl import AutoML
 
