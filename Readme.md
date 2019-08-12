@@ -2,9 +2,8 @@
 Mosaic ML is a Python library for machine learning pipeline configuration
 using Monte Carlo Tree Search.
 
-<div class="warning">       
-    This repository is still under development.
-</div>
+
+> **WARNING**: This repository is still under development.
 
 
 
