@@ -28,7 +28,11 @@ class SklearnEnv(AbstractEnvironment):
                  use_parameter_importance=True,
                  seed = 1):
         """Constructor."""
-        super().__init__(eval_func, config_space, mem_in_mb, cpu_time_in_s, seed)
+        super().__init__(seed)
+        self.eval_func = eval_func
+        self.config_space = config_space
+        self.mem_in_mb = mem_in_mb
+        self.cpu_time_in_s = cpu_time_in_s
 
         self.bestconfig = {
             "validation_score": 0,
@@ -119,7 +123,7 @@ class SklearnEnv(AbstractEnvironment):
             for p, p_problem in zip([117, 120, 122, 132], self.problem_dependant_param):
                 if p_problem in config:
                     arr[p_problem] = min([config[p_problem], 10])
-                    
+
 
             if not self.problem_dependant_value["is_positive"]:
                 for p in ["preprocessor:select_percentile_classification:score_func", "preprocessor:select_rates:score_func"]:
