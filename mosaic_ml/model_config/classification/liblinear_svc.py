@@ -69,7 +69,8 @@ class LibLinear_SVC:
 
 
 def get_model(choice, config, random_state):
-    list_param = {"random_state": random_state}
+    list_param = {"random_state": random_state,
+                  "class_weight": "weighting" if config["class_weight"] == "weighting" else None}
     for k in config:
         if k.startswith("classifier:liblinear_svc:"):
             param_name = k.split(":")[2]

@@ -1,10 +1,9 @@
-
-import os
 import logging
-from mosaic_ml.mosaic_wrapper.mcts import MCTS
+from mosaic_ml.mosaic_wrapper.mcts import MctsML
+from mosaic.mosaic import Search
 
 
-class Search:
+class SearchML(Search):
     """Main class to tune algorithm using Monte-Carlo Tree Search."""
 
     def __init__(self,
@@ -21,50 +20,17 @@ class Search:
         :param policy_arg: specific option for MCTS policy
         :param exec_dir: directory to store tmp files
         """
-        env = environment
-        # env.score_model.dataset_features = problem_features
-        self.mcts = MCTS(env=env,
-                         time_budget=time_budget,
-                         policy_arg=policy_arg,
-                         exec_dir=exec_dir)
+        super().__init__(environment, time_budget, seed, policy_arg, exec_dir)
 
-        # config logger
-        self.logger = logging.getLogger('mcts')
-        hdlr = logging.FileHandler("mcts.log", mode='w')
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        hdlr.setFormatter(formatter)
-        self.logger.addHandler(hdlr)
-        # self.problem_features = problem_features
+        self.mcts = MctsML(env=environment,
+                           time_budget=time_budget,
+                           policy_arg=policy_arg,
+                           exec_dir=exec_dir)
 
-        # execution directory
-        os.makedirs(exec_dir)
-
-    def print_config(self):
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print("logfile = {0}".format(self.logger))
-        print("Memory limit = {0} MB".format(self.mcts.env.mem_in_mb))
-        print("Overall Time Budget = {0}".format(self.mcts.time_budget))
-        print("Evaluation Time Limit = {0}".format(
-            self.mcts.env.cpu_time_in_s))
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    def run(self, nb_simulation=1, generate_image_path="", intial_configuration=[]):
-        """Run MCTS algortihm
-
-        :param nb_simulation: number of MCTS simulation to run
-        :param generate_image_path: path for generated image , optional
-        :param intial_configuration: set of initial configuration, optional
-        :return:
-        """
-        self.print_config()
-        self.mcts.run(nb_simulation, intial_configuration, generate_image_path)
-        return self.mcts.bestconfig, self.mcts.bestscore
+        # config logger for automl
+        self.logger_automl = logging.getLogger('automl')
 
     def get_history_run(self):
-        return self.mcts.env.final_model
-
-    def get_full_history(self):
         return self.mcts.env.final_model
 
     def test_performance(self, X_train, y_train, X_test, y_test, func_test, categorical_features):

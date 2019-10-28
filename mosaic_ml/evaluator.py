@@ -108,9 +108,6 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
     name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config, random_state)
 
     if balancing_strategy == "weighting":
-        if name_clf in ['decision_tree', 'extra_trees', 'liblinear_svc',
-                        'libsvm_svc', "random_forest"]:
-            model_clf.set_params(class_weight='balanced')
         if name_pre in ['liblinear_svc_preprocessor', 'extra_trees_preproc_for_classification']:
             model_pre.set_params(class_weight='balanced')
 

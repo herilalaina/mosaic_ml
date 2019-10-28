@@ -2,6 +2,8 @@
 import os
 import json
 import pynisher
+import tempfile
+import logging
 from functools import partial
 import simplejson as json
 
@@ -9,7 +11,7 @@ import numpy as np
 # pynisher
 # Config space
 from mosaic.external.ConfigSpace import pcs_new as pcs
-from mosaic_ml.mosaic_wrapper.mosaic import Search
+from mosaic_ml.mosaic_wrapper.mosaic import SearchML
 from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
 # scipy
 from scipy.sparse import issparse
@@ -31,13 +33,35 @@ class AutoML():
                  scoring_func="roc_auc",
                  seed=1,
                  data_manager=None,
-                 exec_dir=""
+                 exec_dir=None
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
         self.memory_limit = memory_limit
-        self.config_space = None
+        self.policy_arg = {}
+        self.searcher = None
+        self.data_manager = data_manager
+        self.seed = seed
+        np.random.seed(seed)
+        self.logger_automl = logging.getLogger('automl')
 
+        # Create folder dir if exec_dir is None
+        if exec_dir is None:
+            self.exec_dir = tempfile.mkdtemp()
+        else:
+            self.exec_dir = exec_dir
+            os.makedirs(self.exec_dir)
+
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
+        hdlr_automl = logging.FileHandler(os.path.join(self.exec_dir, "automl.log"), mode='w')
+        hdlr_automl.setFormatter(formatter)
+        self.logger_automl.addHandler(hdlr_automl)
+
+        self.mosaic_dir = os.path.join(self.exec_dir, "mosaic")
+        self._set_scoring_func(scoring_func=scoring_func)
+
+    def _set_scoring_func(self, scoring_func):
         if scoring_func == "balanced_accuracy":
             self.scoring_func = balanced_accuracy_score
         elif scoring_func == "accuracy":
@@ -46,13 +70,6 @@ class AutoML():
             self.scoring_func = roc_auc_score
         else:
             raise Exception("Score func {0} unknown".format(scoring_func))
-
-        self.seed = seed
-        np.random.seed(seed)
-
-        self.searcher = None
-        self.data_manager = data_manager
-        self.exec_dir = exec_dir
 
     def adapt_search_space(self, X, y):
         import ConfigSpace.hyperparameters as CSH
@@ -100,58 +117,60 @@ class AutoML():
         np.save(os.path.join(self.ensemble_dir, "y_valid.npy"), y_test)
         np.save(os.path.join(self.ensemble_dir, "y_test.npy"), y)
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, intial_configurations=[], id_task=None, policy_arg={}):
+    def get_config_space(self, X):
+        if issparse(X):
+            self.logger_automl.info("Data is sparse")
+            return pcs.read(open(os.path.dirname(os.path4.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
+        else:
+            self.logger_automl.info("Data is dense")
+            return pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
+
+    def fit(self, X, y, categorical_features=None, initial_configurations=[], id_task=None):
+        return self.fit(X, y, None, None, categorical_features, initial_configurations)
+
+    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, initial_configurations=[], id_task=None,
+            policy_arg={}):
         X = np.array(X)
         y = np.array(y)
+
+        self.logger_automl.info("-> X shape: {0}; y shape: {1}".format(str(X.shape), str(y.shape)))
         if X_test is not None:
             X_test = np.array(X_test)
             y_test = np.array(y_test)
-        print("-> X shape: {0}".format(str(X.shape)))
-        print("-> y shape: {0}".format(str(y.shape)))
-        if X_test is not None:
-            print("-> X_test shape: {0}".format(str(X_test.shape)))
-            print("-> y_test shape: {0}".format(str(y_test.shape)))
-        print("-> Categorical features: {0}".format(
+            self.logger_automl.info("-> X shape: {0}; y shape: {1}".format(str(X_test.shape), str(y_test.shape)))
+
+        self.logger_automl.info("-> Categorical features: {0}".format(
             str([i for i, x in enumerate(categorical_features) if x == "categorical"])))
 
-        if issparse(X):
-            self.config_space = pcs.read(
-                open(os.path.dirname(os.path4.abspath(__file__)) + "/model_config/1_1.pcs", "r"))
-            print("-> Data is sparse")
-        else:
-            self.config_space = pcs.read(
-                open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
-            print("-> Data is dense")
+        config_space = self.get_config_space(X)
 
-        #dataset_features = get_dataset_metafeature_from_openml(id_task)
-        #self.prepare_ensemble(X, y)
+        # dataset_features = get_dataset_metafeature_from_openml(id_task)
+        # self.prepare_ensemble(X, y)
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed,
-                            test_data={"X_test": X_test, "y_test": y_test},)
+                            test_data={"X_test": X_test, "y_test": y_test} if X_test is not None else {})
         # store_directory=self.ensemble_dir)
 
-        # Create environment
         environment = SklearnEnv(eval_func=eval_func,
-                                 config_space=self.config_space,
+                                 config_space=config_space,
                                  mem_in_mb=self.memory_limit,
                                  cpu_time_in_s=self.time_limit_for_evaluation,
                                  seed=self.seed)
 
-        # This function may hang indefinitely
-        self.searcher = Search(environment=environment,
-                               time_budget=self.time_budget,
-                               seed=self.seed,
-                               policy_arg=policy_arg,
-                               exec_dir=self.exec_dir)
+        self.searcher = SearchML(environment=environment,
+                                 time_budget=self.time_budget,
+                                 seed=self.seed,
+                                 policy_arg=self.policy_arg,
+                                 exec_dir=self.mosaic_dir)
 
         self.adapt_search_space(X, y)
 
         try:
             res = self.searcher.run(
-                nb_simulation=100000000000, intial_configuration=intial_configurations)
+                nb_simulation=100000000000, initial_configurations=initial_configurations)
         except Exception as e:
-            raise(e)
+            raise (e)
 
         return res
 
@@ -168,7 +187,6 @@ class AutoML():
                                             )(test_function)
         print("Get test performance ...")
         return self.searcher.test_performance(X, y, X_test, y_test, test_func, categorical_features)
-        
 
     def get_test_performance(self, X, y, categorical_features, X_test=None, y_test=None):
         test_func = pynisher.enforce_limits(mem_in_mb=self.memory_limit,

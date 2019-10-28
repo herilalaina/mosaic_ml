@@ -9,7 +9,7 @@ using Monte Carlo Tree Search.
 
 ### Installation
 ```bash
-pip install git+https://github.com/herilalaina/mosaic
+pip install git+https://github.com/herilalaina/mosaic@v0-alpha
 pip install git+https://github.com/herilalaina/mosaic_ml
 ```
 

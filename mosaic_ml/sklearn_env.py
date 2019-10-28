@@ -91,6 +91,14 @@ class SklearnEnv(AbstractEnvironment):
         self.problem_dependant_param = []
         self.problem_dependant_value = {}
 
+    def print_config(self):
+        self.logger_automl.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        self.logger_automl.info("Memory limit = {0} MB".format(self.mcts.env.mem_in_mb))
+        self.logger_automl.info("Overall Time Budget = {0}".format(self.mcts.time_budget))
+        self.logger_automl.info("Evaluation Time Limit = {0}".format(
+            self.mcts.env.cpu_time_in_s))
+        self.logger_automl.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
     def reset(self, eval_func,
               mem_in_mb=3024,
               cpu_time_in_s=30):
@@ -199,11 +207,9 @@ class SklearnEnv(AbstractEnvironment):
         list_configuration_to_choose = []
         list_rollout = []
         st_time=time.time()
-        #for _ in range(1000):
         try:
             configs = self.config_space.sample_partial_configuration(history, 500)
             list_configuration_to_choose = [np.nan_to_num(c.get_array()) for c in configs]
-            #list_rollout.append(config)
         except Exception as e:
             pass
         mu, sigma = self.score_model.get_mu_sigma_from_rf(np.array(list_configuration_to_choose), self.score_model.model)
@@ -270,14 +276,14 @@ class SklearnEnv(AbstractEnvironment):
 
 
 
-    def next_moves(self, history=[], info_childs=[]):
+    def next_move(self, history=[], info_children=[]):
         st_time = time.time()
         try:
             #config = self.config_space.sample_partial_configuration(history)
 
             possible_params_ = list(self.config_space.get_possible_next_params(history))
             possible_params_ = list(set(possible_params_).intersection(set(self.main_hyperparameter)))
-            possible_params = self.can_be_selectioned(possible_params_, [v[0] for v in info_childs], history)
+            possible_params = self.can_be_selectioned(possible_params_, [v[0] for v in info_children], history)
             #print("Clean possible parameter ", time.time() - st_time)
 
             if set(self.main_hyperparameter).intersection(set(possible_params)):
@@ -304,7 +310,7 @@ class SklearnEnv(AbstractEnvironment):
 
             for next_param_v in list_choice:
                 stt_time = time.time()
-                if next_param_v not in value_to_choose and next_param_v not in [v[1] for v in info_childs if v[0] == next_param]:
+                if next_param_v not in value_to_choose and next_param_v not in [v[1] for v in info_children if v[0] == next_param]:
                     tmp_config = []
                     try:
                         ex_config = self.config_space.sample_partial_configuration(history + [(next_param, next_param_v)], 500)
@@ -331,7 +337,7 @@ class SklearnEnv(AbstractEnvironment):
             history.append((next_param, value_param))
         except Exception as e:
             print("Exception for {0}".format(history))
-            print("Child info", info_childs)
+            print("Child info", info_children)
             print("Possible params", possible_params)
             print("Next params", next_param)
             print("Value to choose", value_to_choose)
@@ -500,7 +506,7 @@ class SklearnEnv(AbstractEnvironment):
                 count_dict[hyp] = 100
         return count_dict
 
-    def get_nb_childs(self, parameter, value, current_pipeline):
+    def get_nb_children(self, parameter, value, current_pipeline):
         """Get the number of
 
         :param parameter:
