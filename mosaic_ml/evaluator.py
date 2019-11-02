@@ -149,8 +149,6 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
             warnings.simplefilter("ignore")
 
             pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X), seed)
-            list_score_train = []
-            list_score_test = []
 
             name_clf = pipeline.steps[3][0]
 

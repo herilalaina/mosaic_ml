@@ -22,11 +22,13 @@ class MctsML(MCTS):
         super().__init__(env, "puct", time_budget, policy_arg, exec_dir)
 
     def MCT_SEARCH(self):
-        super().MCT_SEARCH()
+        reward, config = super().MCT_SEARCH()
 
         write_gpickle(self.tree, os.path.join(self.exec_dir, "tree.json"))
         with open(os.path.join(self.exec_dir, "full_log.json"), 'w') as outfile:
             json.dump(self.env.history_score, outfile)
+
+        return reward, config
 
     def create_node_for_algorithm(self):
         id_class = {}
@@ -44,7 +46,7 @@ class MctsML(MCTS):
         with Timeout(int(self.time_budget - (start_run - time.time()))):
             try:
                 self.logger.info("Run default configuration")
-                self.env.run_default_configuration()
+                self.bestconfig, self.bestscore = self.env.run_default_configuration()
                 self.env.check_time()
 
                 if len(initial_configurations) > 0:

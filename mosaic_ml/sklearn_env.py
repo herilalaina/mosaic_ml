@@ -11,14 +11,14 @@ from mosaic.external.ConfigSpace.util import get_one_exchange_neighbourhood_with
 from mosaic.external.ConfigSpace.configuration_space import Configuration
 from mosaic.utils import Timeout, get_index_percentile
 
-from mosaic.env import AbstractEnvironment
+from mosaic.env import MosaicEnvironment
 from sklearn.metrics.pairwise import cosine_similarity
 
-from mosaic.utils import expected_improvement, probability_improvement
+from mosaic.utils import expected_improvement
 from mosaic_ml.model_score import ScoreModel
 
 
-class SklearnEnv(AbstractEnvironment):
+class SklearnEnv(MosaicEnvironment):
     """Base class for environement."""
 
     def __init__(self, eval_func,
@@ -381,6 +381,9 @@ class SklearnEnv(AbstractEnvironment):
             preprocessed_moves.append((model, params))
         return preprocessed_moves
 
+    def evaluate(self, config):
+        return self._evaluate(config)
+
     def _evaluate(self, config, type="normal"):
         self.check_time()
         self.id += 1
@@ -422,7 +425,8 @@ class SklearnEnv(AbstractEnvironment):
     def run_default_configuration(self):
         print("Run default configuration")
         try:
-            self._evaluate(self.config_space.get_default_configuration(), type="default")
+            config = self.config_space.get_default_configuration()
+            return config, self._evaluate(config, type="default")
         except Exception as e:
             raise(e)
 
@@ -453,18 +457,21 @@ class SklearnEnv(AbstractEnvironment):
             id_score[cl] = []
 
         for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
-            config = self.config_space.sample_partial_configuration_with_default([("classifier:__choice__", cl)])
-            st_time = time.time()
-            score = self._evaluate(config)
-            id_score[config["classifier:__choice__"]].append(score)
-            if time.time() - st_time > 50:
-                continue
+            yield self.config_space.sample_partial_configuration_with_default([("classifier:__choice__", cl)])
+            # st_time = time.time()
+            # score = self._evaluate(config)
+            # id_score[config["classifier:__choice__"]].append(score)
+            """if time.time() - st_time > 50:
+                continue"""
             for _ in range(1):
-                self.check_time()
-                config = self.config_space.sample_partial_configuration([("classifier:__choice__", cl)])
-                score = self._evaluate(config)
-                id_score[config["classifier:__choice__"]].append(score)
-        return id_score
+                # self.check_time()
+                yield self.config_space.sample_partial_configuration([("classifier:__choice__", cl)])
+                # yield config
+
+        #score = self._evaluate(config)
+
+        #id_score[config["classifier:__choice__"]].append(score)
+        #return id_score
 
     def run_random_configuration(self):
         print("Run random configuration")
@@ -482,13 +489,6 @@ class SklearnEnv(AbstractEnvironment):
                 id_score[c["classifier:__choice__"]].append(score)
 
         return id_score
-
-        """for c in intial_configuration:
-            for i in get_one_exchange_neighbourhood(c, self.seed):
-                self.check_time()
-                score = self._evaluate(i)
-                if score > 0:
-                    break"""
 
 
     def _get_nb_choice_for_each_parameter(self):

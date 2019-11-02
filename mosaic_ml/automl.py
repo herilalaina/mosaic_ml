@@ -2,6 +2,7 @@
 import os
 import json
 import pynisher
+import sys
 import tempfile
 import logging
 from functools import partial
@@ -33,7 +34,8 @@ class AutoML():
                  scoring_func="roc_auc",
                  seed=1,
                  data_manager=None,
-                 exec_dir=None
+                 exec_dir=None,
+                 verbose=0,
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
@@ -42,6 +44,7 @@ class AutoML():
         self.searcher = None
         self.data_manager = data_manager
         self.seed = seed
+        self.verbose = verbose
         np.random.seed(seed)
         self.logger_automl = logging.getLogger('automl')
 
@@ -57,6 +60,11 @@ class AutoML():
         hdlr_automl = logging.FileHandler(os.path.join(self.exec_dir, "automl.log"), mode='w')
         hdlr_automl.setFormatter(formatter)
         self.logger_automl.addHandler(hdlr_automl)
+        if verbose:
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setLevel(logging.DEBUG)
+            handler.setFormatter(formatter)
+            self.logger_automl.addHandler(handler)
 
         self.mosaic_dir = os.path.join(self.exec_dir, "mosaic")
         self._set_scoring_func(scoring_func=scoring_func)
@@ -174,7 +182,7 @@ class AutoML():
 
         return res
 
-    def get_history(self):
+    def get_run_history(self):
         return self.searcher.get_history_run()
 
     def save_full_log(self, file):
