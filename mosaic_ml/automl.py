@@ -170,7 +170,8 @@ class AutoML():
                                  time_budget=self.time_budget,
                                  seed=self.seed,
                                  policy_arg=self.policy_arg,
-                                 exec_dir=self.mosaic_dir)
+                                 exec_dir=self.mosaic_dir,
+                                 verbose=self.verbose)
 
         self.adapt_search_space(X, y)
 
