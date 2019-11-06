@@ -1,4 +1,8 @@
+[![CircleCI](https://circleci.com/gh/herilalaina/mosaic_ml/tree/master.svg?style=svg)](https://circleci.com/gh/herilalaina/mosaic_ml/tree/master)
+
+
 # Automated machine learning with MCTS
+
 Mosaic ML is a Python library for machine learning pipeline configuration
 using Monte Carlo Tree Search.
 

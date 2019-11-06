@@ -1,5 +1,5 @@
 git+https://github.com/herilalaina/mosaic@v0-alpha
 simplejson
-openml==0.7.0
+openml
 scikit-learn==0.20.4
 xgboost
