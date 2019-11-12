@@ -34,6 +34,7 @@ jobs:
             . venv/bin/activate
             pip install cython numpy scipy
             pip install -r requirements.txt
+            pip install openml==0.10.1
 
       - save_cache:
           paths:
@@ -54,4 +55,3 @@ jobs:
 
       - store_artifacts:
           path: test-reports
-
