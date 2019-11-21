@@ -24,7 +24,7 @@ class MctsML(MCTS):
     def MCT_SEARCH(self):
         reward, config = super().MCT_SEARCH()
 
-        write_gpickle(self.tree, os.path.join(self.exec_dir, "tree.json"))
+        write_gpickle(self.tree, os.path.join(self.exec_dir, "tree.pkl"))
         with open(os.path.join(self.exec_dir, "full_log.json"), 'w') as outfile:
             json.dump(self.env.history_score, outfile)
 

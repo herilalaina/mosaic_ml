@@ -10,7 +10,7 @@ autoML = AutoML(time_budget=120,
                 seed=1,
                 scoring_func="balanced_accuracy",
                 exec_dir="execution_dir",
-                verbose=False
+                verbose=True
                 )
 
 best_config, best_score = autoML.fit(X_train, y_train, X_test, y_test, categorical_features=cat)

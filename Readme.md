@@ -36,6 +36,7 @@ autoML = AutoML(time_budget=120,
                 )
 
 best_config, best_score = autoML.fit(X_train, y_train, X_test, y_test, categorical_features=cat)
+print(autoML.get_run_history())
 ```
 
 ### Citation
