@@ -25,7 +25,7 @@ A [simple example](https://github.com/herilalaina/mosaic_ml/blob/master/examples
 
 
 ```python
-from mosaic_ml.automl import 
+from mosaic_ml.automl import AutoML
 
 X_train, y_train, X_test, y_test, cat = load_task(6)
 
