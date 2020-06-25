@@ -1,10 +1,24 @@
 # -*- encoding: utf-8 -*-
 import os
 import sys
+import codecs
+import os.path
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from setuptools.command.build_ext import build_ext
 
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 if sys.version_info < (3, 5):
     raise ValueError(
@@ -38,7 +52,7 @@ setup(
     author='Herilalaina Rakotoarison',
     author_email='herilalaina.rakotoarison@inria.fr',
     description='Mosaic for Machine Learning algorithm.',
-    version="0.1-beta",
+    version=get_version("mosaic_ml/__init__.py"),
     cmdclass={'build_ext': BuildExt},
     packages=find_packages(exclude=['examples', 'test']),
     setup_requires=setup_reqs,

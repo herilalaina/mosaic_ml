@@ -17,9 +17,9 @@ class MctsML(MCTS):
 
     def __init__(self, env,
                  time_budget=3600,
-                 policy_arg = None,
+                 bandit_policy = None,
                  exec_dir = ""):
-        super().__init__(env, "puct", time_budget, policy_arg, exec_dir)
+        super().__init__(env=env, bandit_policy=bandit_policy, time_budget=time_budget, exec_dir=exec_dir, coef_progressive_widening=0.6)
 
     def MCT_SEARCH(self):
         reward, config = super().MCT_SEARCH()
@@ -70,12 +70,14 @@ class MctsML(MCTS):
                             self.bestscore = res
                             self.bestconfig = config
                     else:
+                        self.logger.info("Budget exhausted.")
                         return 0
 
                     if nb_iter_to_generate_img == -1 or i % nb_iter_to_generate_img == 0:
                         self.tree.draw_tree(
                             os.path.join(self.exec_dir, "images"))
             except Timeout.Timeout:
+                self.logger.info("Budget exhausted.")
                 return 0
 
     def print_tree(self, images):

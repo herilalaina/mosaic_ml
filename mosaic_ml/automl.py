@@ -1,18 +1,18 @@
 # Mosaic library
 import os
 import json
-import pynisher
 import sys
-import tempfile
 import logging
+import pynisher
+import tempfile
 from functools import partial
 import simplejson as json
 
 import numpy as np
 # pynisher
 # Config space
-from mosaic.external.ConfigSpace import pcs_new as pcs
 from mosaic_ml.mosaic_wrapper.mosaic import SearchML
+from mosaic.external.ConfigSpace import pcs_new as pcs
 from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
 # scipy
 from scipy.sparse import issparse
@@ -21,14 +21,15 @@ from sklearn.metrics import accuracy_score, roc_auc_score, balanced_accuracy_sco
 
 from networkx.readwrite.gpickle import write_gpickle
 from networkx.readwrite import json_graph
-from mosaic_ml.evaluator import evaluate, test_function, evaluate_competition, evaluate_generate_metadata
+from mosaic_ml.evaluator import evaluate, test_function, evaluate_generate_metadata
 
 from mosaic_ml.model_config.encoding import OneHotEncoding
 from mosaic_ml.sklearn_env import SklearnEnv
 
 
 class AutoML():
-    def __init__(self, time_budget=3600,
+    def __init__(self,
+                 time_budget=3600,
                  time_limit_for_evaluation=300,
                  memory_limit=3024,
                  scoring_func="roc_auc",
@@ -40,7 +41,7 @@ class AutoML():
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
         self.memory_limit = memory_limit
-        self.policy_arg = {}
+        self.policy_arg = {"policy_name": "puct", "c": 1.3}
         self.searcher = None
         self.data_manager = data_manager
         self.seed = seed
@@ -109,7 +110,7 @@ class AutoML():
             "one_hot_encoding": nb_onehot_enc,
             "is_positive": is_positive
         }
-        print(self.searcher.mcts.env.problem_dependant_value)
+        # print(self.searcher.mcts.env.problem_dependant_value)
 
     def prepare_ensemble(self, X, y):
         from sklearn.model_selection import train_test_split
@@ -133,10 +134,16 @@ class AutoML():
             self.logger_automl.info("Data is dense")
             return pcs.read(open(os.path.dirname(os.path.abspath(__file__)) + "/model_config/1_0.pcs", "r"))
 
-    def fit(self, X, y, categorical_features=None, initial_configurations=[], id_task=None):
-        return self.fit(X, y, None, None, categorical_features, initial_configurations)
+    def fit(self, X, y, categorical_features=None, initial_configurations=[]):
+        return self.fit(X=X, y=y, X_test=None, y_test=None,
+                        categorical_features=categorical_features, initial_configurations=initial_configurations)
 
-    def fit(self, X, y, X_test=None, y_test=None, categorical_features=None, initial_configurations=[], id_task=None,
+    def fit(self, X, y,
+            X_test = None,
+            y_test=None,
+            categorical_features = None,
+            initial_configurations = [],
+            nb_simulation=np.inf,
             policy_arg={}):
         X = np.array(X)
         y = np.array(y)
@@ -151,9 +158,6 @@ class AutoML():
             str([i for i, x in enumerate(categorical_features) if x == "categorical"])))
 
         config_space = self.get_config_space(X)
-
-        # dataset_features = get_dataset_metafeature_from_openml(id_task)
-        # self.prepare_ensemble(X, y)
 
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
                             categorical_features=categorical_features, seed=self.seed,
@@ -181,7 +185,7 @@ class AutoML():
         except Exception as e:
             raise (e)
 
-        return res
+        return self.searcher.mcts.env.bestconfig["model"], self.searcher.mcts.env.bestconfig["validation_score"]
 
     def get_run_history(self):
         return self.searcher.get_history_run()

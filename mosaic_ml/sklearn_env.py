@@ -177,7 +177,7 @@ class SklearnEnv(MosaicEnvironment):
             #        [c for c in get_one_exchange_neighbourhood_with_history(expert, self.seed, history)]
             #]]
             configs = []
-            print("[Rollout] Neighborhood on", expert.get_dictionary())
+            # print("[Rollout] Neighborhood on", expert.get_dictionary())
             for c in get_one_exchange_neighbourhood_with_history(expert, self.seed, history):
                 tmp_ = list(get_one_exchange_neighbourhood_with_history(c, self.seed, history))
                 configs.extend(tmp_)
@@ -292,7 +292,7 @@ class SklearnEnv(MosaicEnvironment):
                         id_param = possible_params.index(main_p)
                         break
             elif self.use_parameter_importance and self._can_use_parameter_importance(possible_params):
-                print("Parameter importance activated")
+                # print("Parameter importance activated")
                 id_param = self.score_model.most_importance_parameter([self.config_space.get_idx_by_hyperparameter_name(p) for p in possible_params])
             else:
                 id_param = np.random.randint(0, len(possible_params))
@@ -316,7 +316,8 @@ class SklearnEnv(MosaicEnvironment):
                         ex_config = self.config_space.sample_partial_configuration(history + [(next_param, next_param_v)], 500)
                         tmp_config = np.nan_to_num([c.get_array() for c in ex_config])
                     except Exception as e:
-                        print("Can not sample for ", next_param, next_param_v)
+                        # print("Can not sample for ", next_param, next_param_v)
+                        pass
                     if len(tmp_config) > 0:
                         value_to_choose.append(next_param_v)
                         buffer_config.append(tmp_config)
@@ -330,23 +331,23 @@ class SklearnEnv(MosaicEnvironment):
                 id_max = np.argmax(list_value_score)
                 value_param = value_to_choose[id_max]
             except Exception as e:
-                print("error in ei")
+                # print("error in ei")
                 raise(e)
                 value_param = np.random.choice(value_to_choose)
 
             history.append((next_param, value_param))
         except Exception as e:
-            print("Exception for {0}".format(history))
-            print("Child info", info_children)
-            print("Possible params", possible_params)
-            print("Next params", next_param)
-            print("Value to choose", value_to_choose)
-            print("Value example: ", next_param_v)
+            # print("Exception for {0}".format(history))
+            # print("Child info", info_children)
+            # print("Possible params", possible_params)
+            # print("Next params", next_param)
+            # print("Value to choose", value_to_choose)
+            # print("Value example: ", next_param_v)
             raise (e)
 
-        print("Current pipeline: ", history)
-        print("Possible params", possible_params)
-        print("Next params", (next_param, value_param))
+        # print("Current pipeline: ", history)
+        # print("Possible params", possible_params)
+        # print("Next params", (next_param, value_param))
         #is_terminal = not self._check_if_same_pipeline([el[0] for el in history], [el for el in config])
         possible_params.remove(next_param)
         is_terminal = len(set(possible_params).intersection(set(self.main_hyperparameter))) == 0
@@ -423,7 +424,7 @@ class SklearnEnv(MosaicEnvironment):
         return res["validation_score"]
 
     def run_default_configuration(self):
-        print("Run default configuration")
+        # print("Run default configuration")
         try:
             config = self.config_space.get_default_configuration()
             return config, self._evaluate(config, type="default")
@@ -438,7 +439,7 @@ class SklearnEnv(MosaicEnvironment):
 
 
     def run_default_all(self):
-        print("Run default configuration")
+        # print("Run default configuration")
 
         set_config = set()
         for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors"]:
@@ -451,7 +452,7 @@ class SklearnEnv(MosaicEnvironment):
 
 
     def run_main_configuration(self):
-        print("Run main configuration")
+        # print("Run main configuration")
         id_score = {}
         for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
             id_score[cl] = []
@@ -474,11 +475,11 @@ class SklearnEnv(MosaicEnvironment):
         #return id_score
 
     def run_random_configuration(self):
-        print("Run random configuration")
+        # print("Run random configuration")
         self._evaluate(self.config_space.sample_configuration())
 
     def run_initial_configuration(self, intial_configuration, already_executed = set({})):
-        print("Run initial configuration")
+        # print("Run initial configuration")
         id_score = {}
         for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
             id_score[cl] = []
@@ -587,7 +588,8 @@ class SklearnEnv(MosaicEnvironment):
                     X.extend([np.concatenate([x, features[i_]]) for x in X_])
                     Y.extend(Y_)
                 except Exception as e:
-                    print(e)
+                    # print(e)
+                    pass
         return X, Y
 
     def load_metalearning_x_y(self, id):
@@ -611,7 +613,8 @@ class SklearnEnv(MosaicEnvironment):
                         configs.append(configuration)
 
                 except Exception as e:
-                    print(e)
+                    # print(e)
+                    pass
         return configs
 
     def log_result(self, res, config):
@@ -625,7 +628,7 @@ class SklearnEnv(MosaicEnvironment):
 
         self.history_score.append(run)
 
-        print(">> {0}: validation score: {1}\n".format(str(config), res["validation_score"]))
+        # print(">> {0}: validation score: {1}\n".format(str(config), res["validation_score"]))
 
         if res["validation_score"] > self.bestconfig["validation_score"]:
             self.add_to_final_model(run)

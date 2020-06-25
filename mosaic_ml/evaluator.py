@@ -90,8 +90,8 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
 
     numerical_features = [i for i, x in enumerate(type_features) if x != "categorical"]
     categorical_features = [i for i, x in enumerate(type_features) if x == "categorical"]
-    print("numerical_features", numerical_features)
-    print("categorical_features", categorical_features)
+    # print("numerical_features", numerical_features)
+    # print("categorical_features", categorical_features)
 
 
     list_params = config.keys()
@@ -174,16 +174,13 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
             return info
 
     except Exception as e: # TimeoutException
-        print(sys.exc_info())
+        (sys.exc_info())
         raise(e)
-
-    print(sys.exc_info())
 
     return {"validation_score": 0, "test_score": 0}
 
 
 def evaluate_generate_metadata(config, bestconfig, id_run, X=None, y=None, score_func=None, categorical_features=None, seed=None):
-    print("*", end="")
     try:
         from scipy.sparse import issparse
         import warnings
@@ -221,10 +218,7 @@ def evaluate_generate_metadata(config, bestconfig, id_run, X=None, y=None, score
             return info
 
     except Exception as e: # TimeoutException
-        print(sys.exc_info())
         raise(e)
-
-    print(sys.exc_info())
 
     return {"validation_score": 0, "test_score": 0}
 
@@ -264,53 +258,3 @@ def run_pipeline(params):
     data_manager.add_data(score_, model)
 
     return (score_, model)
-
-
-def evaluate_competition(config, bestconfig, X=None, y=None, score_func=None,
-                         categorical_features=None, seed=None, data_manager=None,
-                         time_limit_for_evaluation=None):
-    print("-----------------------------------------------------------------------------------------------")
-    print(config)
-    try:
-        from scipy.sparse import issparse
-        import warnings
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-        from sklearn.model_selection import StratifiedKFold
-        from sklearn.externals.joblib import Parallel, delayed
-        from sklearn.base import clone
-        from sklearn.utils import resample
-        import random
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-
-            pipeline, balancing_strategy = config_to_pipeline(config, categorical_features, issparse(X))
-            list_score = []
-
-            name_clf = pipeline.steps[4][0]
-
-            X_, y_ = resample(X, y, random_state=random.randint(0, 10000), n_samples=min([X.shape[0], 50000]))
-            skf = StratifiedKFold(n_splits=3, random_state=seed).split(X_, y_)
-
-            if bestconfig["score_validation"] == 0:
-                r = Parallel(n_jobs=3, verbose=0, temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
-            else:
-                r = Parallel(n_jobs=3, verbose=0, timeout=(time_limit_for_evaluation-2), temp_folder="/tmp", backend="threading")(delayed(run_pipeline)((pipeline, X_, y_, index, data_manager)) for index in skf)
-
-            sum_score = 0
-            for s, m in r:
-                sum_score += s
-
-            score = sum_score / 3
-            print("Score", score)
-
-            return {"validation_score": score}
-    except TimeoutException as e:
-        print("Timout!!!")
-        raise(e)
-    except MemorylimitException as e:
-        print("Memout!!!")
-        raise(e)
-    except Exception as e:
-        print(e)
-        raise (e)

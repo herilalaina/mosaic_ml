@@ -21,11 +21,17 @@ class SearchML(Search):
         :param policy_arg: specific option for MCTS policy
         :param exec_dir: directory to store tmp files
         """
-        super().__init__(environment, time_budget, seed, policy_arg, exec_dir, verbose)
+        super().__init__(environment=environment,
+                            time_budget=time_budget,
+                            seed=seed,
+                            bandit_policy=policy_arg,
+                            
+                            exec_dir=exec_dir,
+                            verbose=verbose)
 
         self.mcts = MctsML(env=environment,
                            time_budget=time_budget,
-                           policy_arg=policy_arg,
+                           bandit_policy=policy_arg,
                            exec_dir=exec_dir)
 
         # config logger for automl
