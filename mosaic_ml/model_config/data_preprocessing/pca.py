@@ -33,8 +33,8 @@ class PCA:
 
 def get_model(name, config, random_state):
     model = PCA(
-        keep_variance=config["preprocessor:pca:keep_variance"],
-        whiten=config["preprocessor:pca:whiten"],
+        keep_variance=config["feature_preprocessor:pca:keep_variance"],
+        whiten=config["feature_preprocessor:pca:whiten"],
         random_state=random_state
     )
     return (name, model)

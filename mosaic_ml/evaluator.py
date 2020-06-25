@@ -51,11 +51,11 @@ def evaluation_rescaling(choice, config):
     elif choice == "normalize":
         scaler = Normalizer()
     elif choice == "quantile_transformer":
-        scaler = QuantileTransformer(n_quantiles=int(config["rescaling:quantile_transformer:n_quantiles"]),
-                                     output_distribution=config["rescaling:quantile_transformer:output_distribution"])
+        scaler = QuantileTransformer(n_quantiles=int(config["data_preprocessing:numerical_transformer:rescaling:quantile_transformer:n_quantiles"]),
+                                     output_distribution=config["data_preprocessing:numerical_transformer:rescaling:quantile_transformer:output_distribution"])
     elif choice == "robust_scaler":
-        scaler = RobustScaler(quantile_range=(float(config["rescaling:robust_scaler:q_min"]),
-                                              float(config["rescaling:robust_scaler:q_max"])))
+        scaler = RobustScaler(quantile_range=(float(config["data_preprocessing:numerical_transformer:rescaling:robust_scaler:q_min"]),
+                                              float(config["data_preprocessing:numerical_transformer:rescaling:robust_scaler:q_max"])))
     elif choice == "standardize":
         scaler = StandardScaler()
     else:
@@ -97,12 +97,12 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
     list_params = config.keys()
 
     balancing_strategy = config["balancing:strategy"]
-    imputation_strategy = config["imputation:strategy"]
-    categorical_encoding__choice__ = config["categorical_encoding:__choice__"]
-    rescaling__choice__ = config["rescaling:__choice__"]
+    imputation_strategy = config["data_preprocessing:numerical_transformer:imputation:strategy"]
+    categorical_encoding__choice__ = config["data_preprocessing:categorical_transformer:categorical_encoding:__choice__"]
+    rescaling__choice__ = config["data_preprocessing:numerical_transformer:rescaling:__choice__"]
 
     classifier__choice__ = config["classifier:__choice__"]
-    preprocessor__choice__ = config["preprocessor:__choice__"]
+    preprocessor__choice__ = config["feature_preprocessor:__choice__"]
 
     name_pre, model_pre = get_data_preprocessing.evaluate(preprocessor__choice__, config, random_state)
     name_clf, model_clf = get_classifier.evaluate_classifier(classifier__choice__, config, random_state)
@@ -134,7 +134,6 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
 
 
 def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, categorical_features=None, seed=None, test_data = {}, store_directory = ""):
-    print("*", end="")
     try:
         from scipy.sparse import issparse
         import warnings
@@ -174,7 +173,6 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
             return info
 
     except Exception as e: # TimeoutException
-        (sys.exc_info())
         raise(e)
 
     return {"validation_score": 0, "test_score": 0}

@@ -44,7 +44,7 @@ class SklearnEnv(MosaicEnvironment):
         # Constrained evaluation
         self.max_eval_time = cpu_time_in_s
         self.score_model = ScoreModel(len(self.config_space._hyperparameters),
-                                        id_most_import_class=[self.config_space.get_idx_by_hyperparameter_name(p) for p in ["categorical_encoding:__choice__", "classifier:__choice__"]])
+                                        id_most_import_class=[self.config_space.get_idx_by_hyperparameter_name(p) for p in ["data_preprocessing:categorical_transformer:categorical_encoding:__choice__", "classifier:__choice__"]])
         self.history_score = []
         self.logger = logging.getLogger('mcts')
         self.final_model = []
@@ -54,7 +54,12 @@ class SklearnEnv(MosaicEnvironment):
         self.rng = np.random.RandomState(seed)
 
         self.id = 0
-        self.main_hyperparameter = ["classifier:__choice__", "preprocessor:__choice__", "categorical_encoding:__choice__", "imputation:strategy", "rescaling:__choice__"]
+        self.main_hyperparameter = ["classifier:__choice__",
+                                    "feature_preprocessor:__choice__",
+                                    "data_preprocessing:categorical_transformer:categorical_encoding",
+                                    "data_preprocessing:numerical_transformer:imputation:strategy",
+                                    "data_preprocessing:numerical_transformer:rescaling",
+                                    "data_preprocessing:categorical_transformer:category_coalescence:__choice__"]
         self.max_nb_child_main_parameter = {
             "root": 16,
             "classifier:__choice__:adaboost": 10,
@@ -134,7 +139,7 @@ class SklearnEnv(MosaicEnvironment):
 
 
             if not self.problem_dependant_value["is_positive"]:
-                for p in ["preprocessor:select_percentile_classification:score_func", "preprocessor:select_rates:score_func"]:
+                for p in ["feature_preprocessor:select_percentile_classification:score_func", "feature_preprocessor:select_rates:score_func"]:
                     if p in arr:
                         arr[p] = "f_classif"
 
@@ -400,7 +405,6 @@ class SklearnEnv(MosaicEnvironment):
             self.sucess_run += 1
 
         except Timeout.Timeout as e:
-            print(e)
             res = None
             raise(e)
 
@@ -442,37 +446,32 @@ class SklearnEnv(MosaicEnvironment):
         # print("Run default configuration")
 
         set_config = set()
-        for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors"]:
-            config = self.config_space.sample_partial_configuration_with_default([("classifier:__choice__", cl)])
-            self.check_time()
-            score = self._evaluate(config)
-            set_config.add(config)
+        for cl in ["random_forest", "gradient_boosting", "libsvm_svc", "extra_trees", "bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "lda", "liblinear_svc", "qda", "k_nearest_neighbors"]:
+            try:
+                config = self.config_space.sample_partial_configuration_with_default([("classifier:__choice__", cl)])
+                self.check_time()
+                score = self._evaluate(config)
+                set_config.add(config)
+            except:
+                pass
         return set_config
 
 
 
     def run_main_configuration(self):
-        # print("Run main configuration")
         id_score = {}
-        for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
+        for cl in ["random_forest", "gradient_boosting", "libsvm_svc", "extra_trees", "bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "lda", "liblinear_svc", "qda", "k_nearest_neighbors"]:
             id_score[cl] = []
 
-        for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
-            yield self.config_space.sample_partial_configuration_with_default([("classifier:__choice__", cl)])
-            # st_time = time.time()
-            # score = self._evaluate(config)
-            # id_score[config["classifier:__choice__"]].append(score)
-            """if time.time() - st_time > 50:
-                continue"""
-            for _ in range(1):
-                # self.check_time()
-                yield self.config_space.sample_partial_configuration([("classifier:__choice__", cl)])
-                # yield config
-
-        #score = self._evaluate(config)
-
-        #id_score[config["classifier:__choice__"]].append(score)
-        #return id_score
+        for cl in ["random_forest", "gradient_boosting", "libsvm_svc", "extra_trees", "bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "lda", "liblinear_svc", "qda", "k_nearest_neighbors"]:
+            for _ in range(3):
+                config = self.config_space.sample_partial_configuration(partif_config=[("classifier:__choice__", cl)])
+                try:
+                    score = self._evaluate(config)
+                    id_score[config["classifier:__choice__"]].append(score)
+                except:
+                    pass
+        return id_score
 
     def run_random_configuration(self):
         # print("Run random configuration")
@@ -481,13 +480,16 @@ class SklearnEnv(MosaicEnvironment):
     def run_initial_configuration(self, intial_configuration, already_executed = set({})):
         # print("Run initial configuration")
         id_score = {}
-        for cl in ["bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "extra_trees", "gradient_boosting", "lda", "liblinear_svc", "libsvm_svc", "qda", "k_nearest_neighbors", "random_forest"]:
+        for cl in ["random_forest", "gradient_boosting", "libsvm_svc", "extra_trees", "bernoulli_nb", "multinomial_nb", "decision_tree", "gaussian_nb", "sgd", "passive_aggressive", "xgradient_boosting", "adaboost", "lda", "liblinear_svc", "qda", "k_nearest_neighbors"]:
             id_score[cl] = []
         for c in intial_configuration:
             if c not in already_executed:
-                self.check_time()
-                score = self._evaluate(c)
-                id_score[c["classifier:__choice__"]].append(score)
+                try:
+                    self.check_time()
+                    score = self._evaluate(c)
+                    id_score[c["classifier:__choice__"]].append(score)
+                except Exception as e:
+                    pass
 
         return id_score
 

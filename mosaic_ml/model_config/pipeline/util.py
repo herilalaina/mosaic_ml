@@ -23,7 +23,7 @@ def find_sklearn_classes(class_):
 
         # Work around some issues...
         if module_name in ["hmm", "mixture"]:
-            print("Skipping %s" % module_name)
+            # print("Skipping %s" % module_name)
             continue
 
         module_file = module_loader.__dict__["path"]
@@ -39,7 +39,6 @@ def find_sklearn_classes(class_):
                 # print member_name, obj
                 classifiers.add(classifier)
 
-    print()
     for classifier in sorted([str(cls) for cls in classifiers]):
         print(classifier)
 

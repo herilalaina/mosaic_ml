@@ -170,7 +170,7 @@ class SimpleRegressionPipeline(RegressorMixin, BasePipeline):
             exclude=exclude, include=include, pipeline=self.steps)
 
         regressors = cs.get_hyperparameter('regressor:__choice__').choices
-        preprocessors = cs.get_hyperparameter('preprocessor:__choice__').choices
+        preprocessors = cs.get_hyperparameter('feature_preprocessor:__choice__').choices
         available_regressors = self._final_estimator.get_available_components(
             dataset_properties)
 
@@ -194,7 +194,7 @@ class SimpleRegressionPipeline(RegressorMixin, BasePipeline):
                                             'regressor:__choice__'), key),
                                     ForbiddenEqualsClause(
                                         cs.get_hyperparameter(
-                                            'preprocessor:__choice__'), 'densifier')
+                                            'feature_preprocessor:__choice__'), 'densifier')
                                 ))
                             # Success
                             break
@@ -226,7 +226,7 @@ class SimpleRegressionPipeline(RegressorMixin, BasePipeline):
                         ForbiddenEqualsClause(cs.get_hyperparameter(
                             "regressor:__choice__"), r),
                         ForbiddenEqualsClause(cs.get_hyperparameter(
-                            "preprocessor:__choice__"), f)))
+                            "feature_preprocessor:__choice__"), f)))
                     break
                 except KeyError:
                     break

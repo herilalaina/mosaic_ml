@@ -267,6 +267,9 @@ classifier:xgradient_boosting:reg_alpha | classifier:__choice__ in {xgradient_bo
 classifier:xgradient_boosting:reg_lambda | classifier:__choice__ in {xgradient_boosting}
 classifier:xgradient_boosting:scale_pos_weight | classifier:__choice__ in {xgradient_boosting}
 classifier:xgradient_boosting:subsample | classifier:__choice__ in {xgradient_boosting}
+classifier:xgradient_boosting:normalize_type | classifier:xgradient_boosting:booster in {dart}
+classifier:xgradient_boosting:rate_drop | classifier:xgradient_boosting:booster in {dart}
+classifier:xgradient_boosting:sample_type | classifier:xgradient_boosting:booster in {dart}
 preprocessor:extra_trees_preproc_for_classification:bootstrap | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
 preprocessor:extra_trees_preproc_for_classification:criterion | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
 preprocessor:extra_trees_preproc_for_classification:max_depth | preprocessor:__choice__ in {extra_trees_preproc_for_classification}
@@ -327,9 +330,6 @@ classifier:sgd:eta0 | classifier:sgd:learning_rate in {invscaling, constant}
 classifier:sgd:power_t | classifier:sgd:learning_rate in {invscaling}
 classifier:sgd:epsilon | classifier:sgd:loss in {modified_huber}
 classifier:sgd:l1_ratio | classifier:sgd:penalty in {elasticnet}
-classifier:xgradient_boosting:normalize_type | classifier:xgradient_boosting:booster in {dart}
-classifier:xgradient_boosting:rate_drop | classifier:xgradient_boosting:booster in {dart}
-classifier:xgradient_boosting:sample_type | classifier:xgradient_boosting:booster in {dart}
 preprocessor:fast_ica:n_components | preprocessor:fast_ica:whiten in {True}
 preprocessor:kernel_pca:coef0 | preprocessor:kernel_pca:kernel in {poly, sigmoid}
 preprocessor:kernel_pca:degree | preprocessor:kernel_pca:kernel in {poly}

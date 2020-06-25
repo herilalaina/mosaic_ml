@@ -5,7 +5,6 @@ import time
 from mosaic_ml.autosklearn_wrapper.metalearner import MetaLearningOptimizer
 
 from autosklearn.constants import *
-from autosklearn.util import get_logger
 
 __all__ = [
     'calc_meta_features',
@@ -18,14 +17,11 @@ __all__ = [
 def suggest_via_metalearning(
         meta_base, dataset_name, metric, task, sparse,
         num_initial_configurations):
-    logger = get_logger('autosklearn.metalearning.mismbo')
 
     if task == MULTILABEL_CLASSIFICATION:
         task = MULTICLASS_CLASSIFICATION
 
     task = TASK_TYPES_TO_STRING[task]
-
-    logger.warning(task)
 
     start = time.time()
     ml = MetaLearningOptimizer(
@@ -34,22 +30,17 @@ def suggest_via_metalearning(
         meta_base=meta_base,
         distance='l1',
         seed=1,)
-    logger.info('Reading meta-data took %5.2f seconds',
-                time.time() - start)
     runs = ml.metalearning_suggest_all(exclude_double_configurations=True)
     return runs[:num_initial_configurations]
 
 def suggest_via_metalearning_(
         meta_base, dataset_name, metric, task, sparse,
         num_initial_configurations):
-    logger = get_logger('autosklearn.metalearning.mismbo')
 
     if task == MULTILABEL_CLASSIFICATION:
         task = MULTICLASS_CLASSIFICATION
 
     task = TASK_TYPES_TO_STRING[task]
-
-    logger.warning(task)
 
     start = time.time()
     ml = MetaLearningOptimizer(
@@ -58,7 +49,5 @@ def suggest_via_metalearning_(
         meta_base=meta_base,
         distance='l1',
         seed=1,)
-    logger.info('Reading meta-data took %5.2f seconds',
-                time.time() - start)
     runs = ml.metalearning_suggest_all_(exclude_double_configurations=True)
     return runs #[:num_initial_configurations]
