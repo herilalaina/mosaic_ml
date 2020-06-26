@@ -8,6 +8,7 @@ python:
 install:
   - pip install cython numpy scipy
   - pip install git+https://github.com/herilalaina/mosaic@0.1
+  - pip install -r requirements.txt
   - pip install git+https://github.com/herilalaina/mosaic_ml
 # command to run tests
 script:
