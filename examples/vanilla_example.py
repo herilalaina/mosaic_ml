@@ -9,7 +9,7 @@ if __name__=="__main__":
                     seed=1,
                     scoring_func="balanced_accuracy",
                     verbose=True,
-                    ensemble_size=0
+                    ensemble_size=1
                     )
 
     best_config, best_score = autoML.fit(X_train, y_train, X_test, y_test, categorical_features=cat)

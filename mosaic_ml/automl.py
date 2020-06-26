@@ -161,7 +161,7 @@ class AutoML():
 
         config_space = self.get_config_space(X)
 
-        if self.ensemble_size > 0:
+        if self.ensemble_size > 1:
             self.prepare_ensemble(X=X, y=y)
 
 
