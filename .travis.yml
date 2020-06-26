@@ -6,10 +6,10 @@ python:
   - "3.8"
 # command to install dependencies
 install:
-  - pip install cython numpy scipy
+  - pip install cython numpy scipy pytest
   - sudo apt-get install build-essential swig
   - pip install git+https://github.com/herilalaina/mosaic@0.1
   - pip install git+https://github.com/herilalaina/mosaic_ml
 # command to run tests
 script:
-  - python -m unittest tests/test_example.py
+  - pytest
