@@ -2,7 +2,7 @@ from examples.update_metadata_util import load_task, classification_tasks
 from mosaic_ml.automl import AutoML
 
 
-def test_example():
+def test_vanilla():
     for task in [252, 9971]:
         X_train, y_train, X_test, y_test, cat = load_task(task)
 

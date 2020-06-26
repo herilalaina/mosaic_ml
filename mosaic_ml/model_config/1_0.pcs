@@ -39,7 +39,7 @@ classifier:gradient_boosting:min_samples_leaf integer [1, 200] [20]log
 classifier:gradient_boosting:scoring categorical {loss} [loss]
 classifier:gradient_boosting:tol categorical {1e-07} [1e-07]
 classifier:k_nearest_neighbors:n_neighbors integer [1, 100] [1]log
-classifier:k_nearest_neighbors:p categorical {1, 2} [2]
+classifier:k_nearest_neighbors:p integer [1, 2] [2]
 classifier:k_nearest_neighbors:weights categorical {uniform, distance} [uniform]
 classifier:lda:n_components integer [1, 250] [10]
 classifier:lda:shrinkage categorical {None, auto, manual} [None]

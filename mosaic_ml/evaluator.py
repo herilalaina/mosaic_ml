@@ -1,7 +1,6 @@
 from mosaic_ml.model_config.classification import get_classifier
 from mosaic_ml.model_config.data_preprocessing import get_data_preprocessing
-
-from pynisher import TimeoutException, MemorylimitException
+from pynisher import MemorylimitException, TimeoutException
 
 
 def evaluate_imputation(imputation_strategy):

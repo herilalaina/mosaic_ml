@@ -1,9 +1,10 @@
+import os
+import pickle
+
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
 from sklearn.utils.validation import check_is_fitted
-import numpy as np
-import pickle, os
 
 
 class ScoreModel():

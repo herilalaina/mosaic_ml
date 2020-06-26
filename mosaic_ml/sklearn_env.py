@@ -1,20 +1,20 @@
 """Base environement class."""
 
-import pynisher
-import numpy as np
-import time
 import logging
-from datetime import datetime
+import time
 
-from ConfigSpace.hyperparameters import CategoricalHyperparameter, UniformFloatHyperparameter, IntegerHyperparameter
-from mosaic.external.ConfigSpace.util import get_one_exchange_neighbourhood_with_history
-from mosaic.external.ConfigSpace.configuration_space import Configuration
-from mosaic.utils import Timeout, get_index_percentile
-
-from mosaic.env import MosaicEnvironment
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-from mosaic.utils import expected_improvement
+import pynisher
+from ConfigSpace.hyperparameters import (CategoricalHyperparameter,
+                                         IntegerHyperparameter,
+                                         UniformFloatHyperparameter)
+from mosaic.env import MosaicEnvironment
+from mosaic.external.ConfigSpace.configuration_space import Configuration
+from mosaic.external.ConfigSpace.util import \
+    get_one_exchange_neighbourhood_with_history
+from mosaic.utils import Timeout, expected_improvement, get_index_percentile
 from mosaic_ml.model_score import ScoreModel
 
 
@@ -279,8 +279,6 @@ class SklearnEnv(MosaicEnvironment):
 
         return possible_params
 
-
-
     def next_move(self, history=[], info_children=[]):
         st_time = time.time()
         try:
@@ -484,12 +482,41 @@ class SklearnEnv(MosaicEnvironment):
             id_score[cl] = []
         for c in intial_configuration:
             if c not in already_executed:
+                config = dict(c)
+                for to_convert in ["classifier:random_forest:min_impurity_decrease",
+                                    "classifier:random_forest:min_weight_fraction_leaf",
+                                    "feature_preprocessor:liblinear_svc_preprocessor:intercept_scaling",
+                                    "classifier:gradient_boosting:max_bins",
+                                    "classifier:decision_tree:max_features",
+                                    "classifier:decision_tree:max_leaf_nodes",
+                                    "classifier:decision_tree:min_impurity_decrease",
+                                    "classifier:decision_tree:min_weight_fraction_leaf",
+                                    "classifier:extra_trees:min_impurity_decrease",
+                                    "classifier:extra_trees:min_weight_fraction_leaf",
+                                    "classifier:gradient_boosting:max_bins",
+                                    "classifier:gradient_boosting:tol",
+                                    "classifier:libsvm_svc:max_iter",
+                                    "classifier:xgradient_boosting:base_score",
+                                    "classifier:xgradient_boosting:gamma",
+                                    "classifier:xgradient_boosting:max_delta_step",
+                                    "classifier:xgradient_boosting:n_estimators",
+                                    "classifier:xgradient_boosting:scale_pos_weight",
+                                    "feature_preprocessor:extra_trees_preproc_for_classification:min_impurity_decrease",
+                                    "feature_preprocessor:extra_trees_preproc_for_classification:min_weight_fraction_leaf",
+                                    "feature_preprocessor:extra_trees_preproc_for_classification:n_estimators",
+                                    "feature_preprocessor:liblinear_svc_preprocessor:intercept_scaling",
+                                    "feature_preprocessor:liblinear_svc_preprocessor:penalty",
+                                    "feature_preprocessor:random_trees_embedding:min_weight_fraction_leaf",
+                                    "classifier:liblinear_svc:intercept_scaling"]:
+                    if to_convert in config:
+                        config[to_convert] = str(config[to_convert])
+                c = Configuration(configuration_space=self.config_space, values=config, allow_inactive_with_values=True)
                 try:
                     self.check_time()
                     score = self._evaluate(c)
                     id_score[c["classifier:__choice__"]].append(score)
                 except Exception as e:
-                    pass
+                    raise(e)
 
         return id_score
 

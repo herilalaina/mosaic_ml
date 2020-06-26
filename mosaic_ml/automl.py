@@ -1,29 +1,30 @@
 # Mosaic library
-import os
 import json
-import sys
 import logging
-import pynisher
+import os
+import sys
 import tempfile
 from functools import partial
-import simplejson as json
 
 import numpy as np
-# pynisher
-# Config space
-from mosaic_ml.mosaic_wrapper.mosaic import SearchML
-from mosaic.external.ConfigSpace import pcs_new as pcs
-from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
+from networkx.readwrite import json_graph
+from networkx.readwrite.gpickle import write_gpickle
 # scipy
 from scipy.sparse import issparse
 # Metric
-from sklearn.metrics import accuracy_score, roc_auc_score, balanced_accuracy_score
+from sklearn.metrics import (accuracy_score, balanced_accuracy_score,
+                             roc_auc_score)
 
-from networkx.readwrite.gpickle import write_gpickle
-from networkx.readwrite import json_graph
-from mosaic_ml.evaluator import evaluate, test_function, evaluate_generate_metadata
-
+import pynisher
+import simplejson as json
+from mosaic.external.ConfigSpace import pcs_new as pcs
+from mosaic_ml.evaluator import (evaluate, evaluate_generate_metadata,
+                                 test_function)
+from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
 from mosaic_ml.model_config.encoding import OneHotEncoding
+# pynisher
+# Config space
+from mosaic_ml.mosaic_wrapper.mosaic import SearchML
 from mosaic_ml.sklearn_env import SklearnEnv
 
 
