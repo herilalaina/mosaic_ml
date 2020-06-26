@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"      # current default Python on Travis CI
+  - "3.7"
+  - "3.8"
+# command to install dependencies
+install:
+  - pip install cython numpy scipy
+  - pip install openml==0.10.1
+  - pip install -r requirements.txt
+  - pip install git+https://github.com/herilalaina/mosaic@0.1
+  - pip install git+https://github.com/herilalaina/mosaic_ml
+# command to run tests
+script:
+  - python -m unittest tests/test_example.py
