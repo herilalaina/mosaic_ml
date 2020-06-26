@@ -25,7 +25,7 @@ class SearchML(Search):
                             time_budget=time_budget,
                             seed=seed,
                             bandit_policy=policy_arg,
-                            
+
                             exec_dir=exec_dir,
                             verbose=verbose)
 
@@ -35,7 +35,7 @@ class SearchML(Search):
                            exec_dir=exec_dir)
 
         # config logger for automl
-        self.logger_automl = logging.getLogger('automl')
+        # self.logger_automl = logging.getLogger('automl')
 
     def get_history_run(self):
         return self.mcts.env.final_model

@@ -13,7 +13,7 @@ using Monte Carlo Tree Search.
 
 ### Installation
 `Mosaic ML` relies on the pipeline optimization library [`mosaic`](https://github.com/herilalaina/mosaic).
- 
+
 
 ```bash
 pip install git+https://github.com/herilalaina/mosaic@v0-alpha

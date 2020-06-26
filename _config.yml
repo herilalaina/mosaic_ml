@@ -1,2 +1,3 @@
 theme: jekyll-theme-cayman
-title: Automated machine learning with Monte-Carlo Tree Search
+title: Automated Machine Learning with Monte-Carlo Tree Search
+description: Mosaic ML is a Python library for machine learning pipeline configuration using Monte Carlo Tree Search.
