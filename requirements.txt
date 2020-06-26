@@ -4,4 +4,5 @@ openml==0.10.2
 xgboost==1.0.2
 simplejson==3.17.0
 scikit-learn>=0.22.0,<0.23
+pandas==0.25.3
 auto-sklearn==0.7.0

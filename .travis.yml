@@ -7,8 +7,6 @@ python:
 # command to install dependencies
 install:
   - pip install cython numpy scipy
-  - curl https://raw.githubusercontent.com/automl/auto-sklearn/master/requirements.txt | xargs -n 1 -L 1 pip install
-  - pip install -r requirements.txt
   - pip install git+https://github.com/herilalaina/mosaic@0.1
   - pip install git+https://github.com/herilalaina/mosaic_ml
 # command to run tests
