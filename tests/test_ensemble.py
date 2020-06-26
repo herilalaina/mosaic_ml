@@ -2,7 +2,7 @@ from examples.update_metadata_util import load_task, classification_tasks
 from mosaic_ml.automl import AutoML
 
 
-def test_vanilla():
+def test_ensemble():
     for task in [252, 9971]:
         X_train, y_train, X_test, y_test, cat = load_task(task)
 
@@ -11,7 +11,7 @@ def test_vanilla():
                         memory_limit=3024,
                         seed=1,
                         scoring_func="balanced_accuracy",
-                        ensemble_size=0,
+                        ensemble_size=25,
                         verbose=0
                         )
 

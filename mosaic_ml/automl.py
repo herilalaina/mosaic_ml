@@ -22,8 +22,6 @@ from mosaic_ml.evaluator import (evaluate, evaluate_generate_metadata,
                                  test_function)
 from mosaic_ml.metafeatures import get_dataset_metafeature_from_openml
 from mosaic_ml.model_config.encoding import OneHotEncoding
-# pynisher
-# Config space
 from mosaic_ml.mosaic_wrapper.mosaic import SearchML
 from mosaic_ml.sklearn_env import SklearnEnv
 
@@ -38,6 +36,7 @@ class AutoML():
                  data_manager=None,
                  exec_dir=None,
                  verbose=0,
+                 ensemble_size=25,
                  ):
         self.time_budget = time_budget
         self.time_limit_for_evaluation = time_limit_for_evaluation
@@ -49,6 +48,8 @@ class AutoML():
         self.verbose = verbose
         np.random.seed(seed)
         self.logger_automl = logging.getLogger('automl')
+        self.ensemble_size = ensemble_size
+        self.ensemble_dir = None
 
         # Create folder dir if exec_dir is None
         if exec_dir is None:
@@ -111,7 +112,6 @@ class AutoML():
             "one_hot_encoding": nb_onehot_enc,
             "is_positive": is_positive
         }
-        # print(self.searcher.mcts.env.problem_dependant_value)
 
     def prepare_ensemble(self, X, y):
         from sklearn.model_selection import train_test_split
@@ -137,7 +137,8 @@ class AutoML():
 
     def fit(self, X, y, categorical_features=None, initial_configurations=[]):
         return self.fit(X=X, y=y, X_test=None, y_test=None,
-                        categorical_features=categorical_features, initial_configurations=initial_configurations)
+                        categorical_features=categorical_features,
+                        initial_configurations=initial_configurations)
 
     def fit(self, X, y,
             X_test = None,
@@ -160,10 +161,16 @@ class AutoML():
 
         config_space = self.get_config_space(X)
 
+        if self.ensemble_size > 0:
+            self.prepare_ensemble(X=X, y=y)
+
+
         eval_func = partial(evaluate, X=X, y=y, score_func=self.scoring_func,
-                            categorical_features=categorical_features, seed=self.seed,
-                            test_data={"X_test": X_test, "y_test": y_test} if X_test is not None else {})
-        # store_directory=self.ensemble_dir)
+                            categorical_features=categorical_features,
+                            seed=self.seed,
+                            test_data={"X_test": X_test, "y_test": y_test},
+                            store_directory=self.ensemble_dir,
+                            ensemble_size=self.ensemble_size)
 
         environment = SklearnEnv(eval_func=eval_func,
                                  config_space=config_space,

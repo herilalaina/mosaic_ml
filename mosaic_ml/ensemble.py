@@ -10,7 +10,7 @@ class Ensemble():
         self.nb_best = nb_best
         self.scoring_func = scoring_func
         self.exec_dir = exec_dir
-        self.ensemble_directory = os.path.join(exec_dir, "ensemble_files")
+        self.ensemble_directory = exec_dir
         self.y_valid = np.load(os.path.join(self.ensemble_directory, "y_valid.npy"))
         self.y_test = np.load(os.path.join(self.ensemble_directory, "y_test.npy"))
         self.last_validation = 0
@@ -26,7 +26,7 @@ class Ensemble():
             if run["id"] >= id:
                 break
 
-        valids_dis = sorted(fetched_files, key= lambda i: i[1]) #, reverse=True) #[:self.nb_best]
+        valids_dis = sorted(fetched_files, key= lambda i: i[1]) #, reverse=True)[:self.nb_best]
         id_ensemble = {}
         for id, s, model in valids_dis:
             id_ensemble[model["classifier:__choice__"]] = (id, s)
@@ -70,7 +70,7 @@ class Ensemble():
         best_score = {}
         for run in self.runhistory:
             model = run["model"]
-            print(".", end=".")
+            # print(".", end=".")
             if run["validation_score"] > 0 and (model["classifier:__choice__"] not in best_score or run["validation_score"] > best_score[model["classifier:__choice__"]]): #self.last_validation:
             #if run["validation_score"] > 0 and  run["validation_score"] > self.last_validation:
                 valids_dis, valids_files, test_files = self._get_data(run["id"])
@@ -78,6 +78,6 @@ class Ensemble():
                 score_valid = self.predict_ensemble(ens_set, valids_files, self.y_valid)
                 score_test = self.predict_ensemble(ens_set, test_files, y)
                 scores.append([run["elapsed_time"], score_valid, score_test])
-                print([run["elapsed_time"], score_valid, score_test])
+                # print([run["elapsed_time"], score_valid, score_test])
                 best_score[model["classifier:__choice__"]] = run["validation_score"]
         return scores

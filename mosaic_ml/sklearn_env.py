@@ -399,7 +399,7 @@ class SklearnEnv(MosaicEnvironment):
         else:
             eval_func = self.eval_func
         try:
-            res = eval_func(config, self.bestconfig, self.id)
+            res = eval_func(config, self.history_score, self.id)
             self.sucess_run += 1
 
         except Timeout.Timeout as e:
@@ -657,8 +657,6 @@ class SklearnEnv(MosaicEnvironment):
 
         self.history_score.append(run)
 
-        # print(">> {0}: validation score: {1}\n".format(str(config), res["validation_score"]))
-
-        if res["validation_score"] > self.bestconfig["validation_score"]:
+        if run["validation_score"] > self.bestconfig["validation_score"]:
             self.add_to_final_model(run)
             self.bestconfig = run

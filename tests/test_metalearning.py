@@ -22,7 +22,8 @@ def test_metalearning():
                         memory_limit=3024,
                         seed=1,
                         scoring_func="balanced_accuracy",
-                        verbose=0
+                        verbose=0,
+                        ensemble_size=0
                         )
 
         intial_configuration_metalearning_AS, _ = get_autosklearn_metalearning(X_train, y_train, cat, "balanced_accuracy", 50)

@@ -1,3 +1,5 @@
+import time
+from mosaic_ml.ensemble import Ensemble
 from mosaic_ml.model_config.classification import get_classifier
 from mosaic_ml.model_config.data_preprocessing import get_data_preprocessing
 from pynisher import MemorylimitException, TimeoutException
@@ -132,7 +134,8 @@ def config_to_pipeline(config, type_features, is_sparse, random_state):
     return pipeline, balancing_strategy == "weighting"
 
 
-def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, categorical_features=None, seed=None, test_data = {}, store_directory = ""):
+def evaluate(config, runhistory, id_run, X=None, y=None, score_func=None, categorical_features=None,
+            seed=None, test_data = None, store_directory = None, ensemble_size=25):
     try:
         from scipy.sparse import issparse
         import warnings
@@ -142,6 +145,8 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
         import traceback
         import sys, os
         import numpy as np
+
+        start_time = time.time()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -163,11 +168,25 @@ def evaluate(config, bestconfig, id_run, X=None, y=None, score_func=None, catego
             score = score_func(y_test, pipeline.predict(X_test))
             info = {"validation_score": score}
 
-            if test_data:
+            if test_data is not None:
                 pred_test = pipeline.predict(np.array(test_data["X_test"]))
                 info["test_score"] = score_func(test_data["y_test"], pred_test)
-                #np.save(os.path.join(store_directory, "pred_test_{0}.npy".format(id_run)), pred_test)
-                #np.save(os.path.join(store_directory, "pred_valid_{0}.npy".format(id_run)), pred_valid)
+
+            if store_directory is not None:
+                np.save(os.path.join(store_directory, "pred_test_{0}.npy".format(id_run)), pred_test)
+                np.save(os.path.join(store_directory, "pred_valid_{0}.npy".format(id_run)), pred_valid)
+
+                if len(runhistory) > 0:
+                    run = info
+                    run["id"] = id_run
+                    run["elapsed_time"] = runhistory[-1]["elapsed_time"] + time.time() - start_time
+                    run["model"] = config.get_dictionary()
+
+                    ensemble_builder = Ensemble(runhistory + [run],
+                            ensemble_size, 50, score_func, store_directory)
+                    _, valid_score, test_score = ensemble_builder.score_ensemble(test_data["y_test"])[-1]
+                    info["validation_score"] = valid_score
+                    info["test_score"] = test_score
 
             return info
 
