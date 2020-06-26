@@ -7,7 +7,7 @@ python:
 # command to install dependencies
 install:
   - pip install cython numpy scipy
-  - conda install gxx_linux-64 gcc_linux-64 swig
+  - apt-get install build-essential swig
   - pip install git+https://github.com/herilalaina/mosaic@0.1
   - pip install git+https://github.com/herilalaina/mosaic_ml
 # command to run tests
