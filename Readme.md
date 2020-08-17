@@ -1,6 +1,6 @@
 # Automated Machine Learning with MCTS
 
-[![Build Status](https://travis-ci.org/herilalaina/mosaic_ml.svg?branch=master)](https://travis-ci.org/herilalaina/mosaic_ml)
+[![Build Status](https://api.travis-ci.org/herilalaina/mosaic_ml.svg?branch=master)](https://travis-ci.org/herilalaina/mosaic_ml)
 
 Mosaic ML is a Python library for machine learning pipeline configuration
 using Monte Carlo Tree Search.
